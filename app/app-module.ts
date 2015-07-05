@@ -11,6 +11,7 @@ module vierGewinnt6 {
     .module('vierGewinnt6', [
       'ngRoute',
       'mgcrea.ngStrap',
-      'home'
+      'home',
+      'game'
     ]);
 }
