@@ -9,9 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.13.2",
     "express": "^4.13.1",
     "gulp": "^3.9.0",
     "gulp-typescript": "^2.8.0",
+    "nedb": "^1.1.2",
     "tsd": "^0.6.3"
   }
 }
