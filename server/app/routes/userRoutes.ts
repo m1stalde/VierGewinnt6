@@ -8,9 +8,10 @@ export function Router() {
     var router: express.Router = express.Router();
     var users = require('../controller/userController');
 
-    router.get("/", users.getUsers);
-    router.get("/:id/", users.getUser);
     router.post("/", users.registerUser);
+
+    router.get("/", users.getCurrentUser);
+    router.put(',', users.updateCurrentUser);
 
     return router;
 }

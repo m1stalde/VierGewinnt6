@@ -20,9 +20,18 @@ export function getUser(id, callback) {
     });
 }
 
-export function registerUser(name, password, callback) {
+export function createUser(name, password, callback) {
     var user = new User(name, password);
     db.insert(user, function(err, newUser) {
+        if(callback) {
+            callback(err, newUser);
+        }
+    })
+}
+
+export function updateUser(id, name, password, callback) {
+    var user = new User(name, password);
+    db.update({_id: id}, user, function(err, newUser) {
         if(callback) {
             callback(err, newUser);
         }

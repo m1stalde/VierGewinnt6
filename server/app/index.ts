@@ -18,6 +18,12 @@ app.get('/', (req, res) => {
     res.send('Hello TypeScript')
 });
 
+// allow request from different domain
+app.use(function(req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    return next();
+});
+
 // TODO require().Router() should only be require()
 app.use('/users', require('./routes/userRoutes').Router());
 app.use('/session', require('./routes/sessionRoutes').Router());

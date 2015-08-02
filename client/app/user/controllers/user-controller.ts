@@ -5,7 +5,8 @@ module User.Controllers {
   class UserCtrl {
 
     ctrlName: string;
-    user: User.Services.IUserResource;
+    //user: User.Services.IUserResource;
+    displayUser: User.Services.IUser;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -18,7 +19,11 @@ module User.Controllers {
     // dependencies are injected via AngularJS $injector
     constructor(private userService : User.Services.IUserService) {
       this.ctrlName = 'UserCtrl';
-      this.user = userService.getUser('iFI4XdOSMeYsc1Jf');
+      //this.user = userService.getCurrentUser();
+      var me = this; // TODO: why is this necessary?
+      userService.getCurrentUserAsync(function (user){
+        me.displayUser = user;
+      });
     }
   }
 

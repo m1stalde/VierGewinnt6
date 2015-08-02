@@ -4,7 +4,8 @@ module User.Services {
   'use strict';
 
   export interface IUserService {
-    getUser(id : string) : ng.resource.IResource<IUser>;
+    getCurrentUser() : ng.resource.IResource<IUser>;
+    getCurrentUserAsync(callback);
     saveUser(user : IUser);
   }
 
@@ -25,11 +26,17 @@ module User.Services {
     ];
 
     constructor(private $resource:angular.resource.IResourceService) {
-      this.userResource = $resource('http://localhost:2999/users/:userId', { userId: '@id' });
+      this.userResource = $resource('http://localhost:2999/users');
     }
 
-    getUser(id : string) : IUserResource {
-      return this.userResource.get({ userId: id });
+    getCurrentUser() : IUserResource {
+      return this.userResource.get();
+    }
+
+    getCurrentUserAsync(callback) {
+      var user = this.userResource.get(function() {
+        if (callback) callback(user);
+      });
     }
 
     saveUser(user : IUser) {
