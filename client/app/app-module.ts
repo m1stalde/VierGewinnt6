@@ -14,6 +14,7 @@ module vierGewinnt6 {
       'mgcrea.ngStrap',
       'home',
       'game',
+      'lobby',
       'user'
     ]);
 }
