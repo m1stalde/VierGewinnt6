@@ -5,7 +5,7 @@ module Game.Controllers {
   class GameCtrl {
 
     ctrlName: string;
-    gameFields: Array;
+    gameFields: Array<any>;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor

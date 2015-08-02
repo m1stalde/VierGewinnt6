@@ -6,11 +6,11 @@ import express = require('express');
 export function Router() {
 
     var router: express.Router = express.Router();
-    var users = require('../controller/userController');
+    var users = require('../controller/sessionController');
 
-    router.get("/", users.getUsers);
-    router.get("/:id/", users.getUser);
-    router.post("/", users.registerUser);
+    router.get("/login", users.isLoggedIn);
+    router.post("/login", users.login);
+    router.post("/logout", users.logout);
 
     return router;
 }

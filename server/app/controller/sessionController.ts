@@ -14,16 +14,6 @@ export function getUsers(req : express.Request, res : express.Response) {
     });
 }
 
-export function getUser(req : express.Request, res : express.Response) {
-    userService.getUser(req.params.id, function(err, user) {
-        res.format({
-            'application/json': function(){
-                res.json(user);
-            }
-        });
-    });
-}
-
 export function registerUser (req : express.Request, res : express.Response) {
     userService.registerUser(req.body.name, req.body.password, function(err, user) {
         res.format({
@@ -32,4 +22,16 @@ export function registerUser (req : express.Request, res : express.Response) {
             },
         });
     });
+}
+
+export function login (req : express.Request, res : express.Response) {
+
+}
+
+export function isLoggedIn (req : express.Request, res : express.Response) {
+
+}
+
+export function logout (req : express.Request, res : express.Response) {
+
 }
