@@ -6,6 +6,7 @@ import express = require('express');
 import bodyParser = require('body-parser');
 //import session = require('express-session');
 
+
 var app = express();
 
 app.use(require('cookie-parser')());
@@ -27,6 +28,7 @@ app.use(function(req, res, next) {
 // TODO require().Router() should only be require()
 app.use('/users', require('./routes/userRoutes').Router());
 app.use('/session', require('./routes/sessionRoutes').Router());
+app.use("/lobby", require('./routes/lobbyRoutes.js').Router()),
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/../../client/build/app'));
