@@ -6,12 +6,12 @@ import express = require('express');
 export function Router() {
 
         var router: express.Router = express.Router();
-        var lobby = require('../controller/lobbyController.js');
+        var ctrl = require('../controller/lobbyController.js');
 
         //router.get("/*", errorHandler); error handler
-        router.get("/", lobby.retrieveLobbyData);
-        router.post("/", lobby.createNewGame);
-        router.delete("/:id", lobby.deleteGame);
+        router.get("/", ctrl.LobbyCtrl.retrieveLobbyData);
+        router.post("/", ctrl.LobbyCtrl.createNewGame);
+        router.delete("/:id", ctrl.LobbyCtrl.retrieveLobbyData);
 
         return router;
 }
