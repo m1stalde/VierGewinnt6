@@ -1,6 +1,5 @@
-/**
- * Created by Alexander on 01.08.2015.
- */
+/// <reference path="../_all.ts"/>
+
 module Utils{
     export class helperFunctions{
 

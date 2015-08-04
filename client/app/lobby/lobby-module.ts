@@ -10,5 +10,5 @@ module lobby {
   angular
     .module('lobby', [
       'ngRoute'
-    ]);
+    ]).service('lobbyStorage', lobby.services.LobbyStorage);
 }

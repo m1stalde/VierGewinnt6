@@ -1,8 +1,4 @@
-/// <reference path="../../typings/node/node.d.ts"/>
-/// <reference path="../../typings/express/express.d.ts"/>
-
-/// <reference path="../services/lobbyService.ts" />
-/// <reference path="../utils/helperFunctions.ts" />
+/// <reference path="../_all.ts"/>
 
 import http = require('http');
 import express = require('express');

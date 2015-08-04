@@ -1,8 +1,11 @@
-///<reference path='../../../typings/tsd.d.ts' />
-module LobbyCtrl {
+/// <reference path='../_lobby.ts' />
+
+module lobby.controllers {
   'use strict';
 
   class LobbyCtrl {
+
+    private lobby;
 
     ctrlName: string
 
@@ -11,12 +14,19 @@ module LobbyCtrl {
     // it is better to have it close to the constructor, because the parameters must match in count and type.
     // See http://docs.angularjs.org/guide/di
     public static $inject = [
+      '$scope',
+      'lobbyStorage'
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor() {
-      var vm = this;
-      vm.ctrlName = 'LobbyCtrl';
+    constructor(private $scope, private lobbyStorage) {
+      var lobbyData = lobbyStorage.getGames();
+
+      this.ctrlName = 'LobbyCtrl';
+    }
+
+    public static getLobbyData(){
+
     }
   }
 

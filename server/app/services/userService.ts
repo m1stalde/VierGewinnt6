@@ -1,4 +1,4 @@
-/// <reference path="../../typings/nedb/nedb.d.ts" />
+/// <reference path="../_all.ts"/>
 
 import Datastore = require('nedb');
 

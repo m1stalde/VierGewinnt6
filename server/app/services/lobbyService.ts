@@ -1,4 +1,4 @@
-/// <reference path="../utils/helperFunctions.ts" />
+/// <reference path="../_all.ts"/>
 
 var utils = require('../utils/helperFunctions');
 
