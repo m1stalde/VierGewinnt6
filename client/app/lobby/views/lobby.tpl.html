@@ -4,7 +4,7 @@
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a id="createGame" class="navbar-brand" href="#"><span class="glyphicon glyphicon-plus"></span></a>
+        <a id="createGame" class="navbar-brand" href="#" ng-click="lobby.toggleNewGame()" stop-event><span class="glyphicon glyphicon-plus"></span></a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
       </div>
@@ -12,16 +12,13 @@
   </nav>
 </section>
 
-<p>{{lobby.ctrlName}}</p>
-
-
 <!--Hidden div element to create a new game + additional div for displaying an overview of the pending/created games-->
 <section class="container">
   <div class="row">
     <div class="col-xs-8">
 
       <!--Panel Heading - Create New Game -->
-      <div class="panel panel-default">
+      <div class="panel panel-default" ng-hide="lobby.gameCreation">
         <div class="panel-heading">
           <span class="glyphicon glyphicon-file icon"></span>
           Create New Game
@@ -29,9 +26,9 @@
         <div class="panel-body">
           <div class="form-group">
             <label for="name">Name:</label>
-            <input name="name" class="form-control" id="name">
+            <input type="text" name="name" class="form-control" id="name" ng-model="lobby.currentItem.name">
           </div>
-          <button type="submit" class="btn btn-default">Create</button>
+          <button type="submit" class="btn btn-default" ng-click="lobby.createRoom()">Create</button>
           </form>
         </div>
       </div>
@@ -46,6 +43,18 @@
           <table class="table note-table">
             <thead class="game-table-header">
             <tr>
+              <th>
+                RoomId
+                <a href="#">
+                  <span class="glyphicon glyphicon-chevron-down"></span>
+                </a>
+              </th>
+              <th>
+                Name
+                <a href="#">
+                  <span class="glyphicon glyphicon-chevron-down"></span>
+                </a>
+              </th>
               <th>
                 Status
                 <a href="#">
@@ -67,14 +76,19 @@
             </tr>
             </thead>
             <tbody class="note-table-body">
-            <tr class="noteTableRow">
-              <td>Game 1</td>
-              <td>01.01.2015</td>
+            <tr class="noteTableRow" ng-repeat="item in lobby.lobbyData">
+              <td>{{item.roomId}}</td>
+              <td>{{item.name}}</td>
+              <td>{{item.status}}</td>
+              <td>{{item.creationDate}}</td>
               <td>
-                <a href="#" class="icon">
+                <a href="#" class="icon" ng-click="lobby.joinRoom(item)">
+                  <span class="glyphicon glyphicon-plus"></span>
+                </a>
+                <a href="#" class="icon" ng-click="lobby.editRoom(item)">
                   <span class="glyphicon glyphicon-pencil"></span>
                 </a>
-                <a href="#" class="icon">
+                <a href="#" class="icon" ng-click="lobby.deleteRoom(item)">
                   <span class="glyphicon glyphicon-trash"></span>
                 </a>
               </td>
@@ -92,7 +106,7 @@
           <span class="glyphicon glyphicon-list-alt icon"></span>
           Chat
         </div>
-
+          <!-- Chat Messages -->
         </div>
       </div>
     </div>

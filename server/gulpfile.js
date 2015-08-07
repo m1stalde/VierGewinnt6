@@ -7,13 +7,13 @@ var gulp = require('gulp'),
 gulp.task('default', ['watch']);
 
 gulp.task('watch', function() {
-    gulp.watch('./app/**/*.ts', ['typescript']);
+    gulp.watch('app/**/*.ts', ['typescript']);
 });
 
 gulp.task('typescript' , function() {
     console.log('Compiling typescript');
     return gulp.src(['app/**/*.ts'])
-        .pipe(ts({module: 'commonjs'})).js.pipe(gulp.dest('./deploy/server'))
+        .pipe(ts({module: 'commonjs'})).js.pipe(gulp.dest('./deploy'))
 });
 
 gulp.task('serve', ['typescript'], function () {

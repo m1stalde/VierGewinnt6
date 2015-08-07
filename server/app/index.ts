@@ -29,11 +29,10 @@ app.use(function(req, res, next) {
 // TODO require().Router() should only be require()
 app.use('/users', require('./routes/userRoutes').Router());
 app.use('/session', require('./routes/sessionRoutes').Router());
-app.use("/lobby", require('./routes/lobbyRoutes.js').Router()),
+app.use("/lobby", require('./routes/lobbyRoutes.js').Router());
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/../../client/build/app'));
-
 var port: number = process.env.PORT || 2999;
 
 var server = app.listen(port, function() {

@@ -1,8 +1,4 @@
-/// <reference path="../typings/node/node.d.ts"/>
-/// <reference path="../typings/express/express.d.ts"/>
-/// <reference path="../typings/nedb/nedb.d.ts" />
-/// <reference path="../typings/body-parser/body-parser.d.ts" />
-/// <reference path="../typings/socket.io/socket.io.d.ts" />
+/// <reference path="../typings/tsd.d.ts"/>
 
 /// <reference path="controller/lobbyController.ts"/>
 /// <reference path="controller/sessionController.ts"/>

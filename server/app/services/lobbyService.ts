@@ -7,21 +7,21 @@ export class Lobby {
     static listOfRooms:Array<IRoom> = [
         {
             roomId: "1",
-            title: "Title1",
+            name: "Title1",
             status: "Waiting for Opponent",
             creationDate: "01/01/2015",
             players: ["abcdefghi", "jklmnopqrst"]
         },
         {
             roomId: "2",
-            title: "Title2",
+            name: "Title2",
             status: "Game is in progress",
             creationDate: "01/01/2015",
             players: ["abcdefghi", "jklmnopqrst"]
         },
         {
             roomId: "3",
-            title: "Title3",
+            name: "Title3",
             status: "Game is in progress",
             creationDate: "01/01/2015",
             players: ["abcdefghi", "jklmnopqrst"]
@@ -32,6 +32,7 @@ export class Lobby {
 
     static create(room:IRoom) {
         return this.listOfRooms[this.roomID++] = room;
+
     }
 
     static delete(roomId) {
@@ -61,7 +62,7 @@ export class Lobby {
 
 export interface IRoom {
     roomId : string;
-    title : string;
+    name : string;
     status? : string;
     creationDate : string;
     players : string[];
