@@ -13,7 +13,7 @@ module lobby {
       'ngResource'
     ])
     .service('lobbyStorage', lobby.services.LobbyStorage)
-    .directive('stopEvent', lobby.directives.StopEvent.factory())
+    .directive('stopEvent', lobby.directives.StopEvent.factory());
     /*.factory("resourceBuilder", ['$resource', ($resource) => new lobby.factories.ResourceBuilder($resource)])
     .factory("roomResource", ["ResourceBuilder", (builder: lobby.factories.ResourceBuilder) => builder.getRoomResource()]);*/
   /* .constant('appConstant', lobby.constants.Constants.Default);*/

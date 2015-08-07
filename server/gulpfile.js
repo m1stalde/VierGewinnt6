@@ -4,7 +4,7 @@ var gulp = require('gulp'),
     ts = require('gulp-typescript');
     // runSequence = require('run-sequence');
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['typescript']);
 
 gulp.task('watch', function() {
     gulp.watch('app/**/*.ts', ['typescript']);

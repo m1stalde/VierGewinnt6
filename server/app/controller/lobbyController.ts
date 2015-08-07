@@ -16,13 +16,11 @@ export class LobbyCtrl{
       });
     }
     public static createNewGame(req : express.Request, res : express.Response){
-
         var newGame = {
-            roomId : req.body.roomId,
-            title : req.body.title,
-            status : req.body.status,
-            creationDate : req.body.creationDate,
-            players : req.body.players,
+            name : req.body.name,
+            status : "Waiting for Opponent",
+            creationDate :  new Date().toLocaleTimeString().toString(),
+            players : req.body.players
         }
 
         lobbyService.Lobby.create(newGame, function(err, data) {

@@ -15,7 +15,7 @@
 <!--Hidden div element to create a new game + additional div for displaying an overview of the pending/created games-->
 <section class="container">
   <div class="row">
-    <div class="col-xs-8">
+    <div class="col-xs-8 content">
 
       <!--Panel Heading - Create New Game -->
       <div class="panel panel-default" ng-hide="lobby.gameCreation">
@@ -28,7 +28,7 @@
             <label for="name">Name:</label>
             <input type="text" name="name" class="form-control" id="name" ng-model="lobby.currentItem.name">
           </div>
-          <button type="submit" class="btn btn-default" ng-click="lobby.createRoom()">Create</button>
+          <button type="submit" class="btn btn-default" ng-click="lobby.createRoom(lobby.currentItem.name)">Create</button>
           </form>
         </div>
       </div>
@@ -100,18 +100,129 @@
     </div> <!-- class="col-xs-8" -->
 
     <!-- Chat window-->
-    <div class="col-xs-4">
-      <div class="panel panel-default sideDiv">
+    <div class="col-xs-4 chat-window">
+      <aside>
+      <div class="panel panel-default">
         <div class="panel-heading">
           <span class="glyphicon glyphicon-list-alt icon"></span>
           Chat
         </div>
-          <!-- Chat Messages -->
+          <form action="">
+            <input id="msgInput" autocomplete="off" /><button>Send</button>
+          </form>
         </div>
-      </div>
+    </aside>
     </div>
 
   </div> <!--div.row -->
+  <div class="row">
+    <div class="row-height">
+      <div class="col-xs-8 col-xs-height col-xs-bottom">
+        <div class="inside inside-full-height">
+          <div class="content">
+
+            <!--Panel Heading - Create New Game -->
+            <div class="panel panel-default" ng-hide="lobby.gameCreation">
+              <div class="panel-heading">
+                <span class="glyphicon glyphicon-file icon"></span>
+                Create New Game
+              </div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label for="name">Name:</label>
+                  <input type="text" name="name" class="form-control" id="name" ng-model="lobby.currentItem.name">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="lobby.createRoom(lobby.currentItem.name)">Create</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Display Games -->
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <span class="glyphicon glyphicon-list-alt icon"></span>
+                Games
+              </div>
+              <div class="panel-body">
+                <table class="table note-table">
+                  <thead class="game-table-header">
+                  <tr>
+                    <th>
+                      RoomId
+                      <a href="#">
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                      </a>
+                    </th>
+                    <th>
+                      Name
+                      <a href="#">
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                      </a>
+                    </th>
+                    <th>
+                      Status
+                      <a href="#">
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                      </a>
+                    </th>
+                    <th>
+                      Creation
+                      <a href="#">
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                      </a>
+                    </th>
+                    <th>
+                      Actions
+                      <a href="#">
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                      </a>
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody class="note-table-body">
+                  <tr class="noteTableRow" ng-repeat="item in lobby.lobbyData">
+                    <td>{{item.roomId}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.status}}</td>
+                    <td>{{item.creationDate}}</td>
+                    <td>
+                      <a href="#" class="icon" ng-click="lobby.joinRoom(item)">
+                        <span class="glyphicon glyphicon-plus"></span>
+                      </a>
+                      <a href="#" class="icon" ng-click="lobby.editRoom(item)">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                      </a>
+                      <a href="#" class="icon" ng-click="lobby.deleteRoom(item)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                      </a>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div> <!-- gameDiv -->
+          </div> <!-- class="col-xs-8" -->
+        </div>
+      </div >
+      <div class="col-xs-4 col-xs-height col-xs-top">
+        <div class="inside inside-full-height">
+          <div class="chat-window">
+          <aside>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <span class="glyphicon glyphicon-list-alt icon"></span>
+                Chat
+              </div>
+              <form action="">
+                <input id="msgInput" autocomplete="off" /><button>Send</button>
+              </form>
+            </div>
+          </aside>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 

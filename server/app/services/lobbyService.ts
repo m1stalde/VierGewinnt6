@@ -4,23 +4,23 @@ var utils = require('../utils/helperFunctions');
 
 export class Lobby {
 
-    static listOfRooms:Array<IRoom> = [
+    public static listOfRooms:Array<IRoom> = [
         {
-            roomId: "1",
+            roomId: 1,
             name: "Title1",
             status: "Waiting for Opponent",
             creationDate: "01/01/2015",
             players: ["abcdefghi", "jklmnopqrst"]
         },
         {
-            roomId: "2",
+            roomId: 2,
             name: "Title2",
             status: "Game is in progress",
             creationDate: "01/01/2015",
             players: ["abcdefghi", "jklmnopqrst"]
         },
         {
-            roomId: "3",
+            roomId: 3,
             name: "Title3",
             status: "Game is in progress",
             creationDate: "01/01/2015",
@@ -28,11 +28,10 @@ export class Lobby {
         },
     ];
 
-    static roomID:number;
-
-    static create(room:IRoom) {
-        return this.listOfRooms[this.roomID++] = room;
-
+    static create(room:IRoom, cb) {
+        room.roomId = this.listOfRooms.length;
+        this.listOfRooms[room.roomId] = room;
+        cb(null, room)
     }
 
     static delete(roomId) {
@@ -61,7 +60,7 @@ export class Lobby {
 }
 
 export interface IRoom {
-    roomId : string;
+    roomId : number;
     name : string;
     status? : string;
     creationDate : string;

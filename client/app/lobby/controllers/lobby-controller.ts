@@ -26,6 +26,7 @@ module lobby.controllers {
 
     // Initializer function
     private init(){
+      this.lobbyData = [];
       this.initializeLobbyData();
       this.currentItem.name = "test1";
     }
@@ -34,33 +35,55 @@ module lobby.controllers {
       this.gameCreation = this.gameCreation === false ? true: false;
     }
 
-    public createRoom() : void{
+    public createRoom(name) : void{
       var newRoom = this.lobbyStorage.LobbyRoom();
-      newRoom.roomId = "12";
-      newRoom.save();
+      var jsonObj = {name : name, players : ["abcdefghij"]};
+      newRoom.save(jsonObj,
+        (data) => this.handleRes(data, this.createRoomFn),
+        (err) => this.handleErr(err));
     }
 
-    public editRoom(room) : void{
-
-    }
-
+    // still in progress => works with just this.handleRes(res) and no additional closure function this.lobbyInitFn()
     private initializeLobbyData(){
       var res = this.lobbyStorage.LobbyRoom().query(
-        () => this.callback(null, res),
-        () => this.callback("Error while retrieving the lobby data from the server.", null)
-      );
+        () => this.handleRes(res, this.lobbyInitFn(this.$log, this.lobbyData)),
+        () => this.handleErr("Error while initializing the lobby data."));
     }
 
-    private callback(err,res) {
-      if(err)  {
-        this.$log.error(err)
-      } else if(!res){
-        this.$log.log("There are is existing lobby data available on the server.")
+    private lobbyInitFn(logger, dataCol){
+      return function(data){
+        for (var i = 0; i < data.length; ++i) {
+          logger.log(data[i]);
+        }
+        dataCol = data;
+      }
+    }
+
+    private createRoomFn(newRoom){
+      this.$log.log(newRoom);
+      this.lobbyData.push(newRoom);
+    }
+
+
+    // Common functions => outsourcing
+    private handleRes(res : any, resFn? : callbackFn) {
+      if(typeof resFn != 'undefined') {
+        resFn(res)
       } else{
-        this.lobbyData = res;
+        this.$log.log(res);
+      }
+    }
+
+    private handleErr(err : string, errFn? : callbackFn) {
+      if(typeof errFn != 'undefined') {
+        errFn(err)
+      } else{
+        this.$log.error(err);
       }
     }
   }
+
+  interface callbackFn{(resOrErr : string) : void}
 
   /**
   * @ngdoc object
