@@ -1,42 +1,71 @@
-/// <reference path="../utils/helperFunctions.ts" />
+/// <reference path="../_all.ts"/>
 
 var utils = require('../utils/helperFunctions');
 
-
 export class Lobby {
 
-    listOfRooms : Array<Room>;
-    roomID : number;
+    public static listOfRooms:Array<IRoom> = [
+        {
+            roomId: 1,
+            name: "Title1",
+            status: "Waiting for Opponent",
+            creationDate: "01/01/2015",
+            players: ["abcdefghi", "jklmnopqrst"]
+        },
+        {
+            roomId: 2,
+            name: "Title2",
+            status: "Game is in progress",
+            creationDate: "01/01/2015",
+            players: ["abcdefghi", "jklmnopqrst"]
+        },
+        {
+            roomId: 3,
+            name: "Title3",
+            status: "Game is in progress",
+            creationDate: "01/01/2015",
+            players: ["abcdefghi", "jklmnopqrst"]
+        },
+    ];
 
-    create(room : Room){
-        return this.listOfRooms[this.roomID++] = room;
+    static create(room:IRoom, cb) {
+        room.roomId = this.listOfRooms.length;
+        this.listOfRooms[room.roomId] = room;
+        cb(null, room)
     }
 
-    delete(roomId){
+    static delete(roomId) {
         return this.checkForRoom && this.listOfRooms.splice(this.listOfRooms.indexOf(roomId), 1);
     }
 
-    getAll(){
-        return this.listOfRooms.length > 0 && this.listOfRooms;
+    static getAllRooms(callback) {
+        if (callback && this.listOfRooms.length > 0) {
+            callback(undefined, this.listOfRooms);
+        } else {
+            callback("There are no rooms at the current time");
+        }
     }
 
-    private checkForRoom(room : Room){
+    private static checkForRoom(room:IRoom) {
         // Check if this room already exists
         for (var i = this.listOfRooms.length - 1; i >= 0; i--) {
-            if(this.listOfRooms[i].roomId === room.roomId){
+            if (this.listOfRooms[i].roomId === room.roomId) {
                 return true;
             }
-        };
+        }
+        ;
 
         return false;
     }
-
 }
 
-interface Room {
-    roomId : string;
-    title : string;
+export interface IRoom {
+    roomId : number;
+    name : string;
     status? : string;
     creationDate : string;
     players : string[];
 }
+
+
+

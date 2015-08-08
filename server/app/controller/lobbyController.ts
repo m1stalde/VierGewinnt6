@@ -1,24 +1,48 @@
-/// <reference path="../../typings/node/node.d.ts"/>
-/// <reference path="../../typings/express/express.d.ts"/>
-
-/// <reference path="../services/lobbyService.ts" />
-/// <reference path="../utils/helperFunctions.ts" />
+/// <reference path="../_all.ts"/>
 
 import http = require('http');
 import express = require('express');
 
-var lobby = require('../services/lobbyService.js');
+var lobbyService = require('../services/lobbyService.js');
 
-export function retrieveLobbyData(req, res) {
-    lobby.delete
-};
+export class LobbyCtrl{
+    public static retrieveLobbyData(req : express.Request, res : express.Response){
+      lobbyService.Lobby.getAllRooms(function(err, data) {
+          res.format({
+              'application/json': function(){
+                  res.json(err || data);
+              }
+          });
+      });
+    }
+    public static createNewGame(req : express.Request, res : express.Response){
+        var newGame = {
+            name : req.body.name,
+            status : "Waiting for Opponent",
+            creationDate :  new Date().toLocaleTimeString().toString(),
+            players : req.body.players
+        }
 
-export function createNewGame(req, res){
-    return "B";
-};
+        lobbyService.Lobby.create(newGame, function(err, data) {
+            if(err){
+                res.format({
+                    'application/json': function(){
+                        res.json(err);
+                    }
+                });
+            } else{
+                res.format({
+                    'application/json': function(){
+                        res.json(data);
+                    }
+                });
+            }
+        });
+    }
+    public static deleteGame(){
+        lobbyService.Lobby.getAllRooms();
+    }
+}
 
-export function deleteGame(req, res){
-    return "B";
-};
 
 

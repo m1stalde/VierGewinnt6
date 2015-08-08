@@ -1,5 +1,4 @@
-/// <reference path="../../typings/node/node.d.ts"/>
-/// <reference path="../../typings/express/express.d.ts"/>
+/// <reference path="../_all.ts"/>
 
 import express = require('express');
 
