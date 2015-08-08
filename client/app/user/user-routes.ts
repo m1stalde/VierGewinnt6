@@ -11,7 +11,12 @@ module home {
       .when('/user', {
         templateUrl: 'user/views/user.tpl.html',
         controller: 'UserCtrl',
-        controllerAs: 'user'
+        controllerAs: 'user',
+        resolve: {
+          'Something': ['UserService', function (userService: User.Services.IUserService) {
+            return userService.loadUserData();
+          }]
+        }
       });
   }
 }

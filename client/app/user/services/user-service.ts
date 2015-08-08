@@ -4,12 +4,9 @@ module User.Services {
   'use strict';
 
   export interface IUserService {
-    getCurrentUser() : ng.resource.IResource<IUser>;
-    getCurrentUserAsync(callback);
+    loadUserData() : ng.IPromise<IUser>;
+    getCurrentUser() : IUser;
     saveUser(user : IUser);
-  }
-
-  export interface IUserResource extends ng.resource.IResource<IUser> {
   }
 
   export interface IUser {
@@ -19,24 +16,35 @@ module User.Services {
 
   class UserService {
 
+    private userData : IUser;
+
     private userResource : ng.resource.IResourceClass<ng.resource.IResource<IUser>>;
 
     public static $inject = [
-      '$resource'
+      '$resource', '$q'
     ];
 
-    constructor(private $resource:angular.resource.IResourceService) {
+    constructor(private $resource:angular.resource.IResourceService, private $q : ng.IQService) {
       this.userResource = $resource('http://localhost:2999/users');
     }
 
-    getCurrentUser() : IUserResource {
-      return this.userResource.get();
+    loadUserData() : ng.IPromise<IUser> {
+      var deferred = this.$q.defer();
+
+      if (!this.userData) {
+        this.userResource.get().$promise.then((user) => {
+          this.userData = user;
+          deferred.resolve(this.userData);
+        });
+      } else {
+        deferred.resolve(this.userData);
+      }
+
+      return deferred.promise;
     }
 
-    getCurrentUserAsync(callback) {
-      var user = this.userResource.get(function() {
-        if (callback) callback(user);
-      });
+    getCurrentUser() : IUser {
+      return this.userData;
     }
 
     saveUser(user : IUser) {
