@@ -6,9 +6,11 @@ module vierGewinnt6 {
     .module('vierGewinnt6')
     .config(config);
 
-  function config($routeProvider: ng.route.IRouteProvider) {
+  function config($routeProvider: ng.route.IRouteProvider, $httpProvider : ng.IHttpProvider) {
     $routeProvider.otherwise({
       redirectTo: '/home'
     });
+
+    $httpProvider.defaults.withCredentials = true;
   }
 }

@@ -5,25 +5,28 @@ import express = require('express');
 import bodyParser = require('body-parser');
 var http = require('http').Server(express); // Problems with import
 import io = require('socket.io');
-//import session = require('express-session');
+import session = require('express-session');
 
 // configuration ==========================================
 var app = express();
 app.use(require('cookie-parser')());
-//app.use(session({ secret: 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda', resave: false, saveUninitialized: true}));
-//app.use(bodyParser.urlencoded());
+
+app.use(session({ secret: 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda', resave: false, saveUninitialized: true}));
+app.use(bodyParser.urlencoded());
+
 app.use(bodyParser.json());
 app.get('/', (req, res) => {
     res.send('Hello TypeScript')
 });
 // allow request from different domain
-app.use(function(req, res, next) {
+/*app.use(function(req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     return next();
-});
+});*/
 
 app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
     next();

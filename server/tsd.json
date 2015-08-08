@@ -25,6 +25,9 @@
     },
     "socket.io/socket.io.d.ts": {
       "commit": "02271c53872b38f2f669f3162438c4c837a6fe20"
+    },
+    "express-session/express-session.d.ts": {
+      "commit": "8de599097a8acb3c246f9cc152f07b323c5a8b49"
     }
   }
 }

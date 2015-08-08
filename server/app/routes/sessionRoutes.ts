@@ -5,11 +5,11 @@ import express = require('express');
 export function Router() {
 
     var router: express.Router = express.Router();
-    var users = require('../controller/sessionController');
+    var session = require('../controller/sessionController');
 
-    router.get("/login", users.isLoggedIn);
-    router.post("/login", users.login);
-    router.post("/logout", users.logout);
+    router.get("/login", session.isLoggedIn);
+    router.post("/login", session.login);
+    router.post("/logout", session.logout);
 
     return router;
 }

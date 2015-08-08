@@ -9,6 +9,6 @@
     "style": "less",
     "testFramework": "jasmine",
     "testScript": "ts",
-    "lastUsedModule": "user"
+    "lastUsedModule": "login"
   }
 }

@@ -15,6 +15,7 @@ module vierGewinnt6 {
       'home',
       'game',
       'lobby',
-      'user'
+      'user',
+      'session'
     ]);
 }
