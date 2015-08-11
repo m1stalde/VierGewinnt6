@@ -29,7 +29,7 @@ module Session.Services {
 
       if (!this.session) {
         this.$http.post('http://localhost:2999/session/login', { "username":username, "password":password}).then((data) => {
-          this.session = data.data;
+          this.session = <ISession> data.data;
           deferred.resolve(this.session);
         });
       } else {

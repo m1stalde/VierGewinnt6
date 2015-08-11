@@ -5,38 +5,33 @@ module Game.Controllers {
   class GameCtrl {
 
     ctrlName: string;
-    gameFields: Array<any>;
+    gameFields : Game.Services.Cell[][];
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
     // it is better to have it close to the constructor, because the parameters must match in count and type.
     // See http://docs.angularjs.org/guide/di
     public static $inject = [
-      '$log'
+      '$log', 'GameService'
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor(private $log : ng.ILogService) {
+    constructor(private $log : ng.ILogService, private gameService : Game.Services.IGameService) {
       this.ctrlName = 'GameCtrl';
       this.init();
     }
 
     init() {
       this.$log.debug("initializing game fields array");
+      this.gameFields = this.gameService.getGame().cells;
+    }
 
-      var gf = new Array();
-
-      for (var row = 0; row < 6; row++) {
-        gf[row] = new Array();
-
-        for (var col = 0; col < 7; col++) {
-          gf[row][col] = {
-            name: row + "-" + col
-          };
-        }
+    doMove(evt : JQueryEventObject) : void {
+      var col = $(evt.target).data('x');
+      if (col != undefined) {
+        this.$log.debug("do move " + col);
+        this.gameService.doMove(col);
       }
-
-      this.gameFields = gf;
     }
   }
 
