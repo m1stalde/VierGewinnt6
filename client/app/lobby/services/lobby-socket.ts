@@ -6,7 +6,7 @@ module lobby.services {
 
     private ws:any;
     private chatWindow:JQuery;
-    private currentUser:string;
+    public currentUser: string;
 
 
     public static $inject = [];
