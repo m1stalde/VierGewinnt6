@@ -14,3 +14,4 @@
   }
 }*/
 
+/* .constant('appConstant', lobby.constants.Constants.Default);*/

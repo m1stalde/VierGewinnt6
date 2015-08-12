@@ -22,4 +22,6 @@ module lobby.services {
   }
 }
 
-
+angular
+  .module('lobby')
+  .service('lobbyStorage', lobby.services.LobbyStorage)

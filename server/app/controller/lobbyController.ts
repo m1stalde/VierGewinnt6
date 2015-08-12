@@ -7,7 +7,7 @@ var lobbyService = require('../services/lobbyService.js');
 
 export class LobbyCtrl{
     public static retrieveLobbyData(req : express.Request, res : express.Response){
-      lobbyService.Lobby.getAllRooms(function(err, data) {
+      lobbyService.LobbyService.getAllRooms(function(err, data) {
           res.format({
               'application/json': function(){
                   res.json(err || data);
@@ -16,14 +16,7 @@ export class LobbyCtrl{
       });
     }
     public static createNewGame(req : express.Request, res : express.Response){
-        var newGame = {
-            name : req.body.name,
-            status : "Waiting for Opponent",
-            creationDate :  new Date().toLocaleTimeString().toString(),
-            players : req.body.players
-        }
-
-        lobbyService.Lobby.create(newGame, function(err, data) {
+        lobbyService.LobbyService.create(req, function(err, data) {
             if(err){
                 res.format({
                     'application/json': function(){
@@ -40,7 +33,7 @@ export class LobbyCtrl{
         });
     }
     public static deleteGame(){
-        lobbyService.Lobby.getAllRooms();
+        lobbyService.LobbyService.getAllRooms();
     }
 }
 

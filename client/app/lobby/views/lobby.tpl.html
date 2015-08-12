@@ -105,23 +105,25 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <span class="glyphicon glyphicon-list-alt icon"></span>
-          Chat
+        </div>
+        <div class="chat-output">
+
         </div>
           <form action="">
-            <input id="msgInput" autocomplete="off" /><button>Send</button>
+            <input id="msgInput" autocomplete="off" ng-model="lobby.chat.input"/><button ng-click="lobby.wsSendChatMessage(lobby.chat.input)" stop-event>Send</button>
           </form>
         </div>
     </aside>
     </div>
 
   </div> <!--div.row -->
-  <div class="row">
+ <!-- <div class="row">
     <div class="row-height">
       <div class="col-xs-8 col-xs-height col-xs-bottom">
         <div class="inside inside-full-height">
           <div class="content">
 
-            <!--Panel Heading - Create New Game -->
+            &lt;!&ndash;Panel Heading - Create New Game &ndash;&gt;
             <div class="panel panel-default" ng-hide="lobby.gameCreation">
               <div class="panel-heading">
                 <span class="glyphicon glyphicon-file icon"></span>
@@ -137,7 +139,7 @@
               </div>
             </div>
 
-            <!-- Display Games -->
+            &lt;!&ndash; Display Games &ndash;&gt;
             <div class="panel panel-default">
               <div class="panel-heading">
                 <span class="glyphicon glyphicon-list-alt icon"></span>
@@ -200,8 +202,8 @@
                   </tbody>
                 </table>
               </div>
-            </div> <!-- gameDiv -->
-          </div> <!-- class="col-xs-8" -->
+            </div> &lt;!&ndash; gameDiv &ndash;&gt;
+          </div> &lt;!&ndash; class="col-xs-8" &ndash;&gt;
         </div>
       </div >
       <div class="col-xs-4 col-xs-height col-xs-top">
@@ -214,7 +216,7 @@
                 Chat
               </div>
               <form action="">
-                <input id="msgInput" autocomplete="off" /><button>Send</button>
+                <input id="msgInput" autocomplete="off" /><button ng-click="lobby.sendMessage()">Send</button>
               </form>
             </div>
           </aside>
@@ -222,7 +224,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div>-->
 </section>
 
 

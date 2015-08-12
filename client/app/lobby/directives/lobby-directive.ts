@@ -15,4 +15,8 @@ module lobby.directives {
       return directive;
     }
   }
- }
+}
+
+angular
+  .module('lobby')
+  .directive('stopEvent', lobby.directives.StopEvent.factory());

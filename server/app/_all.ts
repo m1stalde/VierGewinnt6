@@ -8,6 +8,7 @@
 /// <reference path="routes/sessionRoutes.ts"/>
 /// <reference path="routes/userRoutes.ts"/>
 
+/// <reference path="services/websocketService.ts"/>
 /// <reference path="services/lobbyService.ts"/>
 /// <reference path="services/sessionService.ts"/>
 /// <reference path="services/userService.ts"/>

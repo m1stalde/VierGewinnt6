@@ -1,8 +1,9 @@
 /// <reference path="../_all.ts"/>
 
 var utils = require('../utils/helperFunctions');
+import express = require('express');
 
-export class Lobby {
+export class LobbyService {
 
     public static listOfRooms:Array<IRoom> = [
         {
@@ -28,10 +29,18 @@ export class Lobby {
         },
     ];
 
-    static create(room:IRoom, cb) {
-        room.roomId = this.listOfRooms.length;
-        this.listOfRooms[room.roomId] = room;
-        cb(null, room)
+    static create(req : express.Request, cb) {
+
+        var newGame : IRoom = {
+            roomID : this.listOfRooms.length,
+            name : req.body.name,
+            status : "Waiting for Opponent",
+            creationDate :  new Date().toLocaleTimeString().toString(),
+            players : req.body.players
+        }
+
+        this.listOfRooms[newGame.roomId] = newGame;
+        cb(null, newGame)
     }
 
     static delete(roomId) {
@@ -52,19 +61,18 @@ export class Lobby {
             if (this.listOfRooms[i].roomId === room.roomId) {
                 return true;
             }
-        }
-        ;
+        };
 
         return false;
     }
 }
 
 export interface IRoom {
-    roomId : number;
+    roomId? : number;
     name : string;
     status? : string;
     creationDate : string;
-    players : string[];
+    players : Array<any>;
 }
 
 
