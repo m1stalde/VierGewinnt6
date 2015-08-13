@@ -5,7 +5,7 @@ import express = require('express');
 import bodyParser = require('body-parser');
 var http = require('http').Server(express);
 import session = require('express-session');
-var websocketService = require('./services/websocketService.js')
+var websocketService = require('./services/websocket/websocketService.js');
 
 
 // configuration ==========================================
@@ -20,14 +20,9 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
     res.send('Hello TypeScript')
 });
-// allow request from different domain
-/*app.use(function(req, res, next) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    return next();
-});*/
 
 app.all('*', function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', req.headers.orgin);
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
@@ -49,6 +44,9 @@ var server = app.listen(port, function() {
     console.log('Express server listening on port ' + port);
 });
 
+
 var WebsocketService = websocketService.WebsocketService;
 var instWebSocketServ = new WebsocketService();
 instWebSocketServ.setUpWebsocketService(server);
+
+

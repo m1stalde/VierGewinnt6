@@ -38,26 +38,39 @@ module lobby.controllers {
     }
 
     public createRoom(name) : void{
+      var self = this;
       var newRoom = this.lobbyStorage.LobbyRoom();
       var jsonObj = {name : name, players : ["abcdefghij"]};
       newRoom.save(jsonObj,
-        (data) => this.handleRes(data, this.createRoomFn),
-        (err) => this.handleErr(err));
+        (data) => self.postLobbyDataCb(data, null),
+        (err) => self.handleErr("Couldn't create a room on the server."));
     }
 
-    // still in progress => works with just this.handleRes(res) and no additional closure function this.lobbyInitFn()
+    // Common functions => outsourcing
+    private postLobbyDataCb(res : any, err) {
+      if(err)  {
+        this.$log.error(err)
+      } else if(!res){
+        this.$log.log("There are is existing lobby data available on the server.")
+      } else{
+        this.lobbyData.push(res);
+      }
+    }
+
     private initializeLobbyData(){
       var res = this.lobbyStorage.LobbyRoom().query(
-        () => this.handleRes(res, this.lobbyInitFn(this.$log, this.lobbyData)),
-        () => this.handleErr("Error while initializing the lobby data."));
+        () => this.getLobbyDataCb(null, res),
+        () => this.getLobbyDataCb("Error while retrieving the lobby data from the server.", null)
+      );
     }
 
-    private lobbyInitFn(logger, dataCol){
-      return function(data){
-        for (var i = 0; i < data.length; ++i) {
-          logger.log(data[i]);
-        }
-        dataCol = data;
+    private getLobbyDataCb(err,res) {
+      if(err)  {
+        this.$log.error(err)
+      } else if(!res){
+        this.$log.log("There are is existing lobby data available on the server.")
+      } else{
+        this.lobbyData = res;
       }
     }
 
@@ -66,22 +79,8 @@ module lobby.controllers {
       this.lobbyData.push(newRoom);
     }
 
-
-    // Common functions => outsourcing
-    private handleRes(res : any, resFn? : callbackFn) {
-      if(typeof resFn != 'undefined') {
-        resFn(res)
-      } else{
-        this.$log.log(res);
-      }
-    }
-
-    private handleErr(err : string, errFn? : callbackFn) {
-      if(typeof errFn != 'undefined') {
-        errFn(err)
-      } else{
+    private handleErr(err : string) {
         this.$log.error(err);
-      }
     }
 
     public wsSendChatMessage(message : string, sentTo : Array<string>){

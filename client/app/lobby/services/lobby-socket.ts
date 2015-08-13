@@ -21,13 +21,15 @@ module lobby.services {
       var self = this;
 
       this.ws.onmessage = (event) => {
-        var messageObj:IMessage = JSON.parse(event.data);
+
+        var messageObj : IMessage = JSON.parse(event.data);
 
         switch (messageObj.header.type) {
           case "chat":
             self.chatResponseHandler(messageObj);
             break;
           case "room":
+            self.roomResponseHandler(messageObj);
             break;
         }
         // check for event type => if chat => set user field for the current user
@@ -42,7 +44,7 @@ module lobby.services {
       };
     }
 
-    private chatResponseHandler(chatMsgObj:IMessage) {
+    private chatResponseHandler(chatMsgObj: IChatMessage) {
       switch (chatMsgObj.header.subType) {
         case "loadHistory":
           for (var i = 0; i < chatMsgObj.body.data.length; ++i) {
@@ -53,6 +55,14 @@ module lobby.services {
           this.chatWindow.append($('<span><strong>' + chatMsgObj.body.data.body.userName + '</strong>&nbsp' +  chatMsgObj.body.data.body.message + '<br></span>'));
           break;
         case "sendAssignedUserName":
+          this.currentUser = chatMsgObj.body.userName
+          break;
+      }
+    }
+
+    private roomResponseHandler(chatMsgObj: IRoomMessage){
+      switch (chatMsgObj.header.subType) {
+        case "loadLobbyData":
           this.currentUser = chatMsgObj.body.userName
           break;
       }

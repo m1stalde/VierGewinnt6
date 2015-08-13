@@ -4,7 +4,9 @@
   "scripts": {
     "test": "gulp test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "typescript-require": "^0.2.9-1"
+  },
   "devDependencies": {
     "browser-sync": "^2.2.3",
     "del": "^1.1.1",

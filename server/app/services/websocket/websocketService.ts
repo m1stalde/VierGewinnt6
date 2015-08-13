@@ -1,17 +1,26 @@
-/// <reference path="../_all.ts"/>
-
+/// <reference path="../../_all.ts"/>
 var WebSocketServer = require('ws').Server;
-var util = require('util')
+var util = require('util');
+
+var chatWebsocketService = require('../../services/websocket/chatWebsocketService.js');
 
 
 export class WebsocketService {
 
-    private chatHistory : Array<IChatMessage> = [];
-    private clients : Array<IClient> = [];
+    private clients : Array<app.intefaces.IClient> = [];
     private wss : any;
 
+    private chatWs;
 
-    constructor() {}
+    constructor() {
+        this.init();
+    }
+
+    public init(){
+        // Init
+        var ChatWebsocketService = chatWebsocketService.ChatWebsocketService;
+        this.chatWs = new ChatWebsocketService();
+    }
 
     public setUpWebsocketService(server){
         // References the WebsocketService class
@@ -23,8 +32,13 @@ export class WebsocketService {
 
             // Assign a username to the connection
             self.mapUserNameToConn(conn);
+
             // Sends the chat history to the newly connected client
-            self.sendChatHistoryToUser(conn);
+            if(self.chatWs.chatHistory > 0){
+                conn.send(
+                    JSON.stringify(self.chatWs.returnChatHistory())
+                );
+            }
 
             // Client is sending a message
             conn.on('message', function (messageString) {
@@ -32,13 +46,18 @@ export class WebsocketService {
                 // Parse the incoming message
                 var messageObj = JSON.parse(messageString);
 
+                // Processed message which will be sent back to the client
+                var processedMsgObj : app.intefaces.IMessage;
+
                 switch(messageObj.header.type){
                     case "chat":
-                        self.handleChatMessage(messageObj);
+                        processedMsgObj = self.chatWs.handleChatMessage(messageObj);
                         break;
                     case "room":
                         break;
                 }
+
+                self.wss.broadcast(processedMsgObj);
             });
 
             conn.on('close', self.runCleanUpTask(self));
@@ -46,16 +65,6 @@ export class WebsocketService {
 
         // Broadcast the delta to all the participants in the chat
         this.wss.broadcast = this.broadcastData;
-    }
-
-    private handleChatMessage(chatMessageObj : IChatMessage){
-
-        switch(chatMessageObj.header.subType)
-        {
-            case "sendMessage":
-                this.chatSendMessage(chatMessageObj);
-                break;
-        }
     }
 
     private mapUserNameToConn(conn){
@@ -85,7 +94,7 @@ export class WebsocketService {
                     self.clients.splice(i, 1);
                 }
             }
-            console.log("User: " + userName + "has been disconnected");
+            console.log("User: " + userName + " has been disconnected");
         }
     }
 
@@ -95,77 +104,13 @@ export class WebsocketService {
             client.send(JSON.stringify(data));
         });
     };
-
-    private chatSendMessage(chatMessageObj : IChatMessage){
-
-        // Process the message object
-        chatMessageObj.body.creationDate = new Date().toLocaleTimeString().toString();
-
-        // Add the message to the chat history
-        this.chatHistory.push(chatMessageObj);
-
-        if(chatMessageObj.body.sendTo && chatMessageObj.body.sendTo.length){
-            // Send the message to a specific user
-        } else{
-            // Broadcast the message to all the subscribed clients
-            this.wss.broadcast({
-                header : {
-                    type : "chat",
-                    subType : "loadSingleMessage"
-                },
-                body : {
-                    data : chatMessageObj
-                }
-            });
-        }
-    }
-
-    private sendChatHistoryToUser(conn){
-        this.chatHistory.length && conn.send(JSON.stringify({
-            header : {
-                type: "chat",
-                subType: "loadHistory"
-            },
-            body :{
-                data : this.chatHistory
-            }
-        }));
-    }
 }
 
-export interface IRoomMessage extends IMessage {
 
-    body : {
 
-    }
-}
 
-export interface IChatMessage extends IMessage {
-    body : {
-        userName : string;
-        message : string;
-        creationDate : string;
-        sendTo? : string[];
-    }
-}
 
-export interface IMessage {
-    header : {
-        type : string;
-        subType : string;
-    }
-}
 
- export interface IClient {
-     clientObj : any;
-     userName? : string;
- }
-
-export interface IChatHistory extends IMessage {
-    body : {
-        data : Array<IChatMessage>;
-    }
-}
 
 
 
