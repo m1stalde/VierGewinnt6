@@ -31,13 +31,22 @@ app.all('*', function(req, res, next) {
 app.options('*', function(req, res) {
     res.sendStatus(200);
 });
+
 // TODO require().Router() should only be require()
 app.use('/users', require('./routes/userRoutes').Router());
 app.use('/session', require('./routes/sessionRoutes').Router());
 app.use("/lobby", require('./routes/lobbyRoutes').Router());
+app.use("/game", require('./routes/gameRoutes').Router());
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/../../client/build/app'));
+
+// generic error handler after routes
+app.use(function(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
 var port: number = process.env.PORT || 2999;
 
 var server = app.listen(port, function() {

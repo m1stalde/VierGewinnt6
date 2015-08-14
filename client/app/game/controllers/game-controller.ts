@@ -5,7 +5,7 @@ module Game.Controllers {
   class GameCtrl {
 
     ctrlName: string;
-    gameFields : Game.Services.Cell[][];
+    gameFields : Game.Services.Color[][];
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -30,7 +30,9 @@ module Game.Controllers {
       var col = $(evt.target).data('x');
       if (col != undefined) {
         this.$log.debug("do move " + col);
-        this.gameService.doMove(col);
+        this.gameService.doMove(col).then((game) => {
+          this.gameFields = game.cells;
+        });
       }
     }
   }
