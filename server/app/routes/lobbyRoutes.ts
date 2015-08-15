@@ -1,16 +1,13 @@
 /// <reference path="../_all.ts"/>
 
 import express = require('express');
+import controller = require('../controller/lobbyController');
 
-export function Router() {
+var router: express.Router = express.Router();
 
-        var router: express.Router = express.Router();
-        var ctrl = require('../controller/lobbyController.js');
+//router.get("/*", errorHandler); error handler
+router.get("/", controller.retrieveLobbyData);
+router.post("/", controller.createNewGame);
+router.delete("/:id", controller.retrieveLobbyData);
 
-        //router.get("/*", errorHandler); error handler
-        router.get("/", ctrl.LobbyCtrl.retrieveLobbyData);
-        router.post("/", ctrl.LobbyCtrl.createNewGame);
-        router.delete("/:id", ctrl.LobbyCtrl.retrieveLobbyData);
-
-        return router;
-}
+export = router;

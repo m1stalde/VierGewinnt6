@@ -37,10 +37,10 @@ app.options('*', function(req, res) {
     res.sendStatus(200);
 });
 
-// TODO require().Router() should only be require()
-app.use('/users', require('./routes/userRoutes').Router());
-app.use('/session', require('./routes/sessionRoutes').Router());
-app.use("/lobby", require('./routes/lobbyRoutes').Router());
+// register routes
+app.use('/users', require('./routes/userRoutes'));
+app.use('/session', require('./routes/sessionRoutes'));
+app.use("/lobby", require('./routes/lobbyRoutes'));
 app.use("/game", require('./routes/gameRoutes'));
 
 app.use(express.static(__dirname + '/public'));
