@@ -4,13 +4,14 @@ module Game.Services {
 
   export interface IGameService {
     getGame() : IGame;
-    initGame() : ng.IPromise<IGame>;
+    newGame() : ng.IPromise<IGame>;
     doMove(col : number) : void;
   }
 
   export interface IGame {
-    id : string;
-    cells : Color[][];
+    cells: Color[][];
+    nextColor: Color;
+    gameId: string;
   }
 
   export enum Color {
@@ -21,44 +22,45 @@ module Game.Services {
 
   class GameService implements IGameService {
 
-    private game : IGame;
+    private game: IGame;
 
-    private demoMode : boolean;
+    private demoMode: boolean;
 
     public static $inject = [
       '$http', '$q', '$log'
     ];
 
-    constructor(private $http : ng.IHttpService, private $q : ng.IQService, private $log : ng.ILogService) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService) {
       this.demoMode = true;
     }
 
-    getGame() : IGame {
+    getGame(): IGame {
       return this.game;
     }
 
-    initGame() : ng.IPromise<IGame> {
+    newGame(): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
+      var that = this; // TODO check that
 
       if (!this.game) {
-        this.$http.post('http://localhost:2999/game/initGame', null).then((data) => {
-          this.game = <IGame> data.data;
-          deferred.resolve(this.game);
+        this.$http.post<IGame>('http://localhost:2999/game/newGame', null).then((data) => {
+          that.game = data.data;
+          deferred.resolve(that.game);
         });
       } else {
-        deferred.resolve(this.game);
+        deferred.resolve(that.game);
       }
 
       return deferred.promise;
     }
 
-    doMove(col : number) : ng.IPromise<IGame> {
+    doMove(col: number): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
-var me = this; // TODO why?
+      var that = this; // TODO check that
 
-      this.$http.post('http://localhost:2999/game/doMove', { gameId : this.game.id, col : col }).then((data) => {
-        me.game = <IGame> data.data;
-        deferred.resolve(me.game);
+      this.$http.post<IGame>('http://localhost:2999/game/doMove', { gameId: that.game.gameId, col: col }).then((data) => {
+        that.game = data.data;
+        deferred.resolve(that.game);
       });
 
       return deferred.promise;

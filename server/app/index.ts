@@ -41,7 +41,7 @@ app.options('*', function(req, res) {
 app.use('/users', require('./routes/userRoutes').Router());
 app.use('/session', require('./routes/sessionRoutes').Router());
 app.use("/lobby", require('./routes/lobbyRoutes').Router());
-app.use("/game", require('./routes/gameRoutes').Router());
+app.use("/game", require('./routes/gameRoutes'));
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/../../client/build/app'));
@@ -49,7 +49,7 @@ app.use(express.static(__dirname + '/../../client/build/app'));
 // generic error handler after routes
 app.use(function(err, req, res, next) {
     console.error(err.stack);
-    res.status(500).send('Something broke!');
+    res.status(500).send('Request failed: ' + err.message);
 });
 
 var port: number = process.env.PORT || 2999;

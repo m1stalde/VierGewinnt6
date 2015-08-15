@@ -2,66 +2,72 @@
 
 import express = require('express');
 import gameService = require('../services/gameService');
-import gameLogic = require('../logic/game');
+import gameLogic = require('../logic/gameLogic');
 
-export function getGame(req : express.Request, res : express.Response) {
+export function getGame(req: GameControllerRequest, res: express.Response, next: Function) {
     var gameId = req.body.gameId;
     if (!gameId) {
-        throw new RangeError("gameId missing");
+        res.status(400).send('Bad Request: gameId missing');
+        return;
     }
 
-    gameService.getGame(gameId, function(err, game) {
-        res.format({
-            'application/json': function(){
-                res.json(game);
-            },
-        });
-    });
-}
-
-export function initGame(req : express.Request, res : express.Response) {
-    var color = req.body.color;
-    if (!color) {
-        color = gameLogic.Color.Yellow;
-    }
-
-    var game = new gameLogic.Game(color, null);
-
-    gameService.insertGame(game, function(err, game) {
-        res.format({
-            'application/json': function(){
-                res.json(game);
-            },
-        });
-    });
-}
-
-export function doMove(req : express.Request, res : express.Response, next : any) {
-    var gameId = req.body.gameId;
-    if (gameId == undefined) {
-        throw new RangeError("gameId missing");
-    }
-
-    var col = req.body.col;
-    if (col == undefined) {
-        throw new RangeError("col missing");
-    }
-
-    gameService.getGame(gameId, function (err, game : gameLogic.Game) {
-        try {
-            game.doMove(col);
-        } catch(err) {
-            // TODO check for better error handling
+    gameService.getGame(gameId, function(err, gameData) {
+        if (err) {
             next(err);
             return;
         }
 
-        gameService.updateGame(gameId, game, function (err, game) {
-            res.format({
-                'application/json': function(){
-                    res.json(game);
-                },
-            });
+        res.format({
+            'application/json': function(){
+                res.json(gameData);
+            }
         });
     });
+}
+
+export function newGame(req: GameControllerRequest, res: express.Response, next: Function) {
+    gameService.newGame(gameLogic.Color.Yellow, function(err, gameData, gameId) {
+        if (err) {
+            next(err);
+            return;
+        }
+
+        res.format({
+            'application/json': function(){
+                res.json(gameData);
+            }
+        });
+    });
+}
+
+export function doMove(req: GameControllerRequest, res: express.Response, next: Function) {
+    var gameId = req.body.gameId;
+    if (!gameId) {
+        res.status(400).send('Bad Request: gameId missing');
+        return;
+    }
+
+    var col = req.body.col;
+    if (col == undefined) {
+        res.status(400).send('Bad Request: col missing');
+        return;
+    }
+
+    gameService.doMove(gameId, col, function (err, gameData) {
+        if (err) {
+            res.status(400).send('Bad Request: ' + err.message);
+            return;
+        }
+
+        res.format({
+            'application/json': function(){
+                res.json(gameData);
+            }
+        });
+    });
+}
+
+interface GameControllerRequest extends express.Request {
+    gameId: string;
+    col: number;
 }
