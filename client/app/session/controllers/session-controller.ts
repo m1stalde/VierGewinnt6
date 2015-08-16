@@ -4,10 +4,10 @@ module Session.Controllers {
 
   class SessionCtrl {
 
-    ctrlName: string;
-
     username: string;
     password: string;
+    currentSession: Session.Services.ISession;
+    userLoggedIn: boolean;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -19,12 +19,24 @@ module Session.Controllers {
 
     // dependencies are injected via AngularJS $injector
     constructor(private sessionService : Session.Services.ISessionService) {
-      var vm = this;
-      vm.ctrlName = 'SessionCtrl';
+      this.currentSession = sessionService.getCurrentSession();
+      this.userLoggedIn = this.currentSession.loggedId;
     }
 
     login() {
-      this.sessionService.login(this.username, this.password);
+      var vm = this;
+      this.sessionService.login(this.username, this.password).then((session) => {
+        vm.currentSession = session;
+        vm.userLoggedIn = session.loggedId;
+      });
+    }
+
+    logout() {
+      var vm = this;
+      this.sessionService.logout().then((session) => {
+        vm.currentSession = session;
+        vm.userLoggedIn = session.loggedId;
+      });
     }
   }
 

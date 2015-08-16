@@ -11,7 +11,12 @@ module session {
       .when('/session', {
         templateUrl: 'session/views/session.tpl.html',
         controller: 'SessionCtrl',
-        controllerAs: 'session'
+        controllerAs: 'session',
+        resolve: {
+          'Something': ['SessionService', function (sessionService: Session.Services.ISessionService) {
+            return sessionService.loadCurrentSession();
+          }]
+        }
       });
   }
 }

@@ -1,7 +1,8 @@
-<h2>session</h2>
-<p>{{session.ctrlName}}</p>
-<br/>
-<div>
+<h2>Login</h2>
+
+<!-- user is currently logged out -->
+<div ng-hide="session.userLoggedIn">
+  <p>Bitte melde dich an.</p>
   <form ng-submit="session.login()">
     <div class="form-group">
       <label for="inputName">Name</label>
@@ -13,4 +14,10 @@
     </div>
     <button type="submit" class="btn btn-default">Login</button>
   </form>
+</div>
+
+<!-- user is currently logged in -->
+<div ng-show="session.userLoggedIn">
+  <p>Hallo {{session.currentSession.username}}!</p>
+  <button ng-click="session.logout()" class="btn btn-default">Logout</button>
 </div>

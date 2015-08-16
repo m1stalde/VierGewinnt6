@@ -30,14 +30,15 @@ module User.Services {
 
     loadUserData() : ng.IPromise<IUser> {
       var deferred = this.$q.defer();
+      var that = this;
 
       if (!this.userData) {
-        this.userResource.get().$promise.then((user) => {
-          this.userData = user;
-          deferred.resolve(this.userData);
+        that.userResource.get().$promise.then((user) => {
+          that.userData = user;
+          deferred.resolve(that.userData);
         });
       } else {
-        deferred.resolve(this.userData);
+        deferred.resolve(that.userData);
       }
 
       return deferred.promise;
