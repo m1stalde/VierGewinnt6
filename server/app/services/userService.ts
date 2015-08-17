@@ -4,54 +4,95 @@ import Datastore = require('nedb');
 
 var db = new Datastore({ filename: './data/user.db', autoload: true });
 
-export function getUsers(callback) {
-    db.find({}, function (err, docs) {
-        if (callback) {
-            callback(err, docs);
+export function getUser(id, callback: (err: Error, user: IUser) => void) {
+    db.findOne<User>({_id: id}, function (err, doc) {
+        if (err) {
+            callback(err, null);
+            return;
         }
+
+        callback(err, createReturn(doc));
     });
 }
 
-export function getUser(id, callback) {
-    db.findOne({_id: id}, function (err, doc) {
-        if (callback) {
-            callback(err, doc);
-        }
-    });
-}
+export function updateUser(id, name, password, callback: (err: Error, user: IUser) => void) {
+    if(!(id && name && password)) {
+        callback(new Error('id, username and password required'), null);
+        return;
+    }
 
-export function updateUser(id, name, password, callback) {
     var user = new User(name, password);
-    db.update({_id: id}, user, function(err, newUser) {
-        if(callback) {
-            callback(err, newUser);
-        }
-    })
-}
 
-export function registerUser(name, password, callback) {
-    var user = new User(name, password);
-    db.insert(user, function(err, newUser) {
-        if(callback) {
-            callback(err, newUser);
+    db.update({_id: id}, user, function(err, doc) {
+        if (err) {
+            callback(err, null);
+            return;
         }
-    })
-}
 
-export function authenticateUser(name, password, callback) {
-    if(!(name && password)) {  callback(false); }
-
-    db.findOne({ name: name }, function (err, doc) {
-        if(doc == null && !err){
-            callback(err, false);
-        }
-        else {
-            callback(err, doc && doc.password == password, doc);
-        }
+        callback(err, createReturn(doc));
     });
 }
 
-export class User {
+export function registerUser(name, password, callback: (err: Error, user: IUser, userId: string) => void) {
+    if(!(name && password)) {
+        callback(new Error('username and password required'), null, null);
+        return;
+    }
+
+    var user = new User(name, password);
+
+    db.insert(user, function(err, doc) {
+        if (err) {
+            callback(err, null, null);
+            return;
+        }
+
+        callback(err, createReturn(doc), doc._id);
+    });
+}
+
+export function authenticateUser(name, password, callback: (err: Error, success: boolean, user: IUser, userId: string) => void) {
+    if(!(name && password)) {
+        callback(new Error('username and password required'), false, null, null);
+        return;
+    }
+
+    db.findOne<User>({ name: name }, function (err, doc) {
+        if (err) {
+            callback(err, false, null, null);
+            return;
+        }
+
+        // register new user if user not found
+        if(!doc){
+            registerUser(name, password, function (err, user, userId) {
+                if (err) {
+                    callback(err, false, null, null);
+                    return;
+                }
+
+                callback(err, true, user, userId);
+            });
+            return;
+        }
+
+        var success = doc.password === password;
+        callback(err, success, doc, doc._id);
+    });
+}
+
+function createReturn(user: User): IUser {
+    return {
+        name: user.name
+    }
+}
+
+export interface IUser {
+    name: string;
+}
+
+class User implements IUser {
+    _id : string;
     name: string;
     password: string;
 

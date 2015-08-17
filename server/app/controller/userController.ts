@@ -1,12 +1,11 @@
 /// <reference path="../_all.ts"/>
 
 import express = require('express');
-var userService = require('../services/userService');
+import userService = require('../services/userService');
+import security = require('../utils/security');
 
 export function getCurrentUser(req : express.Request, res : express.Response) {
-
-    var userId = "iFI4XdOSMeYsc1Jf"; // TODO get userId from current session
-
+    var userId = security.currentUserId(req);
     userService.getUser(userId, function(err, user) {
         res.format({
             'application/json': function(){
@@ -17,9 +16,7 @@ export function getCurrentUser(req : express.Request, res : express.Response) {
 }
 
 export function updateCurrentUser(req : express.Request, res : express.Response) {
-
-    var userId = "iFI4XdOSMeYsc1Jf"; // TODO get userId from current session
-
+    var userId = security.currentUserId(req);
     userService.updateUser(userId, req.body.name, req.body.password, function(err, user) {
         res.format({
             'application/json': function(){

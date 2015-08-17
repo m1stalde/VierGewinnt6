@@ -4,18 +4,20 @@ module Session.Services {
 
   export interface ISessionService {
     login(username : string, password : string) : ng.IPromise<ISession>;
-    logout() : void;
-    isLoggedIn() : boolean;
-    getSession() : ISession;
+    logout(): ng.IPromise<ISession>;
+    isLoggedIn(): boolean;
+    getCurrentSession(): ISession;
+    loadCurrentSession(): ISession;
   }
 
   export interface ISession {
     username: string;
+    loggedId: boolean;
   }
 
   class SessionService {
 
-    private session : ISession;
+    private currentSession : ISession;
 
     public static $inject = [
       '$http', '$q'
@@ -26,29 +28,50 @@ module Session.Services {
 
     login(username : string, password : string) : ng.IPromise<ISession> {
       var deferred = this.$q.defer();
+      var that = this;
 
-      if (!this.session) {
-        this.$http.post('http://localhost:2999/session/login', { "username":username, "password":password}).then((data) => {
-          this.session = <ISession> data.data;
-          deferred.resolve(this.session);
-        });
-      } else {
-        deferred.resolve(this.session);
-      }
+      this.$http.post<ISession>('http://localhost:2999/session/login', { "username":username, "password":password}).then((data) => {
+        that.currentSession = data.data;
+        deferred.resolve(that.currentSession);
+      });
 
       return deferred.promise;
     }
 
-    logout() {
-      this.$http.get('http://localhost:2999/session/logout');
+    logout() : ng.IPromise<ISession> {
+      var deferred = this.$q.defer();
+      var that = this;
+
+      this.$http.post<ISession>('http://localhost:2999/session/logout', {}).then((data) => {
+        that.currentSession = data.data;
+        deferred.resolve(that.currentSession);
+      });
+
+      return deferred.promise;
     }
 
     isLoggedIn() {
-      return !!(this.session);
+      return this.currentSession && this.currentSession.loggedId;
     }
 
-    getSession() : ISession {
-      return this.session;
+    getCurrentSession() : ISession {
+      return this.currentSession;
+    }
+
+    loadCurrentSession() : ng.IPromise<ISession> {
+      var deferred = this.$q.defer();
+      var that = this;
+
+      if (!that.currentSession) {
+        this.$http.get<ISession>('http://localhost:2999/session/').then((data) => {
+          that.currentSession = data.data;
+          deferred.resolve(that.currentSession);
+        });
+      } else {
+        deferred.resolve(that.currentSession);
+      }
+
+      return deferred.promise;
     }
 
     get(): string {

@@ -21,4 +21,4 @@
 
 /// <reference path="utils/helperFunctions.ts"/>
 
-/// <reference path="logic/game.ts"/>
+/// <reference path="logic/gameLogic.ts"/>

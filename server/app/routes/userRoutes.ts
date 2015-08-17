@@ -1,17 +1,14 @@
 /// <reference path="../_all.ts"/>
 
 import express = require('express');
-var security = require('../utils/security');
+import controller = require('../controller/userController');
+import security = require('../utils/security');
 
-export function Router() {
+var router: express.Router = express.Router();
 
-    var router: express.Router = express.Router();
-    var users = require('../controller/userController');
+router.all('/*', security.handleAuthenticate)
+router.get('/', controller.getCurrentUser);
+router.put(',', controller.updateCurrentUser);
 
-    //router.all('/*', security.handleAuthenticate)
-    router.get("/", users.getCurrentUser);
-    router.put(',', users.updateCurrentUser);
-
-    return router;
-}
+export = router;
 

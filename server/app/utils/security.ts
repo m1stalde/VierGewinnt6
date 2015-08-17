@@ -2,27 +2,28 @@
 
 import express = require('express');
 import session = require('express-session');
-var userService = require('../services/userService');
+import sessionService = require('../services/sessionService');
 
-export function login(req : express.Request, callback)
+const SESSION_USER_KEY = 'userId';
+
+export function login(req : express.Request, callback: (err: Error, session: sessionService.Session) => void)
 {
-    userService.authenticateUser(req.body.username, req.body.password, function(err, result, user) {
+    sessionService.authenticateUser(req.body.username, req.body.password, function(err, result, session, userId) {
         if (result) {
-            req.session.name = user.name;
-        }
-
-        var session = null;
-        if (user) {
-            session = new Session(user.name);
+            setSessionUserId(req, userId);
         }
 
         if (callback) callback(err, session);
     });
 }
 
+export function currentUserId(req : express.Request): string {
+    return getSessionUserId(req);
+}
+
 export function isLoggedIn(req : express.Request)
 {
-    return !!req.session.name;
+    return !!getSessionUserId(req);
 }
 
 export function handleAuthenticate(req : express.Request, res : express.Response, next){
@@ -37,21 +38,20 @@ export function handleAuthenticate(req : express.Request, res : express.Response
     }
 }
 
-export function currentUser(req : express.Request)
-{
-    return req.session.name;
+export function logout(req : express.Request, callback: (err: Error, session: sessionService.Session) => void) {
+    if(getSessionUserId(req)) {
+        setSessionUserId(req, null);
+    }
+
+    sessionService.getCurrentSession(getSessionUserId(req), function(err, session) {
+        callback(err, session);
+    });
 }
 
-export function logout(req : express.Request) {
-    if(req.session.name) {
-        req.session.name = null;
-    }
+function getSessionUserId(req: express.Request): string {
+    return req.session['SESSION_USER_KEY'];
 }
 
-export class Session {
-    username: string;
-
-    constructor(username: string) {
-        this.username = username;
-    }
+function setSessionUserId(req: express.Request, userId: string) {
+    return req.session['SESSION_USER_KEY'] = userId;
 }

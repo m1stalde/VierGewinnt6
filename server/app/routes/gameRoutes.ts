@@ -1,17 +1,13 @@
 /// <reference path="../_all.ts"/>
 
 import express = require('express');
+import controller = require('../controller/gameController');
 
-export function Router() {
+var router: express.Router = express.Router();
 
-    var router: express.Router = express.Router();
-    var games = require('../controller/gameController');
+//router.all('/*', security.handleAuthenticate)
+router.get('/getGame', controller.getGame);
+router.post('/newGame', controller.newGame);
+router.post('/doMove', controller.doMove);
 
-    //router.all('/*', security.handleAuthenticate)
-    router.get('/getGame', games.getGame);
-    router.post('/initGame', games.initGame);
-    router.post('/doMove', games.doMove);
-
-    return router;
-}
-
+export = router;

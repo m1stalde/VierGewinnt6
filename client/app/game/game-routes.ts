@@ -14,7 +14,7 @@ module game {
         controllerAs: 'game',
         resolve: {
           'Something': ['GameService', function (gameService: Game.Services.IGameService) {
-            return gameService.initGame();
+            return gameService.newGame();
           }]
         }
       });
