@@ -5,15 +5,15 @@ import express = require('express');
 import bodyParser = require('body-parser');
 var http = require('http').Server(express);
 import session = require('express-session');
-var websocketService = require('./services/websocket/websocketService.js');
+var infuse = require('infuse.js');
+var websocketService = require('./websocket/websocketService.js');
 
 
 // configuration ==========================================
-
 var app = express();
 app.use(require('cookie-parser')());
 
-app.use(session({ secret: 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda', resave: false, saveUninitialized: true}));
+app.use(session({secret: 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda', resave: false, saveUninitialized: true}));
 app.use(bodyParser.urlencoded());
 
 app.use(bodyParser.json());
@@ -21,14 +21,14 @@ app.get('/', (req, res) => {
     res.send('Hello TypeScript')
 });
 
-app.all('*', function(req, res, next) {
+app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
     next();
 });
-app.options('*', function(req, res) {
+app.options('*', function (req, res) {
     res.sendStatus(200);
 });
 
@@ -42,20 +42,42 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/../../client/build/app'));
 
 // generic error handler after routes
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     console.error(err.stack);
     res.status(500).send('Request failed: ' + err.message);
 });
 
-var port: number = process.env.PORT || 2999;
+var port:number = process.env.PORT || 2999;
 
-var server = app.listen(port, function() {
+var server = app.listen(port, function () {
     console.log('Express server listening on port ' + port);
 });
+
+export class Server {
+    constructor(){
+
+    }
+    public getServer() {
+        this.server = app.listen(port, function () {
+            console.log('Express server listening on port ' + port);
+        });
+    }
+}
+
+
+
+var injector = new infuse.Injector();
+injector.mapValue("name", "John");
+injector.mapClass('test', Server);
+injector.mapClass('WebsocketService', websocketService.WebsocketService)
+
+injector.createInstance(websocketService.WebsocketService);
 
 
 var WebsocketService = websocketService.WebsocketService;
 var instWebSocketServ = new WebsocketService();
 instWebSocketServ.setUpWebsocketService(server);
+
+
 
 

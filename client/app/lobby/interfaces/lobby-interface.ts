@@ -5,15 +5,15 @@
 module lobby.interfaces{
   "use strict";
 
-  export interface Room extends ng.resource.IResource<Room> {
+  export interface IRoom extends ng.resource.IResource<IRoom> {
     roomId: string;
     title: string;
     status: string;
-    creationDate: string;
+    creationTime: string;
     players: Array<string>;
   }
 
-  export interface IRoomResource extends ng.resource.IResourceClass<Room> {
+  export interface IRoomResource extends ng.resource.IResourceClass<IRoom> {
 
   }
 }

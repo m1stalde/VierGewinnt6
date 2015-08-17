@@ -12,8 +12,8 @@
 /// <reference path="routes/userRoutes.ts"/>
 /// <reference path="routes/gameRoutes.ts"/>
 
-/// <reference path="services/websocket/chatWebsocketService.ts"/>
-/// <reference path="services/websocket/websocketService.ts"/>
+/// <reference path="websocket/chatWebsocketService.ts"/>
+/// <reference path="websocket/websocketService.ts"/>
 /// <reference path="services/lobbyService.ts"/>
 /// <reference path="services/sessionService.ts"/>
 /// <reference path="services/userService.ts"/>

@@ -14,14 +14,25 @@ export function retrieveLobbyData(req : express.Request, res : express.Response)
       });
   });
 }
-export function createNewGame(req : express.Request, res : express.Response){
+
+export function createNewRoom(req : express.Request, res : express.Response){
     lobbyService.LobbyService.create(req, function(err, data) {
         if(err){
+            res.status(418).send(err);
+        } else{
             res.format({
                 'application/json': function(){
-                    res.json(err);
+                    res.json(data);
                 }
             });
+        }
+    });
+}
+
+export function joinRoom(req : express.Request, res : express.Response){
+    lobbyService.LobbyService.join(req, function(err, data) {
+        if(err){
+            res.status(418).send(err);
         } else{
             res.format({
                 'application/json': function(){

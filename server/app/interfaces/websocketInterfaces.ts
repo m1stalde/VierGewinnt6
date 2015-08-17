@@ -19,6 +19,7 @@ module app.intefaces {
 
     export interface IClient {
         clientObj : any;
+        playerId: string;
         userName? : string;
     }
 

@@ -1,8 +1,10 @@
-/// <reference path="../../_all.ts"/>
+/// <reference path="../_all.ts"/>
+
 var WebSocketServer = require('ws').Server;
 var util = require('util');
+var helperFn = require('../utils/helperFunctions.js');
 
-var chatWebsocketService = require('../../services/websocket/chatWebsocketService.js');
+var chatWebsocketService = require('./chatWebsocketService.js'); // . indicates the current file and not the inde
 
 
 export class WebsocketService {
@@ -12,14 +14,13 @@ export class WebsocketService {
 
     private chatWs;
 
-    constructor() {
-        this.init();
-    }
+    static inject = ['test', 'name'];
 
-    public init(){
+    constructor(test, name) {
+        var k = 5;
         // Init
-        var ChatWebsocketService = chatWebsocketService.ChatWebsocketService;
-        this.chatWs = new ChatWebsocketService();
+        // var ChatWebsocketService = chatWebsocketService.ChatWebsocketService;
+        //this.chatWs = new ChatWebsocketService();
     }
 
     public setUpWebsocketService(server){
@@ -31,10 +32,10 @@ export class WebsocketService {
         this.wss.on('connection', function (conn) {
 
             // Assign a username to the connection
-            self.mapUserNameToConn(conn);
+            self.mapMetaDataToConn(conn);
 
             // Sends the chat history to the newly connected client
-            if(self.chatWs.chatHistory > 0){
+            if(self.chatWs.chatHistory.length > 0){
                 conn.send(
                     JSON.stringify(self.chatWs.returnChatHistory())
                 );
@@ -67,20 +68,23 @@ export class WebsocketService {
         this.wss.broadcast = this.broadcastData;
     }
 
-    private mapUserNameToConn(conn){
+   private mapMetaDataToConn(conn){
         var userName = "User " + (this.clients.length + 1);
+        var playerId = helperFn.Utils.createGuidcreateGuid();
         this.clients.push({
             userName: userName,
-            clientObj : conn
+            clientObj : conn,
+            playerId: playerId
         });
 
         conn.send(JSON.stringify({
             header :  {
                 type : "chat",
-                subType : "sendAssignedUserName"
+                subType : "sendMetaDataToUser"
             },
             body : {
-                userName: userName
+                userName: userName,
+                playerId: playerId
             }
         }));
     }
