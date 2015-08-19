@@ -1,14 +1,6 @@
 var gulp = require('gulp'),
-    ndemon = require('gulp-nodemon'),
-    livereload = require('gulp-livereload'),
+    nodemon = require('gulp-nodemon'),
     ts = require('gulp-typescript');
-    // runSequence = require('run-sequence');
-
-gulp.task('default', ['typescript']);
-
-gulp.task('watch', function() {
-    gulp.watch('app/**/*.ts', ['typescript']);
-});
 
 gulp.task('typescript' , function() {
     console.log('Compiling typescript');
@@ -16,16 +8,16 @@ gulp.task('typescript' , function() {
         .pipe(ts({module: 'commonjs'})).js.pipe(gulp.dest('./deploy'))
 });
 
-gulp.task('serve', ['typescript'], function () {
-    livereload.listen();
-    ndemon({
+gulp.task('typescript-watch', function() {
+    gulp.watch('app/**/*.ts', ['typescript']);
+});
+
+gulp.task('serve', ['typescript-watch'], function () {
+    nodemon({
         script: 'deploy/index.js',
         ext: 'js'
-    }).on('restart', function () {
-        setTimeout(function () {
-            livereload.changed();
-        }, 500);
     });
 });
 
+gulp.task('default', ['serve']);
 
