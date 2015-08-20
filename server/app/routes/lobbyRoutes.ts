@@ -7,7 +7,8 @@ var router: express.Router = express.Router();
 
 //router.get("/*", errorHandler); error handler
 router.get("/", controller.retrieveLobbyData);
-router.post("/", controller.createNewGame);
+router.post("/", controller.createNewRoom);
+router.post("/:id", controller.joinRoom);
 router.delete("/:id", controller.retrieveLobbyData);
 
 export = router;

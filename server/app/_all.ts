@@ -5,12 +5,15 @@
 /// <reference path="controller/userController.ts"/>
 /// <reference path="controller/gameController.ts"/>
 
+/// <reference path="interfaces/websocketInterfaces.ts"/>
+
 /// <reference path="routes/lobbyRoutes.ts"/>
 /// <reference path="routes/sessionRoutes.ts"/>
 /// <reference path="routes/userRoutes.ts"/>
 /// <reference path="routes/gameRoutes.ts"/>
 
-/// <reference path="services/websocketService.ts"/>
+/// <reference path="websocket/chatWebsocketService.ts"/>
+/// <reference path="websocket/websocketService.ts"/>
 /// <reference path="services/lobbyService.ts"/>
 /// <reference path="services/sessionService.ts"/>
 /// <reference path="services/userService.ts"/>

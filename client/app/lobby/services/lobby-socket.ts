@@ -6,28 +6,36 @@ module lobby.services {
 
     private ws:any;
     private chatWindow:JQuery;
-    public currentUser: string;
+
+    public currentUser: string; // used as display e.g chat
+    public playerId : string; // used in the REST-API to avoid identity fraud and to create an easy mapper attribute between REST => Websocket
+    public chatHistory: IChatHistory;
+    public singleChatMessage : IChatMessage;
 
 
     public static $inject = [];
 
     constructor() {
-
+      this.chatHistory = {};
       // DOM related initialisation
       this.chatWindow = $('.chat-output');
+    }
 
+    public setUpWebsocketService(){
       // Websocket configuration
       this.ws = new WebSocket('ws://localhost:2999');
       var self = this;
 
       this.ws.onmessage = (event) => {
-        var messageObj:IMessage = JSON.parse(event.data);
+
+        var messageObj : IMessage = JSON.parse(event.data);
 
         switch (messageObj.header.type) {
           case "chat":
             self.chatResponseHandler(messageObj);
             break;
           case "room":
+            self.roomResponseHandler(messageObj);
             break;
         }
         // check for event type => if chat => set user field for the current user
@@ -42,17 +50,25 @@ module lobby.services {
       };
     }
 
-    private chatResponseHandler(chatMsgObj:IMessage) {
+    private chatResponseHandler(chatMsgObj: IMessage) {
       switch (chatMsgObj.header.subType) {
         case "loadHistory":
-          for (var i = 0; i < chatMsgObj.body.data.length; ++i) {
-            this.chatWindow.append($('<span><strong>' +  chatMsgObj.body.data[i].body.userName + '</strong>&nbsp' +  chatMsgObj.body.data[i].body.message + '<br></span>'));
-          }
+          this.chatHistory = chatMsgObj;
           break;
         case "loadSingleMessage":
+          this.singleChatMessage = chatMsgObj;
           this.chatWindow.append($('<span><strong>' + chatMsgObj.body.data.body.userName + '</strong>&nbsp' +  chatMsgObj.body.data.body.message + '<br></span>'));
           break;
-        case "sendAssignedUserName":
+        case "sendMetaDataToUser":
+          this.currentUser = chatMsgObj.body.userName;
+          this.playerId = chatMsgObj.body.playerId;
+          break;
+      }
+    }
+
+    private roomResponseHandler(chatMsgObj: IRoomMessage){
+      switch (chatMsgObj.header.subType) {
+        case "loadLobbyData":
           this.currentUser = chatMsgObj.body.userName
           break;
       }

@@ -17,7 +17,7 @@ module lobby.services {
     }
 
     public LobbyRoom() : ng.resource.IResourceClass<ng.resource.IResource<any>> {
-      return this.$resource(this.baseUrl + '/lobby/:id', { id: '@id' });
+      return this.$resource(this.baseUrl + '/lobby/:id', {id: '@id' });
     }
   }
 }

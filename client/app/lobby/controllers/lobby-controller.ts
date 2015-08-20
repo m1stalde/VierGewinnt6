@@ -5,7 +5,9 @@ module lobby.controllers {
 
   class LobbyCtrl{
 
-    public lobbyData : Array<string>;
+    private chatWindow:JQuery;
+
+    public lobbyData : Array<lobby.interfaces.IRoom>;
     public gameCreation : boolean = true;
     public currentItem = {};
     public chat = {};
@@ -30,58 +32,86 @@ module lobby.controllers {
     private init(){
       this.lobbyData = [];
       this.initializeLobbyData();
-      this.currentItem.name = "test1";
+
+      // DOM related initialisation
+      this.chatWindow = $('.chat-output');
+
+      var self = this;
+      this.$scope.$watch(
+        function () {
+          return self.socketService.chatHistory
+        },
+        function (newValue, oldValue) {
+          if(newValue !== oldValue){
+            // Delete existing records
+            self.chatWindow.empty();
+
+            for (var i = 0; i < newValue.body.data.length; ++i) {
+              self.chatWindow.append($('<span><strong>' +  newValue.body.data[i].body.userName + '</strong>&nbsp' +  newValue.body.data[i].body.message + '<br></span>'));
+            }
+          }
+        }
+      );
+
+      this.socketService.setUpWebsocketService();
+
     }
 
     public toggleNewGame() : void{
       this.gameCreation = this.gameCreation === false ? true: false;
     }
 
-    public createRoom(name) : void{
+    public createRoom(roomName : string) : void{
+      var self = this;
       var newRoom = this.lobbyStorage.LobbyRoom();
-      var jsonObj = {name : name, players : ["abcdefghij"]};
+      var jsonObj = {name : roomName, playerId : this.socketService.playerId};
       newRoom.save(jsonObj,
-        (data) => this.handleRes(data, this.createRoomFn),
-        (err) => this.handleErr(err));
+        (data) => self.createLobbyRoomCb(data, null),
+        (err) => self.handleErr("Couldn't create a room on the server."));
     }
 
-    // still in progress => works with just this.handleRes(res) and no additional closure function this.lobbyInitFn()
-    private initializeLobbyData(){
-      var res = this.lobbyStorage.LobbyRoom().query(
-        () => this.handleRes(res, this.lobbyInitFn(this.$log, this.lobbyData)),
-        () => this.handleErr("Error while initializing the lobby data."));
+    public joinRoom(room : lobby.interfaces.IRoom){
+      var self = this;
+      var newRoom = this.lobbyStorage.LobbyRoom();
+      newRoom.save({id: room.roomId, playerId : this.socketService.playerId},
+        (data) => self.joinLobbyRoomCb(data, null),
+        (err) => self.handleErr("Couldn't create a room on the server."));
     }
-
-    private lobbyInitFn(logger, dataCol){
-      return function(data){
-        for (var i = 0; i < data.length; ++i) {
-          logger.log(data[i]);
-        }
-        dataCol = data;
-      }
-    }
-
-    private createRoomFn(newRoom){
-      this.$log.log(newRoom);
-      this.lobbyData.push(newRoom);
-    }
-
 
     // Common functions => outsourcing
-    private handleRes(res : any, resFn? : callbackFn) {
-      if(typeof resFn != 'undefined') {
-        resFn(res)
+    private createLobbyRoomCb(res : lobby.interfaces.IRoom, err) {
+      if(err)  {
+        this.$log.error(err)
+      } else if(!res){
+        this.$log.log("There are is existing lobby data available on the server.")
       } else{
-        this.$log.log(res);
+        this.lobbyData.push(res);
       }
     }
 
-    private handleErr(err : string, errFn? : callbackFn) {
-      if(typeof errFn != 'undefined') {
-        errFn(err)
+    private joinLobbyRoomCb(res : lobby.interfaces.IRoom, err){
+      var k = 3;
+    }
+
+    private initializeLobbyData(){
+      var res = this.lobbyStorage.LobbyRoom().query(
+        () => this.getLobbyDataCb(null, res),
+        () => this.getLobbyDataCb("Error while retrieving the lobby data from the server.", null)
+      );
+    }
+
+    private getLobbyDataCb(err,res) {
+      if(err)  {
+        this.$log.error(err)
+      } else if(!res){
+        this.$log.log("There are is existing lobby data available on the server.")
       } else{
-        this.$log.error(err);
+        this.lobbyData = res;
       }
+    }
+
+    private handleErr(err : string) {
+        this.$log.error(err);
     }
 
     public wsSendChatMessage(message : string, sentTo : Array<string>){
