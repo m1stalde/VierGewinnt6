@@ -3,7 +3,7 @@ module Game.Services {
   'use strict';
 
   export interface IGameService {
-    getGame() : IGame;
+    getGame() : ng.IPromise<IGame>;
     newGame() : ng.IPromise<IGame>;
     doMove(col : number) : void;
   }
@@ -24,46 +24,70 @@ module Game.Services {
 
     private game: IGame;
 
-    private demoMode: boolean;
+    private gameDeferred: ng.IDeferred<IGame>;
 
     public static $inject = [
-      '$http', '$q', '$log'
+      '$http', '$q', '$log', 'MessageService'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService) {
-      this.demoMode = true;
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService) {
+      var that = this;
+
+      that.gameDeferred = <ng.IDeferred<IGame>> $q.defer();
+
+      messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
+        that.$log.info("message reveiced " + message);
+        that.game = message.data.game;
+        that.gameDeferred.notify(that.game); // TODO check deferred notify without resolve
+      });
     }
 
-    getGame(): IGame {
-      return this.game;
+    getGame(): ng.IPromise<IGame> {
+      return this.gameDeferred.promise;
     }
 
     newGame(): ng.IPromise<IGame> {
-      var deferred = this.$q.defer();
       var that = this; // TODO check that
 
       if (!this.game) {
         this.$http.post<IGame>('http://localhost:2999/game/newGame', null).then((data) => {
           that.game = data.data;
-          deferred.resolve(that.game);
+          that.gameDeferred.notify(that.game);
         });
       } else {
-        deferred.resolve(that.game);
+        that.gameDeferred.notify(that.game);
       }
 
-      return deferred.promise;
+      return that.gameDeferred.promise;
     }
 
-    doMove(col: number): ng.IPromise<IGame> {
-      var deferred = this.$q.defer();
-      var that = this; // TODO check that
+    doMove(col: number) {
+      this.messageService.sendMessage(new GameDoMoveMessage(this.game.gameId, col));
+    }
+  }
 
-      this.$http.post<IGame>('http://localhost:2999/game/doMove', { gameId: that.game.gameId, col: col }).then((data) => {
-        that.game = data.data;
-        deferred.resolve(that.game);
-      });
+  class GameDoMoveMessage implements Common.Services.IMessage {
+    static NAME = "GameDoMoveMessage";
+    type: string = GameDoMoveMessage.NAME;
+    data: any;
 
-      return deferred.promise;
+    constructor(gameId: string, col: number) {
+      this.data = {
+        gameId: gameId,
+        col: col
+      };
+    }
+  }
+
+  class GameUpdateMessage implements Common.Services.IMessage {
+    static NAME = "GameUpdateMessage";
+    type: string = GameUpdateMessage.NAME;
+    data: any;
+
+    constructor (game: IGame) {
+      this.data = {
+        game: game
+      };
     }
   }
 

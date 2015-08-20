@@ -15,9 +15,10 @@ gulp.task('typescript-watch', function() {
 gulp.task('serve', ['typescript-watch'], function () {
     nodemon({
         script: 'deploy/index.js',
-        ext: 'js'
+        ext: 'js',
+        nodeArgs: ['--debug']
     });
 });
 
-gulp.task('default', ['serve']);
+gulp.task('default', ['typescript-watch']);
 

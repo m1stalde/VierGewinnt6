@@ -2,7 +2,7 @@
 
 var WebSocketServer = require('ws').Server;
 var util = require('util')
-
+import gameService = require('./gameService');
 
 export class WebsocketService {
 
@@ -38,6 +38,9 @@ export class WebsocketService {
                         break;
                     case "room":
                         break;
+                    case "GameDoMoveMessage":
+                        self.handleGameDoMoveMessage(messageObj);
+                        break;
                 }
             });
 
@@ -46,6 +49,26 @@ export class WebsocketService {
 
         // Broadcast the delta to all the participants in the chat
         this.wss.broadcast = this.broadcastData;
+    }
+
+    private handleGameDoMoveMessage(message: any) {
+        var self = this;
+
+        gameService.doMove(message.body.gameId, message.body.col, function (err, gameData) {
+            if (err) {
+                // TODO implement websocket error handling
+                return;
+            }
+
+            self.wss.broadcast({
+                header : {
+                    type : "GameUpdateMessage"
+                },
+                body : {
+                    game: gameData
+                }
+            });
+        });
     }
 
     private handleChatMessage(chatMessageObj : IChatMessage){

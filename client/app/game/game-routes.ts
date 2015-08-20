@@ -11,12 +11,12 @@ module game {
       .when('/game', {
         templateUrl: 'game/views/game.tpl.html',
         controller: 'GameCtrl',
-        controllerAs: 'game',
+        controllerAs: 'game'/*,
         resolve: {
           'Something': ['GameService', function (gameService: Game.Services.IGameService) {
             return gameService.newGame();
           }]
-        }
+        }*/
       });
   }
 }
