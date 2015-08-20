@@ -1,97 +1,143 @@
 /// <reference path="../_all.ts"/>
 
-var utils = require('../utils/helperFunctions');
-var websocket = require('../websocket/WebsocketService');
 import express = require('express');
+var utils = require('../utils/helperFunctions');
+var websocketService = require('../websocket/websocketService');
 
-export class LobbyService {
-
-    private static _instance: LobbyService = new LobbyService();
-
-    public static listOfRooms:Array<IRoom> = [
-        {
-            roomId: 1,
-            name: "Title1",
-            status: "Waiting for Opponent",
-            creationTime: "17:01:34",
-            players: ["abcdefghi", "jklmnopqrst"]
-        },
-        {
-            roomId: 2,
-            name: "Title2",
-            status: "Game is in progress",
-            creationTime: "17:01:34",
-            players: ["abcdefghi", "jklmnopqrst"]
-        },
-        {
-            roomId: 3,
-            name: "Title3",
-            status: "Game is in progress",
-            creationTime: "12:01:34",
-            players: ["abcdefghi", "jklmnopqrst"]
-        },
-    ];
-
-    static create(req : express.Request, cb) {
-
-        if(!utils.Utils.propertyValidator(req.body))
-        {
-            cb("Couldn't create a new room, at least one of the properties was missing.", null);
-            return;
-        }
-
-        var newRoom : IRoom = {
-            roomId : ++this.listOfRooms.length,
-            name : req.body.name,
-            status : "Waiting for Opponent",
-            creationTime :  new Date().toLocaleTimeString().toString(),
-            players : [req.body.playerId]
-        };
-
-        this.listOfRooms[newRoom.roomId] = newRoom;
-        cb(null, newRoom);
-    }
-
-    static delete(roomId) {
-        return this.checkForRoom && this.listOfRooms.splice(this.listOfRooms.indexOf(roomId), 1);
-    }
-
-    static join(req : express.Request, cb){
-        if(!utils.Utils.propertyValidator(req.body))
-        {
-            cb("Couldn't create a join room, at least one of the properties was missing.", null);
-            return;
-        }
-        var room = this.listOfRooms[req.body.id];
-        room.players
-    }
-
-    static getAllRooms(callback) {
-        if (callback && this.listOfRooms.length > 0) {
-            callback(undefined, this.listOfRooms);
-        } else {
-            callback("There are no rooms at the current time");
-        }
-    }
-
-    private static checkForRoom(room:IRoom) {
-        // Check if this room already exists
-        for (var i = this.listOfRooms.length - 1; i >= 0; i--) {
-            if (this.listOfRooms[i].roomId === room.roomId) {
-                return true;
+var listOfRooms:Array<IRoom> = [
+    {
+        roomId: 1,
+        name: "Title1",
+        status: "Waiting for Opponent",
+        creationTime: "17:01:34",
+        players: [
+            {
+                playerId: "12124234",
+                clientObj: {},
+                userName: "Hans"
+            },
+            {
+                playerId: "23232323",
+                clientObj: {},
+                userName: "Ueli"
             }
-        };
+        ]
+    },
+    {
+        roomId: 2,
+        name: "Title2",
+        status: "Game is in progress",
+        creationTime: "17:01:34",
+        players: [
+            {
+                playerId: "23232323",
+                clientObj: {},
+                userName: "Ueli"
+            }
+        ]
+    },
+    {
+        roomId: 3,
+        name: "Title3",
+        status: "Game is in progress",
+        creationTime: "12:01:34",
+        players: [
+            {
+                playerId: "23232323",
+                clientObj: {},
+                userName: "Ueli"
+            }
+        ]
+    },
+];
 
-        return false;
+export function createRoom(req:express.Request, cb) {
+
+    if (!utils.Utils.propertyValidator(req.body)) {
+        cb("Couldn't create a new room, at least one of the properties was missing.", null);
+        return;
+    }
+
+    var newRoom:IRoom = {
+        roomId: ++listOfRooms.length,
+        name: req.body.name,
+        status: "Waiting for Opponent",
+        creationTime: new Date().toLocaleTimeString().toString(),
+        players: [req.body.playerId]
+    };
+
+    listOfRooms[newRoom.roomId - 1] = newRoom;
+    cb(null, newRoom);
+}
+
+export function joinRoom(req:express.Request, cb) {
+
+    if (!utils.Utils.propertyValidator(req.body)) {
+        cb("Couldn't create a join room, at least one of the properties was missing.", null);
+        return;
+    }
+    // Retrieve the room which the player wants to join
+    var room = listOfRooms[req.body.id - 1;
+
+    // Validation
+    if (!room) {
+        cb("Couldn't find a room with the id " + req.body.id, null)
+        return;
+    } else if (room.players.length === 0) {
+        cb("Can't join an empty room.", null)
+        return;
+    } else if (room.players.length === 2) {
+        cb("The selected room has already reached the maximum capacity of 2 players.", null)
+        return;
+    } else if (room.players[0].playerId === req.body.playerId) {
+        cb("The player has already enrolled for this particular room.", null)
+        return;
+    }
+
+    var userSessionObj:Array<app.interfaces.IClient> = [];
+    for (var i = 0; i < websocketService.clients.length; i++) {
+        if (websocketService.clients[i].playerId === req.body.playerId) {
+            userSessionObj.push(websocketService.clients[i]);
+        }
+    }
+
+    if (userSessionObj.length === 1) {
+        room.players.push(userSessionObj[0].playerId);
+    } else {
+        cb("The player has more than one active session on the server.", null)
+        return;
+    }
+
+    cb(null, room);
+}
+
+export function getAllRooms(callback) {
+    if (callback && listOfRooms.length > 0) {
+        callback(undefined, listOfRooms);
+    } else {
+        callback("There are no rooms at the current time");
     }
 }
+
+export function checkForRoom(room:IRoom) {
+    // Check if this room already exists
+    for (var i = listOfRooms.length - 1; i >= 0; i--) {
+        if (listOfRooms[i].roomId === room.roomId) {
+            return true;
+        }
+    }
+    ;
+
+    return false;
+}
+
 
 export interface IRoom {
     roomId? : number;
     name : string;
     status? : string;
     creationTime : string;
-    players : Array<any>;
+    players : Array<app.interfaces.IClient>;
 }
 
 

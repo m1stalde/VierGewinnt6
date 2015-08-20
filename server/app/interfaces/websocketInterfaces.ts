@@ -1,8 +1,9 @@
 /**
  * Created by Alexander on 13.08.2015.
  */
+import http   = require('http');
 
-module app.intefaces {
+module app.interfaces {
 
     export interface IMessage {
         header : {
@@ -30,5 +31,13 @@ module app.intefaces {
             creationDate : string;
             sendTo? : string[];
         }
+    }
+
+    export interface IWebsocketService {
+        clients : Array<app.interfaces.IClient>;
+        returnWsServer(): http.Server;
+        setUpWebsocketService(server : http.Server): http.Server;
+        runCleanUpTask(self : any) : void;
+        broadcastData(data : string): void;
     }
 }

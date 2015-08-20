@@ -73,7 +73,7 @@ module lobby.controllers {
     public joinRoom(room : lobby.interfaces.IRoom){
       var self = this;
       var newRoom = this.lobbyStorage.LobbyRoom();
-      newRoom.save({id: room.roomId},
+      newRoom.save({id: room.roomId, playerId : this.socketService.playerId},
         (data) => self.joinLobbyRoomCb(data, null),
         (err) => self.handleErr("Couldn't create a room on the server."));
     }

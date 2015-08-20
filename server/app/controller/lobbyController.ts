@@ -4,9 +4,10 @@ import http = require('http');
 import express = require('express');
 
 var lobbyService = require('../services/lobbyService');
+var websocketService = require('../websocket/websocketService');
 
 export function retrieveLobbyData(req : express.Request, res : express.Response){
-  lobbyService.LobbyService.getAllRooms(function(err, data) {
+  lobbyService.getAllRooms(function(err, data) {
       res.format({
           'application/json': function(){
               res.json(err || data);
@@ -16,7 +17,7 @@ export function retrieveLobbyData(req : express.Request, res : express.Response)
 }
 
 export function createNewRoom(req : express.Request, res : express.Response){
-    lobbyService.LobbyService.create(req, function(err, data) {
+    lobbyService.createRoom(req, function(err, data) {
         if(err){
             res.status(418).send(err);
         } else{
@@ -30,7 +31,7 @@ export function createNewRoom(req : express.Request, res : express.Response){
 }
 
 export function joinRoom(req : express.Request, res : express.Response){
-    lobbyService.LobbyService.join(req, function(err, data) {
+    lobbyService.joinRoom(req, function(err, data) {
         if(err){
             res.status(418).send(err);
         } else{
