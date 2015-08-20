@@ -55,7 +55,7 @@ export function joinRoom(req:express.Request, cb) {
         return;
     }
     // Retrieve the room which the player wants to join
-    var room = listOfRooms[req.body.id - 1;
+    var room = listOfRooms[req.body.id - 1];
 
     // Validation
     if (!room) {

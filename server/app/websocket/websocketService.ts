@@ -6,6 +6,7 @@ var util = require('util');
 var helperFn = require('../utils/helperFunctions.js');
 
 var chatWebsocket = require('./chatWebsocketService.js');
+import gameWebsocket = require('./gameWebsocketService');
 
 var wsServer;
 var clients : Array<app.interfaces.IClient> = [];
@@ -47,11 +48,18 @@ export function setUpWebsocketService(server){
                     break;
                 case "room":
                     break;
-                case "game":
+                case "GameDoMoveMessage":
+                    gameWebsocket.handleGameDoMoveMessage(messageObj, function (err, message) {
+                        if (message) {
+                            wsServer.broadcast(message);
+                        }
+                    });
                     break;
             }
 
-            wsServer.broadcast(processedMsgObj);
+            if (processedMsgObj) {
+                wsServer.broadcast(processedMsgObj);
+            }
         });
 
         conn.on('close', runCleanUpTask(this));
@@ -103,7 +111,5 @@ export function broadcastData(data) {
         client.send(JSON.stringify(data));
     });
 };
-
-
 
 
