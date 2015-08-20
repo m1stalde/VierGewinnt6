@@ -10,45 +10,23 @@ var listOfRooms:Array<IRoom> = [
         name: "Title1",
         status: "Waiting for Opponent",
         creationTime: "17:01:34",
-        players: [
-            {
-                playerId: "12124234",
-                clientObj: {},
-                userName: "Hans"
-            },
-            {
-                playerId: "23232323",
-                clientObj: {},
-                userName: "Ueli"
-            }
-        ]
+        players: ["12124234", "1223232"]
+
     },
     {
         roomId: 2,
         name: "Title2",
         status: "Game is in progress",
         creationTime: "17:01:34",
-        players: [
-            {
-                playerId: "23232323",
-                clientObj: {},
-                userName: "Ueli"
-            }
-        ]
+        players: ["12124234"]
     },
     {
         roomId: 3,
         name: "Title3",
         status: "Game is in progress",
         creationTime: "12:01:34",
-        players: [
-            {
-                playerId: "23232323",
-                clientObj: {},
-                userName: "Ueli"
-            }
-        ]
-    },
+        players: ["12124234"]
+    }
 ];
 
 export function createRoom(req:express.Request, cb) {
