@@ -25,14 +25,14 @@ module Game.Services {
     private game: IGame;
 
     public static $inject = [
-      '$http', '$q', '$log', 'MessageService', '$rootScope'
+      '$http', '$q', '$log', 'MessageService'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private $rootScope: ng.IScope) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService) {
       var that = this;
 
-      $rootScope.$on(GameUpdateMessage.NAME, function (event: ng.IAngularEvent, message: any) {
-        that.$log.info("message reveiced " + event);
+      messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
+        that.$log.info("message reveiced " + message);
         that.game = message.data.game;
       });
     }

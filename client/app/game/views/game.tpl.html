@@ -1,7 +1,7 @@
 <h2>Spiel</h2>
 
 <div class="game-container" ng-click="game.doMove($event)">
-    <div class="game-row" ng-repeat="gameFieldRow in game.gameFields track by $index">
+    <div class="game-row" ng-repeat="gameFieldRow in game.getCurrentGame().cells track by $index">
       <!-- <game-field ng-repeat="gameField in gameFieldRow">{{gameField.name}}</game-field> -->
       <div class="game-field" ng-class="{'red':gameField==1, 'yellow':gameField==2}" data-x="{{$index}}" data-y="{{$parent.$index}}" ng-repeat="gameField in gameFieldRow track by $index"></div>
     </div>
