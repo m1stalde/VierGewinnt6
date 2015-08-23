@@ -5,7 +5,6 @@ module lobby.services {
   export class LobbyStorage {
 
     private gameStorage : Array<any>;
-    private baseUrl : string = 'http://localhost:2999'; /*this.appConstant.baseUrl + '/lobby';*/
 
     public static $inject = [
       '$http',
