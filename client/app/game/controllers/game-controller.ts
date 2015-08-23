@@ -4,7 +4,6 @@ module Game.Controllers {
 
   class GameCtrl {
 
-    ctrlName: string;
     gameFields : Game.Services.Color[][];
 
     // $inject annotation.
@@ -12,19 +11,25 @@ module Game.Controllers {
     // it is better to have it close to the constructor, because the parameters must match in count and type.
     // See http://docs.angularjs.org/guide/di
     public static $inject = [
-      '$log', 'GameService'
+      '$log', 'GameService', '$scope'
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor(private $log : ng.ILogService, private gameService : Game.Services.IGameService) {
-      this.ctrlName = 'GameCtrl';
-      this.init();
+    constructor(private $log : ng.ILogService, private gameService : Game.Services.IGameService, private $scope: ng.IScope) {
+      var that = this;
+      that.updateGameData();
+
+      $scope.$on('GameUpdateMessage', function (event: ng.IAngularEvent, message: any) {
+        that.$log.info("message reveiced in controller " + event);
+        that.$scope.$apply(function (scope: ng.IScope) {
+          that.updateGameData();
+        });
+      });
     }
 
-    init() {
+    updateGameData() {
       this.$log.debug("initializing game fields array");
-      this.gameService.newGame().then((game) => this.gameFields = game.cells, null, (game) => this.gameFields = game.cells);
-      //this.gameService.getGame().then((game2) => this.gameFields = game2.cells);
+      this.gameFields = this.gameService.getGame().cells;
     }
 
     doMove(evt : JQueryEventObject) : void {

@@ -3,7 +3,7 @@ module Game.Services {
   'use strict';
 
   export interface IGameService {
-    getGame() : ng.IPromise<IGame>;
+    getGame() : IGame;
     newGame() : ng.IPromise<IGame>;
     doMove(col : number) : void;
   }
@@ -18,47 +18,43 @@ module Game.Services {
     Empty = 0,
     Red = 1,
     Yellow = 2
-  };
+  }
 
   class GameService implements IGameService {
 
     private game: IGame;
 
-    private gameDeferred: ng.IDeferred<IGame>;
-
     public static $inject = [
-      '$http', '$q', '$log', 'MessageService'
+      '$http', '$q', '$log', 'MessageService', '$rootScope'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private $rootScope: ng.IScope) {
       var that = this;
 
-      that.gameDeferred = <ng.IDeferred<IGame>> $q.defer();
-
-      messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
-        that.$log.info("message reveiced " + message);
+      $rootScope.$on(GameUpdateMessage.NAME, function (event: ng.IAngularEvent, message: any) {
+        that.$log.info("message reveiced " + event);
         that.game = message.data.game;
-        that.gameDeferred.notify(that.game); // TODO check deferred notify without resolve
       });
     }
 
-    getGame(): ng.IPromise<IGame> {
-      return this.gameDeferred.promise;
+    getGame(): IGame {
+      return this.game;
     }
 
     newGame(): ng.IPromise<IGame> {
+      var deferred = this.$q.defer();
       var that = this; // TODO check that
 
       if (!this.game) {
         this.$http.post<IGame>('http://localhost:2999/game/newGame', null).then((data) => {
           that.game = data.data;
-          that.gameDeferred.notify(that.game);
+          deferred.resolve(that.game);
         });
       } else {
-        that.gameDeferred.notify(that.game);
+        deferred.resolve(that.game);
       }
 
-      return that.gameDeferred.promise;
+      return deferred.promise;
     }
 
     doMove(col: number) {

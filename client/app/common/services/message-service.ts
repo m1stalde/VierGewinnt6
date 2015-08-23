@@ -3,7 +3,6 @@ module Common.Services {
   'use strict';
 
   export interface IMessageService {
-    addMessageListener(messageType: string, listener: IMessageListener);
     sendMessage(message: IMessage);
   }
 
@@ -12,21 +11,15 @@ module Common.Services {
     data: any;
   }
 
-  export interface IMessageListener {
-    (message: IMessage): void;
-  }
-
   class MessageService implements IMessageService {
 
     private ws: WebSocket;
 
-    private messageListeners: any = {};
-
     public static $inject = [
-      '$log'
+      '$log', '$rootScope'
     ];
 
-    constructor(private $log : ng.ILogService) {
+    constructor(private $log : ng.ILogService, private $rootScope: ng.IScope) {
       // Websocket configuration
       this.ws = new WebSocket('ws://localhost:2999');
       var self = this;
@@ -34,16 +27,6 @@ module Common.Services {
       this.ws.onmessage = (event) => self.onMessage(event);
       this.ws.onopen = (event) => self.onOpen(event);
       this.ws.onerror = (error) => self.onError(error);
-    }
-
-    public addMessageListener(messageType: string, messageListener: IMessageListener) {
-      this.$log.debug("adding message listener " + messageListener + " for message type " + messageType);
-
-      if (!this.messageListeners.hasOwnProperty(messageType)) {
-        this.messageListeners[messageType] = new Array();
-      }
-
-      this.messageListeners[messageType].push(messageListener);
     }
 
     public sendMessage(message: IMessage) {
@@ -73,9 +56,7 @@ module Common.Services {
         data: recvMessage.body
       }
 
-      if (this.messageListeners.hasOwnProperty(messageType)) {
-        this.messageListeners[messageType].forEach((listener) => listener(message));
-      }
+      this.$rootScope.$broadcast(messageType, message);
     }
 
     private onOpen(message: Event) {
