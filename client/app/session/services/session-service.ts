@@ -20,17 +20,17 @@ module Session.Services {
     private currentSession : ISession;
 
     public static $inject = [
-      '$http', '$q'
+      '$http', '$q', 'appConfig'
     ];
 
-    constructor(private $http : ng.IHttpService, private $q : ng.IQService) {
+    constructor(private $http : ng.IHttpService, private $q : ng.IQService, private appConfig: vierGewinnt6.IAppConfig) {
     }
 
     login(username : string, password : string) : ng.IPromise<ISession> {
       var deferred = this.$q.defer();
       var that = this;
 
-      this.$http.post<ISession>('http://localhost:2999/session/login', { "username":username, "password":password}).then((data) => {
+      this.$http.post<ISession>(this.appConfig.baseUrl + '/session/login', { "username":username, "password":password}).then((data) => {
         that.currentSession = data.data;
         deferred.resolve(that.currentSession);
       });
@@ -42,7 +42,7 @@ module Session.Services {
       var deferred = this.$q.defer();
       var that = this;
 
-      this.$http.post<ISession>('http://localhost:2999/session/logout', {}).then((data) => {
+      this.$http.post<ISession>(this.appConfig.baseUrl + '/session/logout', {}).then((data) => {
         that.currentSession = data.data;
         deferred.resolve(that.currentSession);
       });
@@ -63,7 +63,7 @@ module Session.Services {
       var that = this;
 
       if (!that.currentSession) {
-        this.$http.get<ISession>('http://localhost:2999/session/').then((data) => {
+        this.$http.get<ISession>(this.appConfig.baseUrl + '/session/').then((data) => {
           that.currentSession = data.data;
           deferred.resolve(that.currentSession);
         });

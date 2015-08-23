@@ -19,12 +19,12 @@ module Common.Services {
     private messageListeners: any = {};
 
     public static $inject = [
-      '$log', '$rootScope'
+      '$log', '$rootScope', 'appConfig'
     ];
 
-    constructor(private $log : ng.ILogService, private $rootScope: ng.IScope) {
+    constructor(private $log : ng.ILogService, private $rootScope: ng.IScope, private appConfig: vierGewinnt6.IAppConfig) {
       // Websocket configuration
-      this.ws = new WebSocket('ws://localhost:2999');
+      this.ws = new WebSocket(appConfig.baseWsUrl);
       var self = this;
 
       this.ws.onmessage = (event) => self.onMessage(event);

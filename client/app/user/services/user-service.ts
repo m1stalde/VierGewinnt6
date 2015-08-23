@@ -4,9 +4,9 @@ module User.Services {
   'use strict';
 
   export interface IUserService {
-    loadUserData() : ng.IPromise<IUser>;
-    getCurrentUser() : IUser;
-    saveUser(user : IUser);
+    loadUserData(): ng.IPromise<IUser>;
+    getCurrentUser(): IUser;
+    saveUser(user: IUser);
   }
 
   export interface IUser {
@@ -21,14 +21,14 @@ module User.Services {
     private userResource : ng.resource.IResourceClass<ng.resource.IResource<IUser>>;
 
     public static $inject = [
-      '$resource', '$q'
+      '$resource', '$q', 'appConfig'
     ];
 
-    constructor(private $resource:angular.resource.IResourceService, private $q : ng.IQService) {
-      this.userResource = $resource('http://localhost:2999/users');
+    constructor(private $resource: angular.resource.IResourceService, private $q: ng.IQService, private appConfig: vierGewinnt6.IAppConfig) {
+      this.userResource = $resource(appConfig.baseUrl + '/users');
     }
 
-    loadUserData() : ng.IPromise<IUser> {
+    loadUserData(): ng.IPromise<IUser> {
       var deferred = this.$q.defer();
       var that = this;
 
@@ -44,11 +44,11 @@ module User.Services {
       return deferred.promise;
     }
 
-    getCurrentUser() : IUser {
+    getCurrentUser(): IUser {
       return this.userData;
     }
 
-    saveUser(user : IUser) {
+    saveUser(user: IUser) {
       this.userResource.save(user);
     }
   }

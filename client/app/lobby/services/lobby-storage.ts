@@ -9,15 +9,16 @@ module lobby.services {
 
     public static $inject = [
       '$http',
-      '$resource'
+      '$resource',
+      'appConfig'
     ];
 
-    constructor(private $http: ng.IHttpService, private $resource : ng.resource.IResourceService /*,private appConstant*/) {
+    constructor(private $http: ng.IHttpService, private $resource : ng.resource.IResourceService, private appConfig: vierGewinnt6.IAppConfig) {
 
     }
 
     public LobbyRoom() : ng.resource.IResourceClass<ng.resource.IResource<any>> {
-      return this.$resource(this.baseUrl + '/lobby/:id', {id: '@id' });
+      return this.$resource(this.appConfig.baseUrl + '/lobby/:id', {id: '@id' });
     }
   }
 }

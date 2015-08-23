@@ -25,10 +25,10 @@ module Game.Services {
     private game: IGame;
 
     public static $inject = [
-      '$http', '$q', '$log', 'MessageService'
+      '$http', '$q', '$log', 'MessageService', 'appConfig'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
       var that = this;
 
       messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
@@ -46,7 +46,7 @@ module Game.Services {
       var that = this; // TODO check that
 
       if (!this.game) {
-        this.$http.post<IGame>('http://localhost:2999/game/newGame', null).then((data) => {
+        this.$http.post<IGame>(this.appConfig.baseUrl + '/game/newGame', null).then((data) => {
           that.game = data.data;
           deferred.resolve(that.game);
         });

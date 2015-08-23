@@ -18,5 +18,15 @@ module vierGewinnt6 {
       'user',
       'session',
       'common'
-    ]);
+    ])
+    .constant('appConfig', {
+      baseUrl: 'http://localhost:2999',
+      baseWsUrl: 'ws://localhost:2999'
+    })
+  ;
+
+  export interface IAppConfig {
+    baseUrl: string;
+    baseWsUrl: string;
+  }
 }
