@@ -3,6 +3,7 @@
 import express = require('express');
 import gameService = require('../services/gameService');
 import gameLogic = require('../logic/gameLogic');
+import security = require('../utils/security');
 
 export function getGame(req: GameControllerRequest, res: express.Response, next: Function) {
     var gameId = req.body.gameId;
@@ -26,7 +27,9 @@ export function getGame(req: GameControllerRequest, res: express.Response, next:
 }
 
 export function newGame(req: GameControllerRequest, res: express.Response, next: Function) {
-    gameService.newGame(gameLogic.Color.Yellow, function(err, gameData, gameId) {
+    var userId = security.currentUserId(req);
+
+    gameService.newGame(userId, userId, gameLogic.Color.Yellow, function(err, gameData, gameId) {
         if (err) {
             next(err);
             return;
@@ -41,6 +44,8 @@ export function newGame(req: GameControllerRequest, res: express.Response, next:
 }
 
 export function doMove(req: GameControllerRequest, res: express.Response, next: Function) {
+    var userId = security.currentUserId(req);
+
     var gameId = req.body.gameId;
     if (!gameId) {
         res.status(400).send('Bad Request: gameId missing');
@@ -53,7 +58,7 @@ export function doMove(req: GameControllerRequest, res: express.Response, next: 
         return;
     }
 
-    gameService.doMove(gameId, col, function (err, gameData) {
+    gameService.doMove(gameId, userId, col, function (err, gameData) {
         if (err) {
             res.status(400).send('Bad Request: ' + err.message);
             return;

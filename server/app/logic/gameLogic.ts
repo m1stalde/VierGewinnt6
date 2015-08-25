@@ -1,21 +1,31 @@
+/// <reference path="../_all.ts"/>
+'use strict';
+
 export class Game {
 
-    gameData: IGameData;
+    private gameData: IGameData;
 
     /**
      * Initializes new or existing game.
      * @param gameData existing game data or undefined
-     * @param startColor first color for new game or undefined
      */
-    constructor(gameData: IGameData, startColor: Color) {
-        if (gameData) {
-            this.gameData = gameData;
-        } else {
-            this.gameData = this.createGameData(startColor);
-        }
+    constructor(gameData: IGameData) {
+        this.gameData = gameData;
     }
 
-    private createGameData(startColor: Color): IGameData {
+    /**
+     * Create new game for given users, userId1 begins to play.
+     * @param userId1 user id of player 1
+     * @param userId2 user id of player 2
+     * @param startColor first color for new game or undefined
+     * @param callback with result or error
+     */
+    public newGame(userId1: string, userId2: string, startColor: Color, callback: (err: Error, gameData: IGameData) => void): void {
+        if(!(userId1 && userId2)) {
+            callback(new Error('userId1 and userId2 required'), null);
+            return;
+        }
+
         var rowCount = 6;
         var colCount = 7;
         var nextColor = Color.Yellow;
@@ -32,38 +42,59 @@ export class Game {
             }
         }
 
-        return {
+        this.gameData = {
             cells: cells,
             nextColor: nextColor,
-            gameId: null
+            nextUserId: userId1,
+            userId1: userId1,
+            userId2: userId2,
+            state: GameState.New
         }
+
+        callback(null, this.gameData);
     }
 
     /**
      * Does the next move.
+     * @param userId user who put tile into
      * @param col column to put tile into
-     * @param callback success or failure
+     * @param callback with result or error
      */
-    doMove(col: number, callback: (err: Error) => void) {
+    doMove(userId: string, col: number, callback: (err: Error, gameData: IGameData) => void): void {
+        if (!(userId && col != undefined)) {
+            callback(new Error('userId and col required'), null);
+            return;
+        }
+
+        // check if given user is on the move
+        if (this.gameData.nextUserId !== userId) {
+            callback(new Error("user " + userId + " isn't on the move"), null);
+            return;
+        }
+
         var rowCount = this.gameData.cells.length;
         var colCount = this.gameData.cells[0].length;
 
         if (col < 0 || col >= colCount) {
-            if (callback) callback(new Error("col value " + col + " out of range"));
-            return false;
+            if (callback) callback(new Error("col value " + col + " out of range"), null);
+            return;
         }
 
         var nextCell = this.getNextCell(col);
         if (nextCell < 0) {
-            if (callback) callback(new Error("col " + col + " already full"));
-            return false;
+            if (callback) callback(new Error("col " + col + " already full"), null);
+            return;
         }
 
+        // do the move and switch color and user
         this.gameData.cells[nextCell][col] = this.gameData.nextColor;
-
         this.gameData.nextColor = this.gameData.nextColor === Color.Red ? Color.Yellow : Color.Red;
+        this.gameData.nextUserId = this.gameData.userId1 === userId ? this.gameData.userId2 : this.gameData.userId1;
 
-        callback(null);
+        // TODO implement finish check
+        this.gameData.state = GameState.Running;
+
+        callback(null, this.gameData);
     }
 
     private getNextCell(col: number) : number {
@@ -87,8 +118,17 @@ export enum Color {
     Yellow = 2
 }
 
+export enum GameState {
+    New = 0,
+    Running = 1,
+    Finished = 2
+}
+
 export interface IGameData {
     cells: Color[][];
     nextColor: Color;
-    gameId: string;
+    nextUserId: string;
+    userId1: string;
+    userId2: string;
+    state: GameState;
 }

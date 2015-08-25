@@ -62,11 +62,12 @@ module Common.Services {
       this.$log.info("message received: " + message);
 
       var recvMessage = JSON.parse(message.data);
-      var messageType = recvMessage.header.type;
+      var messageType = recvMessage.type;
 
+      // TODO remove mapping
       var notifyMessage: IMessage = {
-        type: recvMessage.header.type,
-        data: recvMessage.body
+        type: recvMessage.type,
+        data: recvMessage.data
       }
 
       if (this.messageListeners.hasOwnProperty(messageType)) {

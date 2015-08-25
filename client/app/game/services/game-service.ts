@@ -11,7 +11,7 @@ module Game.Services {
   export interface IGame {
     cells: Color[][];
     nextColor: Color;
-    gameId: string;
+    _id: string;
   }
 
   export enum Color {
@@ -33,7 +33,7 @@ module Game.Services {
 
       messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
         that.$log.info("message reveiced " + message);
-        that.game = message.data.game;
+        that.game = message.data;
       });
     }
 
@@ -57,8 +57,10 @@ module Game.Services {
       return deferred.promise;
     }
 
-    doMove(col: number) {
-      this.messageService.sendMessage(new GameDoMoveMessage(this.game.gameId, col));
+    doMove(col: number): void {
+      var that = this; // TODO check that
+
+      this.$http.post<IGame>('http://localhost:2999/game/doMove', { gameId: that.game._id, col: col });
     }
   }
 
