@@ -25,10 +25,27 @@
         </div>
         <div class="panel-body">
           <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" name="name" class="form-control" id="name" ng-model="lobby.currentItem.name">
+            <label for="creation-name">Name:</label>
+            <input type="text" name="name" class="form-control" id="creation-name" ng-model="lobby.currentItem.name">
           </div>
           <button type="submit" class="btn btn-default" ng-click="lobby.createRoom(lobby.currentItem.name)">Create</button>
+          </form>
+        </div>
+      </div>
+
+      <!--Panel Heading - Edit Existing Game -->
+      <div class="panel panel-default" ng-hide="lobby.gameEditing">
+        <div class="panel-heading">
+          <span class="glyphicon glyphicon-file icon"></span>
+          Edit Existing Game
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label for="editing-title">Name:</label>
+            <input type="text" name="name" class="form-control" id="editing-title" ng-model="lobby.currentItem.name">
+            <input type="hidden" name="roomId" class="form-control" ng-model="lobby.currentItem.roomId">
+          </div>
+          <button type="submit" class="btn btn-default" ng-click="lobby.changeRoomName(lobby.currentItem.name, lobby.currentItem.roomId)">Edit</button>
           </form>
         </div>
       </div>
@@ -62,6 +79,12 @@
                 </a>
               </th>
               <th>
+                Players
+                <a href="#">
+                  <span class="glyphicon glyphicon-chevron-down"></span>
+                </a>
+              </th>
+              <th>
                 Creation
                 <a href="#">
                   <span class="glyphicon glyphicon-chevron-down"></span>
@@ -80,15 +103,20 @@
               <td>{{item.roomId}}</td>
               <td>{{item.name}}</td>
               <td>{{item.status}}</td>
+              <td>
+                <span ng-repeat="player in item.players">
+                  {{player.userName}}
+                </span>
+              </td>
               <td>{{item.creationTime}}</td>
               <td>
-                <a href="#" class="icon" ng-click="lobby.joinRoom(item)">
+                <a href="#" class="icon" ng-click="lobby.joinRoom(item)" stop-event>
                   <span class="glyphicon glyphicon-plus"></span>
                 </a>
-                <a href="#" class="icon" ng-click="lobby.editRoom(item)">
+                <a href="#" class="icon" ng-click="lobby.editRoom(item)" stop-event>
                   <span class="glyphicon glyphicon-pencil"></span>
                 </a>
-                <a href="#" class="icon" ng-click="lobby.deleteRoom(item)">
+                <a href="#" class="icon" ng-click="lobby.deleteRoom(item)" stop-event>
                   <span class="glyphicon glyphicon-trash"></span>
                 </a>
               </td>

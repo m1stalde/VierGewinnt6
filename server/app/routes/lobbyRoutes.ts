@@ -1,14 +1,18 @@
 /// <reference path="../_all.ts"/>
 
 import express = require('express');
-import controller = require('../controller/lobbyController');
+var path = require("path");
+
+var controller = require(path.join(__dirname, '..', 'controller', 'lobbyController.js'));
+//import controller = require('../controller/lobbyController');
+var security = require(path.join(__dirname, '..', 'utils', 'security.js'));
 
 var router: express.Router = express.Router();
 
-//router.get("/*", errorHandler); error handler
+router.all('/*', security.handleAuthenticate);
 router.get("/", controller.retrieveLobbyData);
 router.post("/", controller.createNewRoom);
+router.get("/:id", controller.retrieveRoom);
 router.post("/:id", controller.joinRoom);
-router.delete("/:id", controller.retrieveLobbyData);
 
 export = router;

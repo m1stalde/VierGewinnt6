@@ -34,6 +34,9 @@ export function retrieveChatMessageWsObject(chatMessageObj:app.interfaces.IChatM
     // Process the message object
     chatMessageObj.body.creationDate = new Date().toLocaleTimeString().toString();
 
+    // Simple chat message validator => needs to be improved (avoid XSS)
+    chatMessageObj.body.message = chatMessageObj.body.message.replace(/[<>]/g,"");
+
     // Add the message to the chat history
     chatHistory.push(chatMessageObj);
 

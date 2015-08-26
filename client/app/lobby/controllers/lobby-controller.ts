@@ -9,8 +9,10 @@ module lobby.controllers {
 
     public lobbyData : Array<lobby.interfaces.IRoom>;
     public gameCreation : boolean = true;
-    public currentItem = {};
+    public gameEditing : boolean = true;
+    public currentItem : lobby.interfaces.IRoom = {};
     public chat = {};
+    public displayUser: User.Services.IUser;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -19,12 +21,18 @@ module lobby.controllers {
     public static $inject = [
       '$scope',
       '$log',
+      '$rootScope',
       'lobbyStorage',
-      'socketService'
+      'socketService',
+      'UserService',
+      'lobbyService'
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor(private $scope, private $log : ng.ILogService, private lobbyStorage, private socketService) {
+    constructor(private $scope, private $log : ng.ILogService, private $rootScope : ng.IScope,
+                private lobbyStorage, private socketService, private userService : User.Services.IUserService,
+                private lobbyService) {
+      this.displayUser = userService.getCurrentUser();
       this.init();
     }
 
@@ -58,40 +66,50 @@ module lobby.controllers {
     }
 
     public toggleNewGame() : void{
+      this.gameEditing = true;
       this.gameCreation = this.gameCreation === false ? true: false;
+    }
+    public toggleEditingGame() : void{
+      this.gameCreation = true;
+      this.gameEditing = this.gameEditing === false ? true: false;
     }
 
     public createRoom(roomName : string) : void{
       var self = this;
       var newRoom = this.lobbyStorage.LobbyRoom();
-      var jsonObj = {name : roomName, playerId : this.socketService.playerId};
+      var jsonObj = {name : roomName, userName : this.displayUser.name};
       newRoom.save(jsonObj,
-        (data) => self.createLobbyRoomCb(data, null),
+        (data) => self.lobbyService.createLobbyRoomCb(self.lobbyData, data),
         (err) => self.handleErr("Couldn't create a room on the server."));
+
+      this.toggleNewGame();
     }
 
     public joinRoom(room : lobby.interfaces.IRoom){
       var self = this;
       var newRoom = this.lobbyStorage.LobbyRoom();
-      newRoom.save({id: room.roomId, playerId : this.socketService.playerId},
-        (data) => self.joinLobbyRoomCb(data, null),
+      newRoom.save({id: room.roomId, userName : this.displayUser.name},
+        (data) => self.lobbyService.joinLobbyRoomCb(self.lobbyData, data),
         (err) => self.handleErr("Couldn't create a room on the server."));
     }
 
-    // Common functions => outsourcing
-    private createLobbyRoomCb(res : lobby.interfaces.IRoom, err) {
-      if(err)  {
-        this.$log.error(err)
-      } else if(!res){
-        this.$log.log("There are is existing lobby data available on the server.")
-      } else{
-        this.lobbyData.push(res);
-      }
+    public editRoom(room : lobby.interfaces.IRoom){
+      this.currentItem.name = room.name;
+      this.currentItem.roomId = room.roomId;
+      this.toggleEditingGame();
     }
 
-    private joinLobbyRoomCb(res : lobby.interfaces.IRoom, err){
-      var k = 3;
+    public changeRoomName(name : string, id : string){
+      var newRoom = this.lobbyService.updateRoomName(this, name, id);
     }
+
+   /* private initializeLobbyData(){
+      var self = this;
+      var res = this.lobbyStorage.LobbyRoom().query(
+        () => self.lobbyService.getLobbyDataCb(self.lobbyData, res, null),
+        () => self.lobbyService.getLobbyDataCb(self.lobbyData, res, "Error while retrieving the lobby data from the server.")
+      );
+    }*/
 
     private initializeLobbyData(){
       var res = this.lobbyStorage.LobbyRoom().query(
@@ -105,7 +123,7 @@ module lobby.controllers {
         this.$log.error(err)
       } else if(!res){
         this.$log.log("There are is existing lobby data available on the server.")
-      } else{
+     } else{
         this.lobbyData = res;
       }
     }

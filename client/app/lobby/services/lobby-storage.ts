@@ -4,8 +4,6 @@ module lobby.services {
   "use strict";
   export class LobbyStorage {
 
-    private gameStorage : Array<any>;
-
     public static $inject = [
       '$http',
       '$resource',

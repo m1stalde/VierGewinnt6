@@ -48,7 +48,7 @@ export function logout(req : express.Request, callback: (err: Error, session: se
     });
 }
 
-function getSessionUserId(req: express.Request): string {
+export function getSessionUserId(req: express.Request): string {
     return req.session['SESSION_USER_KEY'];
 }
 

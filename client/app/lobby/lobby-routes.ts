@@ -11,7 +11,12 @@ module lobby {
       .when('/lobby', {
         templateUrl: 'lobby/views/lobby.tpl.html',
         controller: 'LobbyCtrl',
-        controllerAs: 'lobby'
+        controllerAs: 'lobby',
+        resolve: {
+          'LoadUserData': ['UserService', function (userService: User.Services.IUserService) {
+            return userService.loadUserData();
+          }]
+        }
       });
   }
 }

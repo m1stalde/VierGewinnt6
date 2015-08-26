@@ -6,11 +6,11 @@ module lobby.interfaces{
   "use strict";
 
   export interface IRoom extends ng.resource.IResource<IRoom> {
-    roomId: string;
-    title: string;
-    status: string;
-    creationTime: string;
-    players: Array<string>;
+    roomId?: string;
+    name?: string;
+    status?: string;
+    creationTime?: string;
+    players?: Array<string>;
   }
 
   export interface IRoomResource extends ng.resource.IResourceClass<IRoom> {
