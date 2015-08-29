@@ -3,41 +3,38 @@
  */
 import http   = require('http');
 
-module app.interfaces {
-
-    export interface IMessage {
-        header : {
-            type : string;
-            subType : string;
-        }
+export interface IMessage {
+    header : {
+        type : string;
+        subType : string;
     }
+}
 
-    export interface IChatHistory extends IMessage{
-        body : {
-            data : Array<IChatMessage>;
-        }
+export interface IChatHistory extends IMessage{
+    body : {
+        data : Array<IChatMessage>;
     }
+}
 
-    export interface IClient {
-        clientObj : any;
-        playerId: string;
-        userName? : string;
-    }
+export interface IClient {
+    clientObj : any;
+    playerId: string;
+    userName? : string;
+}
 
-    export interface IChatMessage extends IMessage {
-        body : {
-            userName : string;
-            message : string;
-            creationDate : string;
-            sendTo? : string[];
-        }
+export interface IChatMessage extends IMessage {
+    body : {
+        userName : string;
+        message : string;
+        creationDate : string;
+        sendTo? : string[];
     }
+}
 
-    export interface IWebsocketService {
-        clients : Array<app.interfaces.IClient>;
-        returnWsServer(): http.Server;
-        setUpWebsocketService(server : http.Server): http.Server;
-        runCleanUpTask(self : any) : void;
-        broadcastData(data : string): void;
-    }
+export interface IWebsocketService {
+    clients : Array<IClient>;
+    returnWsServer(): http.Server;
+    setUpWebsocketService(server : http.Server): http.Server;
+    runCleanUpTask(self : any) : void;
+    broadcastData(data : string): void;
 }

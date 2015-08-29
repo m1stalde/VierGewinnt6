@@ -10,9 +10,17 @@ var websocketService = require('./websocket/websocketService.js');
 
 // configuration ==========================================
 var app = express();
-app.use(require('cookie-parser')());
 
-app.use(session({ secret: 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda', resave: false, saveUninitialized: true}));
+const cookieSecret = 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda';
+
+var cookieParser: express.RequestHandler = require('cookie-parser')(cookieSecret);
+app.use(cookieParser);
+
+var sessionStore: session.Store = new session.MemoryStore();
+
+var session: express.RequestHandler = session({ store: sessionStore, secret: cookieSecret, resave: false, saveUninitialized: true});
+app.use(session);
+
 app.use(bodyParser.urlencoded());
 
 app.use(bodyParser.json());
@@ -53,5 +61,5 @@ var server = app.listen(port, function() {
 });
 
 
-var wsSocketServer = websocketService.setUpWebsocketService(server);
+var wsSocketServer = websocketService.setUpWebsocketService(server, cookieParser, sessionStore);
 

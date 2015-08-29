@@ -28,6 +28,9 @@
     },
     "ws/ws.d.ts": {
       "commit": "3b0f362204ea965952dafdb682a5274d527ef9d0"
+    },
+    "cookie-parser/cookie-parser.d.ts": {
+      "commit": "67605e10f6eb01c9d4a0d13719d804d6dea9e1cb"
     }
   }
 }

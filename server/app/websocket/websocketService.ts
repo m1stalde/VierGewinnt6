@@ -1,6 +1,10 @@
 /// <reference path="../_all.ts"/>
+import websocketInterfaces = require('../interfaces/websocketInterfaces');
+import session = require('express-session');
+import WebSocket = require('ws');
+import security = require('../utils/security');
 
-var WebSocketServer = require('ws').Server;
+var WebSocketServer = WebSocket.Server;
 import express = require('express');
 var util = require('util');
 var helperFn = require('../utils/helperFunctions.js');
@@ -9,7 +13,7 @@ var chatWebsocket = require('./chatWebsocketService.js');
 import messageService = require('../services/messageService');
 
 var wsServer;
-var clients : Array<app.interfaces.IClient> = [];
+var clients : Array<websocketInterfaces.IClient> = [];
 
 exports.clients = clients;
 
@@ -17,14 +21,23 @@ export function returnWsServer(){
     return wsServer;
 }
 
-export function setUpWebsocketService(server) {
+export function setUpWebsocketService(server, cookieParser: express.RequestHandler, sessionStore: session.Store) {
     // register for all message types to broadcast all server messages to all clients
     messageService.addMessageListener(messageService.WILDCARD_MESSAGE_TYPE, sendMessage);
 
     wsServer = new WebSocketServer({server: server});
 
     // Establishes a connection with the server
-    wsServer.on('connection', function (conn) {
+    wsServer.on('connection', function (conn: WebSocket) {
+
+        cookieParser(<express.Request> conn.upgradeReq, null, function () {
+            var req = <express.Request>conn.upgradeReq;
+            var sessionID = req.signedCookies['connect.sid'];
+            sessionStore.get(sessionID, function (err, session: Express.Session) {
+                var userId = security.getUserId(session);
+                console.log(userId);
+            });
+        });
 
         // Assign a username to the connection
         mapMetaDataToConn(conn);
@@ -43,7 +56,7 @@ export function setUpWebsocketService(server) {
             var messageObj = JSON.parse(messageString);
 
             // Processed message which will be sent back to the client
-            var processedMsgObj : app.intefaces.IMessage;
+            var processedMsgObj : websocketInterfaces.IMessage;
 
             switch(messageObj.header.type){
                 case "chat":
@@ -68,6 +81,7 @@ export function setUpWebsocketService(server) {
 }
 
 function mapMetaDataToConn(conn){
+
     var userName = "User " + (clients.length + 1);
     var playerId = helperFn.Utils.createGuidcreateGuid();
     clients.push({
@@ -123,8 +137,8 @@ function sendMessage(message: messageService.IMessage) {
     clients.forEach(client => {
         // TODO implement userId for client connections
         //if (message.userIds.indexOf(client.playerId) != -1) {
-            // TODO implement exception handling to prevent server from shutdown on send error
-            client.clientObj.send(JSON.stringify(message));
+        // TODO implement exception handling to prevent server from shutdown on send error
+        client.clientObj.send(JSON.stringify(message));
         //}
     });
 };

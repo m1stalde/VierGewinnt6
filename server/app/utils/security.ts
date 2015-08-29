@@ -5,6 +5,7 @@ import session = require('express-session');
 import sessionService = require('../services/sessionService');
 
 const SESSION_USER_KEY = 'userId';
+const SESSION_CLIENT_KEY = 'clientId';
 
 export function login(req : express.Request, callback: (err: Error, session: sessionService.Session) => void)
 {
@@ -48,10 +49,26 @@ export function logout(req : express.Request, callback: (err: Error, session: se
     });
 }
 
-function getSessionUserId(req: express.Request): string {
-    return req.session['SESSION_USER_KEY'];
+export function getUserId(session: Express.Session): string {
+    return session['SESSION_USER_KEY'];
 }
 
-function setSessionUserId(req: express.Request, userId: string) {
-    return req.session['SESSION_USER_KEY'] = userId;
+export function setUserId(session: Express.Session, userId: string): void {
+    session['SESSION_USER_KEY'] = userId;
+}
+
+export function getClientId(session: Express.Session): string {
+    return session['SESSION_CLIENT_KEY'];
+}
+
+export function setClientId(session: Express.Session, clientId: string): void {
+    session['SESSION_CLIENT_KEY'] = clientId;
+}
+
+function getSessionUserId(req: Express.Request): string {
+    return getUserId(req.session);
+}
+
+function setSessionUserId(req: Express.Request, userId: string) {
+    return setUserId(req.session, userId);
 }
