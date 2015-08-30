@@ -3,6 +3,8 @@
 import express = require('express');
 var utils = require('../utils/helperFunctions');
 var websocketService = require('../websocket/websocketService');
+import gameService = require('../services/gameService');
+import gameLogic = require('../logic/gameLogic');
 
 var listOfRooms:Array<IRoom> = [
     {
@@ -29,37 +31,28 @@ var listOfRooms:Array<IRoom> = [
     }
 ];
 
-export function createRoom(req:express.Request, cb) {
-
-    if (!utils.Utils.propertyValidator(req.body)) {
-        cb("Couldn't create a new room, at least one of the properties was missing.", null);
-        return;
-    }
+export function createRoom(userId: string, name: string, cb) {
 
     var newRoom:IRoom = {
         roomId: ++listOfRooms.length,
-        name: req.body.name,
+        name: name,
         status: "Waiting for Opponent",
         creationTime: new Date().toLocaleTimeString().toString(),
-        players: [req.body.playerId]
+        players: [userId]
     };
 
     listOfRooms[newRoom.roomId - 1] = newRoom;
     cb(null, newRoom);
 }
 
-export function joinRoom(req:express.Request, cb) {
+export function joinRoom(userId: string, roomId: number, cb) {
 
-    if (!utils.Utils.propertyValidator(req.body)) {
-        cb("Couldn't create a join room, at least one of the properties was missing.", null);
-        return;
-    }
     // Retrieve the room which the player wants to join
-    var room = listOfRooms[req.body.id - 1];
+    var room = listOfRooms[roomId - 1];
 
     // Validation
     if (!room) {
-        cb("Couldn't find a room with the id " + req.body.id, null)
+        cb("Couldn't find a room with the id " + roomId, null)
         return;
     } else if (room.players.length === 0) {
         cb("Can't join an empty room.", null)
@@ -67,26 +60,25 @@ export function joinRoom(req:express.Request, cb) {
     } else if (room.players.length === 2) {
         cb("The selected room has already reached the maximum capacity of 2 players.", null)
         return;
-    } else if (room.players[0].playerId === req.body.playerId) {
+    } else if (room.players[0] === userId) {
         cb("The player has already enrolled for this particular room.", null)
         return;
     }
 
-    var userSessionObj:Array<app.interfaces.IClient> = [];
-    for (var i = 0; i < websocketService.clients.length; i++) {
-        if (websocketService.clients[i].playerId === req.body.playerId) {
-            userSessionObj.push(websocketService.clients[i]);
+    // start game
+    var userId1 = <string>room.players[0];
+    var userId2 = userId;
+    gameService.newGame(userId1, userId2, gameLogic.Color.Yellow, function (err, gameData, gameId) {
+        if (err) {
+            cb(err, null);
+            return;
         }
-    }
 
-    if (userSessionObj.length === 1) {
-        room.players.push(userSessionObj[0].playerId);
-    } else {
-        cb("The player has more than one active session on the server.", null)
-        return;
-    }
+        // update room
+        room.players[1] = userId;
 
-    cb(null, room);
+        cb(null, room);
+    });
 }
 
 export function getAllRooms(callback) {

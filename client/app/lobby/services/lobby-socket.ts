@@ -32,13 +32,16 @@ module lobby.services {
 
         var messageObj : IMessage = JSON.parse(event.data);
 
-        switch (messageObj.header.type) {
-          case "chat":
-            self.chatResponseHandler(messageObj);
-            break;
-          case "room":
-            self.roomResponseHandler(messageObj);
-            break;
+        // TODO remove check after message cleanup
+        if (messageObj.header) {
+          switch (messageObj.header.type) {
+            case "chat":
+              self.chatResponseHandler(messageObj);
+              break;
+            case "room":
+              self.roomResponseHandler(messageObj);
+              break;
+          }
         }
         // check for event type => if chat => set user field for the current user
       };
