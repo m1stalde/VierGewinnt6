@@ -13,9 +13,11 @@ module lobby.services {
     public singleChatMessage : IChatMessage;
 
 
-    public static $inject = [];
+    public static $inject = [
+      'appConfig'
+    ];
 
-    constructor() {
+    constructor(private appConfig: vierGewinnt6.IAppConfig) {
       this.chatHistory = {};
       // DOM related initialisation
       this.chatWindow = $('.chat-output');
@@ -23,7 +25,7 @@ module lobby.services {
 
     public setUpWebsocketService(){
       // Websocket configuration
-      this.ws = new WebSocket('ws://localhost:2999');
+      this.ws = new WebSocket(this.appConfig.baseWsUrl);
       var self = this;
 
       this.ws.onmessage = (event) => {

@@ -60,7 +60,7 @@ module Game.Services {
     doMove(col: number): void {
       var that = this; // TODO check that
 
-      this.$http.post<IGame>('http://localhost:2999/game/doMove', { gameId: that.game._id, col: col });
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: that.game._id, col: col });
     }
   }
 

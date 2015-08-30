@@ -20,8 +20,8 @@ module vierGewinnt6 {
       'common'
     ])
     .constant('appConfig', {
-      baseUrl: 'http://localhost:2999',
-      baseWsUrl: 'ws://localhost:2999'
+      baseUrl: 'http://127.0.0.1:2999',
+      baseWsUrl: 'ws://127.0.0.1:2999'
     })
   ;
 

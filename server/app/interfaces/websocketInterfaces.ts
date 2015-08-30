@@ -20,6 +20,7 @@ export interface IClient {
     clientObj : any;
     playerId: string;
     userName? : string;
+    userId?: string;
 }
 
 export interface IChatMessage extends IMessage {

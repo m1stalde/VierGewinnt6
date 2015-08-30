@@ -1,6 +1,5 @@
 /// <reference path="../_all.ts"/>
 import websocketInterfaces = require('../interfaces/websocketInterfaces');
-import session = require('express-session');
 import WebSocket = require('ws');
 import security = require('../utils/security');
 
@@ -21,7 +20,7 @@ export function returnWsServer(){
     return wsServer;
 }
 
-export function setUpWebsocketService(server, cookieParser: express.RequestHandler, sessionStore: session.Store) {
+export function setUpWebsocketService(server) {
     // register for all message types to broadcast all server messages to all clients
     messageService.addMessageListener(messageService.WILDCARD_MESSAGE_TYPE, sendMessage);
 
@@ -29,15 +28,6 @@ export function setUpWebsocketService(server, cookieParser: express.RequestHandl
 
     // Establishes a connection with the server
     wsServer.on('connection', function (conn: WebSocket) {
-
-        cookieParser(<express.Request> conn.upgradeReq, null, function () {
-            var req = <express.Request>conn.upgradeReq;
-            var sessionID = req.signedCookies['connect.sid'];
-            sessionStore.get(sessionID, function (err, session: Express.Session) {
-                var userId = security.getUserId(session);
-                console.log(userId);
-            });
-        });
 
         // Assign a username to the connection
         mapMetaDataToConn(conn);
@@ -80,26 +70,36 @@ export function setUpWebsocketService(server, cookieParser: express.RequestHandl
     return wsServer;
 }
 
-function mapMetaDataToConn(conn){
+function mapMetaDataToConn(conn: WebSocket){
+    security.getServerSessionFromWebSocket(conn, function(err, serverSession) {
+        var userName = "User " + (clients.length + 1);
+        var playerId = helperFn.Utils.createGuidcreateGuid();
+        var userId = null;
 
-    var userName = "User " + (clients.length + 1);
-    var playerId = helperFn.Utils.createGuidcreateGuid();
-    clients.push({
-        userName: userName,
-        clientObj : conn,
-        playerId: playerId
-    });
-
-    conn.send(JSON.stringify({
-        header :  {
-            type : "chat",
-            subType : "sendMetaDataToUser"
-        },
-        body : {
-            userName: userName,
-            playerId: playerId
+        // link server session with client connection if a server session exists
+        if (!err) {
+            userId = serverSession.getUserId();
+            serverSession.setClientId(playerId);
         }
-    }));
+
+        clients.push({
+            userName: userName,
+            clientObj : conn,
+            playerId: playerId,
+            userId: userId
+        });
+
+        conn.send(JSON.stringify({
+            header :  {
+                type : "chat",
+                subType : "sendMetaDataToUser"
+            },
+            body : {
+                userName: userName,
+                playerId: playerId
+            }
+        }));
+    });
 }
 
 function runCleanUpTask(self){
@@ -135,11 +135,13 @@ function sendMessage(message: messageService.IMessage) {
     // send message to clients matching the messages userIds
     console.log("sending message to clients:\n " + util.inspect(message, {showHidden: false, depth: 1}));
     clients.forEach(client => {
-        // TODO implement userId for client connections
-        //if (message.userIds.indexOf(client.playerId) != -1) {
-        // TODO implement exception handling to prevent server from shutdown on send error
-        client.clientObj.send(JSON.stringify(message));
-        //}
+        if (client.userId && message.userIds.indexOf(client.userId) != -1) {
+            try {
+                client.clientObj.send(JSON.stringify(message));
+            } catch (ex) {
+                console.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
+            }
+        }
     });
 };
 
