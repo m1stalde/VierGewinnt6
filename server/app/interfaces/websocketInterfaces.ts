@@ -17,10 +17,8 @@ export interface IChatHistory extends IMessage{
 }
 
 export interface IClient {
-    clientObj : any;
-    playerId: string;
+    playerId : string;
     userName? : string;
-    userId?: string;
 }
 
 export interface IChatMessage extends IMessage {

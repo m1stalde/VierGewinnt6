@@ -15,7 +15,7 @@ var listOfRooms:Array<IRoom> = [
         status: "Waiting for Opponent",
         creationTime: "17:01:34",
         players: [
-            {userName: "Hans", sessionId: "1223"}]
+            {userName: "Hans", playerId: "1223"}]
     },
     {
         roomId: 2,
@@ -23,8 +23,8 @@ var listOfRooms:Array<IRoom> = [
         status: "Game is in progress",
         creationTime: "17:01:34",
         players: [
-            {userName: "Hans", sessionId: "1223"},
-            {userName: "Moritz", sessionId: "1225"}]
+            {userName: "Hans", playerId: "1223"},
+            {userName: "Moritz", playerId: "1225"}]
     },
     {
         roomId: 3,
@@ -32,26 +32,50 @@ var listOfRooms:Array<IRoom> = [
         status: "Game is in progress",
         creationTime: "12:01:34",
         players: [
-            {userName: "Hans", sessionId: "1223"},
-            {userName: "Hugo", sessionId: "1224"}]
+            {userName: "Hans", playerId: "1223"},
+            {userName: "Hugo", playerId: "1224"}]
     }
 ];
 
-export function createRoom(userId: string, name: string, cb) {
+export function saveRoom(roomObj, cb) {
+    var room : IRoom = {};
 
-    var newRoom:IRoom = {
-        roomId: ++listOfRooms.length,
-        name: name,
-        status: "Waiting for Opponent",
-        creationTime: new Date().toLocaleTimeString().toString(),
-        players: [userId]
-    };
+    // Update & Delete an existing room
+    if(roomObj.roomId){
+        // Delete
+        if(roomObj.isDelete){
+            var pos = utils.Utils.getPositionOfElement(listOfRooms, "roomId", roomObj.roomId);
+            listOfRooms.splice(pos, 1);
+        } else { // Update
+            room = listOfRooms[roomObj.roomId - 1];
 
-    listOfRooms[newRoom.roomId - 1] = newRoom;
-    cb(null, newRoom);
+            // Verification
+            if(room.players[0].userName !== roomObj.userName){ // Only the creator of the room can also update it
+                cb("Access denied - can't edit this room.", null);
+            }
+
+            room.name = roomObj.roomName;
+        }
+    } else { // Create
+        room = {
+            roomId: ++listOfRooms.length,
+            name: roomObj.roomName,
+            status: "Waiting for Opponent",
+            creationTime: new Date().toLocaleTimeString().toString(),
+            players: [{
+                playerId : roomObj.playerId,
+                userName : roomObj.userName
+            }],
+            gameId : null
+        };
+
+        listOfRooms[room.roomId - 1] = room;
+    }
+
+    cb(null, room);
 }
 
-export function joinRoom(userId: string, roomId: number, cb) {
+export function joinRoom(roomId: number, playerId: string, userName : string, cb) {
 
     // Retrieve the room which the player wants to join
     var room = listOfRooms[roomId - 1];
@@ -66,25 +90,44 @@ export function joinRoom(userId: string, roomId: number, cb) {
     } else if (room.players.length === 2) {
         cb("The selected room has already reached the maximum capacity of 2 players.", null)
         return;
-    } else if (room.players[0] === userId) {
+    } else if (room.players[0].playerId === playerId) {
         cb("The player has already enrolled for this particular room.", null)
         return;
     }
 
     // start game
-    var userId1 = <string>room.players[0];
-    var userId2 = userId;
-    gameService.newGame(userId1, userId2, gameLogic.Color.Yellow, function (err, gameData, gameId) {
+    var playerId1 = <string>room.players[0].playerId;
+    var playerId2 = playerId;
+    gameService.newGame(playerId, playerId2, gameLogic.Color.Yellow, function (err, gameData, gameId) {
         if (err) {
             cb(err, null);
             return;
         }
 
         // update room
-        room.players[1] = userId;
+        room.players[1] = {
+            playerId : playerId2,
+            userName : userName
+        };
+
+        room.gameId = gameId;
 
         cb(null, room);
     });
+}
+
+export function retrieveRoom(roomId, cb){
+
+    var pos = utils.Utils.getPositionOfElement(listOfRooms, "roomId", roomId);
+    var room = listOfRooms[pos];
+
+    // Validation
+    if (!room) {
+        cb("Couldn't find a room with the id " + roomId, null)
+        return;
+    }
+
+    cb(null, room);
 }
 
 export function getAllRooms(callback) {
@@ -107,12 +150,15 @@ export function checkForRoom(room:IRoom) {
 }
 
 
+
+
 export interface IRoom {
     roomId? : number;
     name : string;
     status? : string;
     creationTime : string;
-    players : Array<app.interfaces.IClient>;
+    players : Array<any>;
+    gameId : string;
 }
 
 

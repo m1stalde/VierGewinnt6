@@ -24,4 +24,12 @@ export class Utils{
         }
         return isValid;
     }
+
+    static getPositionOfElement(array, element, value){
+        var pos : number = -1;
+        for (var i = 0, len = array.length; i < len; i++) {
+            if (array[i][element] == value) pos = i;
+        }
+        return pos;
+    }
 }

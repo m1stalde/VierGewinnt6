@@ -77,9 +77,9 @@ module lobby.controllers {
     public createRoom(roomName : string) : void{
       var self = this;
       var newRoom = this.lobbyStorage.LobbyRoom();
-      var jsonObj = {name : roomName, userName : this.displayUser.name};
+      var jsonObj = {name : roomName};
       newRoom.save(jsonObj,
-        (data) => self.lobbyService.createLobbyRoomCb(self.lobbyData, data),
+        (data) => self.lobbyService.createLobbyRoom(self.lobbyData, data),
         (err) => self.handleErr("Couldn't create a room on the server."));
 
       this.toggleNewGame();
@@ -89,7 +89,7 @@ module lobby.controllers {
       var self = this;
       var newRoom = this.lobbyStorage.LobbyRoom();
       newRoom.save({id: room.roomId, userName : this.displayUser.name},
-        (data) => self.lobbyService.joinLobbyRoomCb(self.lobbyData, data),
+        (data) => self.lobbyService.joinLobbyRoom(self.lobbyData, data),
         (err) => self.handleErr("Couldn't create a room on the server."));
     }
 
@@ -99,17 +99,13 @@ module lobby.controllers {
       this.toggleEditingGame();
     }
 
-    public changeRoomName(name : string, id : string){
-      var newRoom = this.lobbyService.updateRoomName(this, name, id);
+    public deleteRoom(room : lobby.interfaces.IRoom){
+      this.lobbyService.deleteRoom(this, room.roomId);
     }
 
-   /* private initializeLobbyData(){
-      var self = this;
-      var res = this.lobbyStorage.LobbyRoom().query(
-        () => self.lobbyService.getLobbyDataCb(self.lobbyData, res, null),
-        () => self.lobbyService.getLobbyDataCb(self.lobbyData, res, "Error while retrieving the lobby data from the server.")
-      );
-    }*/
+    public changeRoomName(name : string, id : string){
+      this.lobbyService.updateRoomName(this, name, id);
+    }
 
     private initializeLobbyData(){
       var res = this.lobbyStorage.LobbyRoom().query(

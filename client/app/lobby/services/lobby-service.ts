@@ -14,7 +14,7 @@ module lobby.services {
 
     constructor(private $q: ng.IQService, private $log : ng.ILogService, private lobbyStorage) {}
 
-    public joinLobbyRoomCb(lobbyData : Array<lobby.interfaces.IRoom>, res : lobby.interfaces.IRoom){
+    public joinLobbyRoom(lobbyData : Array<lobby.interfaces.IRoom>, res : lobby.interfaces.IRoom){
 
       var isUpdated = false;
 
@@ -36,7 +36,7 @@ module lobby.services {
     }
 
     // Common functions => outsourcing
-    public createLobbyRoomCb(lobbyData : Array<lobby.interfaces.IRoom>, res : lobby.interfaces.IRoom) {
+    public createLobbyRoom(lobbyData : Array<lobby.interfaces.IRoom>, res : lobby.interfaces.IRoom) {
       if(!res){
         this.$log.log("There is no existing lobby data on the server.")
         this.deferred.reject(lobbyData);
@@ -49,28 +49,34 @@ module lobby.services {
     }
 
     public updateRoomName(self, name : string, id : string){
+      var pos = this.getPositionOfElement(self.lobbyData, "roomId", id);
       var newRoom = this.lobbyStorage.LobbyRoom();
       newRoom.get({id: id},function(room : lobby.interfaces.IRoom){
-          var k = 5;
+        room.name = name;
+        room.$save(function(room) {
+          self.lobbyData[pos] = room;
+        });
       });
     }
 
+    public deleteRoom(self, id : string){
+      var pos = this.getPositionOfElement(self.lobbyData, "roomId", id);
+      var newRoom = this.lobbyStorage.LobbyRoom();
+      newRoom.get({id: id},function(room : lobby.interfaces.IRoom){
+        room.delete = true;
+        room.$save(function(room) {
+          self.lobbyData.splice(pos, 1);
+        });
+      });
+    }
 
-
-    /*public getLobbyDataCb(lobbyData : Array<lobby.interfaces.IRoom>, res : Array<lobby.interfaces.IRoom>, err : string) {
-      if(err)  {
-        this.$log.error(err)
-        this.deferred.reject(lobbyData);
-      } else if(!res){
-        this.$log.log("There is no existing lobby data on the server.")
-        this.deferred.reject(lobbyData);
-      } else{
-        lobbyData = res;
-        this.deferred.resolve(lobbyData);
+    private getPositionOfElement(array, element, value){
+      var pos : number = -1;
+      for (var i = 0, len = array.length; i < len; i++) {
+        if (array[i][element] == value) pos = i;
       }
-
-      return this.deferred.promise;
-    }*/
+      return pos;
+    }
   }
 }
 

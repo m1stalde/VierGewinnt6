@@ -11,7 +11,7 @@ var router: express.Router = express.Router();
 
 router.all('/*', security.handleAuthenticate);
 router.get("/", controller.retrieveLobbyData);
-router.post("/", controller.createNewRoom);
+router.post("/", controller.saveRoom);
 router.get("/:id", controller.retrieveRoom);
 router.post("/:id", controller.joinRoom);
 

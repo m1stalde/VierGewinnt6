@@ -7,78 +7,136 @@ var path = require("path");
 
 var lobbyService = require(path.join(__dirname, '..', 'services', 'lobbyService.js'));
 var websocketService = require(path.join(__dirname, '..', 'websocket', 'websocketService.js'));
+var sessionService = require(path.join(__dirname, '..', 'services', 'sessionService.js'));
+var userService = require(path.join(__dirname, '..', 'services', 'userService.js'));
+
 // var lobbyService = require('../services/lobbyService');
 // var websocketService = require('../websocket/websocketService');
 
-export function retrieveLobbyData(req : express.Request, res : express.Response){
-  lobbyService.getAllRooms(function(err, data) {
-      res.format({
-          'application/json': function(){
-              res.json(err || data);
-          }
-      });
-  });
-}
-
-export function createNewRoom(req : express.Request, res : express.Response){
-    var userId = security.currentUserId(req);
-
-    var name = req.body.name;
-    if (!name) {
-        res.status(400).send('Bad Request: name missing');
-        return;
-    }
-
-    lobbyService.createRoom(userId, name, function(err, data) {
-        if(err){
-            res.status(400).send(err);
-        } else{
-            res.format({
-                'application/json': function(){
-                    res.json(data);
-                }
-            });
-        }
+export function retrieveLobbyData(req:express.Request, res:express.Response) {
+    lobbyService.getAllRooms(function (err, data) {
+        res.format({
+            'application/json': function () {
+                res.json(err || data);
+            }
+        });
     });
 }
 
-export function joinRoom(req : express.Request, res : express.Response){
+export function saveRoom(req:express.Request, res:express.Response) {
     var userId = security.currentUserId(req);
 
+    var roomObj = {
+        roomId: req.body.roomId || null,
+        playerId: "123456",  // temporary fix, retrieve the playerId in the future from the session object
+        roomName: req.body.name,
+        isDelete: req.body.delete || null
+    }
+
+    sessionService.getCurrentSession(userId, function (err, sessionObj) {
+        if (err) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("Couldn't find a session with the delivered sessionId");
+            return;
+        } else if (!sessionObj.username) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("The is no username associated with the session.");
+            return;
+        } else if (!roomObj.roomName) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("There was no room name passed to the function.");
+            return;
+        }
+
+        roomObj.userName = sessionObj.username;
+
+        lobbyService.saveRoom(roomObj, function (err, data) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.format({
+                    'application/json': function () {
+                        res.json(data);
+                    }
+                });
+            }
+        });
+    });
+}
+
+export function joinRoom(req:express.Request, res:express.Response) {
+    var userId = security.currentUserId(req);
+    // temporary fix, retrieve the playerId in the future from the session object
+    var playerId = "123456";
     var roomId = req.body.id;
-    if (roomId === undefined) {
-        res.status(400).send('Bad Request: id missing');
-        return;
-    }
 
-    lobbyService.joinRoom(userId, roomId, function(err, data) {
-        if(err){
-            res.status(418).send(err);
-        } else{
-            res.format({
-                'application/json': function(){
-                    res.json(data);
-                }
-            });
+    sessionService.getCurrentSession(userId, function (err, sessionObj) { // retrieve the userName from the sessionObj
+        if (err) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("Couldn't find a session with the delivered sessionId");
+            return;
         }
+        else if (!sessionObj.username) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("The is no username associated with the session.");
+            return;
+        }
+        else if (!roomId) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("There was no room id passed to the function.");
+            return;
+        }
+        lobbyService.joinRoom(roomId, playerId, sessionObj.username, function (err, data) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.format({
+                    'application/json': function () {
+                        res.json(data);
+                    }
+                });
+            }
+        });
     });
 }
 
-export function retrieveRoom(req : express.Request, res : express.Response){
-    lobbyService.retrieveRoom(req, function(err, data) {
-        if(err){
-            res.status(400).send(err);
-        } else{
-            res.format({
-                'application/json': function(){
-                    res.json(data);
-                }
-            });
+export function retrieveRoom(req:express.Request, res:express.Response) {
+    var userId = security.currentUserId(req);
+    var roomId = req.params.id;
+
+    sessionService.getCurrentSession(userId, function (err, sessionObj) { // retrieve the userName from the sessionObj
+        if (err) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("Couldn't find a session with the delivered sessionId");
+            return;
         }
+        else if (!sessionObj.username) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("The is no username associated with the session.");
+            return;
+        }
+        else if (!roomId) {
+            // Development only => security issue in production => generic exception
+            res.status(400).send("There was no room id passed to the function.");
+            return;
+        }
+        lobbyService.retrieveRoom(roomId, function (err, data) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.format({
+                    'application/json': function () {
+                        res.json(data);
+                    }
+                });
+            }
+        });
     });
+
+
 }
 
-export function  deleteGame(){
+export function deleteRoom() {
     lobbyService.LobbyService.getAllRooms();
 }
 
