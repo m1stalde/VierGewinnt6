@@ -6,3 +6,4 @@
 /// <reference path="node/node.d.ts" />
 /// <reference path="serve-static/serve-static.d.ts" />
 /// <reference path="ws/ws.d.ts" />
+/// <reference path="cookie-parser/cookie-parser.d.ts" />

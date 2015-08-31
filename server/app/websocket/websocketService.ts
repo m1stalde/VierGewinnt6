@@ -1,19 +1,20 @@
 /// <reference path="../_all.ts"/>
+import websocketInterfaces = require('../interfaces/websocketInterfaces');
+import WebSocket = require('ws');
+import security = require('../utils/security');
 var path = require("path");
-var express = require('express');
-var WebSocketServer = require('ws').Server;
-
+var WebSocketServer = WebSocket.Server;
+import express = require('express');
 var util = require('util');
 var helperFn = require(path.join(__dirname, '..', 'utils', 'helperFunctions.js'));
 var chatWebsocket = require(path.join(__dirname, 'chatWebsocketService.js'));
 var gameWebsocket = require(path.join(__dirname, 'gameWebsocketService.js'));
 //import gameWebsocket = require('./gameWebsocketService');
 
-var chatWebsocket = require('./chatWebsocketService.js');
-import gameWebsocket = require('./gameWebsocketService');
+import messageService = require('../services/messageService');
 
 var wsServer;
-var clients : Array<app.interfaces.IClient> = [];
+var clients : Array<websocketInterfaces.IClient> = [];
 
 exports.clients = clients;
 
@@ -28,10 +29,10 @@ export function setUpWebsocketService(server) {
     wsServer = new WebSocketServer({server: server});
 
     // Establishes a connection with the server
-    wsServer.on('connection', function (conn) {
+    wsServer.on('connection', function (conn: WebSocket) {
 
         // Assign a username to the connection
-        // mapMetaDataToConn(conn);
+        mapMetaDataToConn(conn);
 
         // Sends the chat history to the newly connected client
         if(chatWebsocket.retrieveChatHistory().length > 0){
@@ -47,7 +48,7 @@ export function setUpWebsocketService(server) {
             var messageObj = JSON.parse(messageString);
 
             // Processed message which will be sent back to the client
-            var processedMsgObj : app.intefaces.IMessage;
+            var processedMsgObj : websocketInterfaces.IMessage;
 
             switch(messageObj.header.type){
                 case "chat":
@@ -71,25 +72,36 @@ export function setUpWebsocketService(server) {
     return wsServer;
 }
 
-function mapMetaDataToConn(conn){
-    var userName = "User " + (clients.length + 1);
-    var playerId = helperFn.Utils.createGuidcreateGuid();
-    clients.push({
-        userName: userName,
-        clientObj : conn,
-        playerId: playerId
-    });
+function mapMetaDataToConn(conn: WebSocket){
+    security.getServerSessionFromWebSocket(conn, function(err, serverSession) {
+        var userName = "User " + (clients.length + 1);
+        var playerId = helperFn.Utils.createGuidcreateGuid();
+        var userId = null;
 
-    conn.send(JSON.stringify({
-        header :  {
-            type : "chat",
-            subType : "sendMetaDataToUser"
-        },
-        body : {
-            userName: userName,
-            playerId: playerId
+        // link server session with client connection if a server session exists
+        if (!err) {
+            userId = serverSession.getUserId();
+            serverSession.setClientId(playerId);
         }
-    }));
+
+        clients.push({
+            userName: userName,
+            clientObj : conn,
+            playerId: playerId,
+            userId: userId
+        });
+
+        conn.send(JSON.stringify({
+            header :  {
+                type : "chat",
+                subType : "sendMetaDataToUser"
+            },
+            body : {
+                userName: userName,
+                playerId: playerId
+            }
+        }));
+    });
 }
 
 function runCleanUpTask(self){

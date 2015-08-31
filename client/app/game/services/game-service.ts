@@ -25,15 +25,18 @@ module Game.Services {
     private game: IGame;
 
     public static $inject = [
-      '$http', '$q', '$log', 'MessageService', 'appConfig'
+      '$http', '$q', '$log', 'MessageService', 'appConfig', '$location'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig, private $location: ng.ILocationService) {
       var that = this;
 
       messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
         that.$log.info("message reveiced " + message);
         that.game = message.data;
+
+        // TODO check route change
+        that.$location.path('/game');
       });
     }
 
@@ -60,20 +63,7 @@ module Game.Services {
     doMove(col: number): void {
       var that = this; // TODO check that
 
-      this.$http.post<IGame>('http://localhost:2999/game/doMove', { gameId: that.game._id, col: col });
-    }
-  }
-
-  class GameDoMoveMessage implements Common.Services.IMessage {
-    static NAME = "GameDoMoveMessage";
-    type: string = GameDoMoveMessage.NAME;
-    data: any;
-
-    constructor(gameId: string, col: number) {
-      this.data = {
-        gameId: gameId,
-        col: col
-      };
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: that.game._id, col: col });
     }
   }
 

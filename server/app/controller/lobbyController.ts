@@ -2,6 +2,7 @@
 
 import http = require('http');
 import express = require('express');
+import security = require('../utils/security');
 var path = require("path");
 
 var lobbyService = require(path.join(__dirname, '..', 'services', 'lobbyService.js'));
@@ -20,7 +21,15 @@ export function retrieveLobbyData(req : express.Request, res : express.Response)
 }
 
 export function createNewRoom(req : express.Request, res : express.Response){
-    lobbyService.createRoom(req, function(err, data) {
+    var userId = security.currentUserId(req);
+
+    var name = req.body.name;
+    if (!name) {
+        res.status(400).send('Bad Request: name missing');
+        return;
+    }
+
+    lobbyService.createRoom(userId, name, function(err, data) {
         if(err){
             res.status(400).send(err);
         } else{
@@ -34,9 +43,17 @@ export function createNewRoom(req : express.Request, res : express.Response){
 }
 
 export function joinRoom(req : express.Request, res : express.Response){
-    lobbyService.joinRoom(req, function(err, data) {
+    var userId = security.currentUserId(req);
+
+    var roomId = req.body.id;
+    if (roomId === undefined) {
+        res.status(400).send('Bad Request: id missing');
+        return;
+    }
+
+    lobbyService.joinRoom(userId, roomId, function(err, data) {
         if(err){
-            res.status(400).send(err);
+            res.status(418).send(err);
         } else{
             res.format({
                 'application/json': function(){

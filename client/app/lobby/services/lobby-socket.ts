@@ -13,9 +13,11 @@ module lobby.services {
     public singleChatMessage : IChatMessage;
 
 
-    public static $inject = [];
+    public static $inject = [
+      'appConfig'
+    ];
 
-    constructor() {
+    constructor(private appConfig: vierGewinnt6.IAppConfig) {
       this.chatHistory = {};
       // DOM related initialisation
       this.chatWindow = $('.chat-output');
@@ -23,20 +25,23 @@ module lobby.services {
 
     public setUpWebsocketService(){
       // Websocket configuration
-      this.ws = new WebSocket('ws://localhost:2999');
+      this.ws = new WebSocket(this.appConfig.baseWsUrl);
       var self = this;
 
       this.ws.onmessage = (event) => {
 
         var messageObj : IMessage = JSON.parse(event.data);
 
-        switch (messageObj.header.type) {
-          case "chat":
-            self.chatResponseHandler(messageObj);
-            break;
-          case "room":
-            self.roomResponseHandler(messageObj);
-            break;
+        // TODO remove check after message cleanup
+        if (messageObj.header) {
+          switch (messageObj.header.type) {
+            case "chat":
+              self.chatResponseHandler(messageObj);
+              break;
+            case "room":
+              self.roomResponseHandler(messageObj);
+              break;
+          }
         }
         // check for event type => if chat => set user field for the current user
       };
