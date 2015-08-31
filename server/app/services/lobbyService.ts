@@ -42,16 +42,17 @@ export function saveRoom(roomObj, cb) {
 
     // Update & Delete an existing room
     if(roomObj.roomId){
+        var pos = utils.Utils.getPositionOfElement(listOfRooms, "roomId", roomObj.roomId);
+
         // Delete
         if(roomObj.isDelete){
-            var pos = utils.Utils.getPositionOfElement(listOfRooms, "roomId", roomObj.roomId);
             listOfRooms.splice(pos, 1);
         } else { // Update
-            room = listOfRooms[roomObj.roomId - 1];
-
+            room = listOfRooms[pos];
             // Verification
             if(room.players[0].userName !== roomObj.userName){ // Only the creator of the room can also update it
                 cb("Access denied - can't edit this room.", null);
+                return;
             }
 
             room.name = roomObj.roomName;
