@@ -43,16 +43,16 @@ export interface IMessage {
     data: any;
 
     /**
-     * UserIds to broadcast message or undefined to avoid broadcast to clients.
+     * PlayerIds to broadcast message or undefined to avoid broadcast to clients.
      */
-    userIds: string[];
+    playerIds: string[];
 }
 
 export class ServerMessage<T> implements IMessage {
 
     type: string;
     data: T;
-    userIds: string[] = [];
+    playerIds: string[] = [];
 
     constructor (type: string, data: T) {
         this.type = type;

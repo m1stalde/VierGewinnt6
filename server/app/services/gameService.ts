@@ -24,20 +24,20 @@ export function getGame(gameId: string, callback: (err: Error, gameData: gameLog
 
 /**
  * Creates and persists new game.
- * @param userId1 user id of player 1
- * @param userId2 user id of player 2
+ * @param playerId1 player id of player 1
+ * @param playerId2 player id of player 2
  * @param startColor first color or undefined to select default color
  * @param callback called after execution
  */
-export function newGame(userId1: string, userId2: string, startColor: gameLogic.Color, callback: (err: Error, gameData: gameLogic.IGameData, gameId: string) => void) {
-    if(!(userId1 && userId2)) {
-        callback(new Error('userId1 and userId2 required'), null, null);
+export function newGame(playerId1: string, playerId2: string, startColor: gameLogic.Color, callback: (err: Error, gameData: gameLogic.IGameData, gameId: string) => void) {
+    if(!(playerId1 && playerId2)) {
+        callback(new Error('playerId1 and playerId2 required'), null, null);
         return;
     }
 
     var game = new gameLogic.Game(null);
 
-    game.newGame(userId1, userId2, startColor, function (err, gameData) {
+    game.newGame(playerId1, playerId2, startColor, function (err, gameData) {
         if (err) {
             callback(err, null, null);
             return;
@@ -53,13 +53,13 @@ export function newGame(userId1: string, userId2: string, startColor: gameLogic.
 /**
  * Does next move on game by given id and persists result.
  * @param gameId game to do next move
- * @param userId user who do next move
+ * @param playerId player who do next move
  * @param col column to put tile into
  * @param callback called after execution
  */
-export function doMove(gameId: string, userId: string, col: number, callback: (err: Error, gameData: gameLogic.IGameData) => void) {
-    if(!(gameId && userId && col != undefined)) {
-        callback(new Error('gameId and userId and col required'), null);
+export function doMove(gameId: string, playerId: string, col: number, callback: (err: Error, gameData: gameLogic.IGameData) => void) {
+    if(!(gameId && playerId && col != undefined)) {
+        callback(new Error('gameId and playerId and col required'), null);
         return;
     }
 
@@ -71,7 +71,7 @@ export function doMove(gameId: string, userId: string, col: number, callback: (e
 
         var game = new gameLogic.Game(gameData);
 
-        game.doMove(userId, col, function (err, gameData) {
+        game.doMove(playerId, col, function (err, gameData) {
             if (err) {
                 callback(err, null);
                 return;
@@ -94,7 +94,7 @@ export class GameUpdateMessage extends messageService.ServerMessage<gameLogic.IG
 
     constructor (gameData: gameLogic.IGameData) {
         super(GameUpdateMessage.NAME, gameData);
-        this.userIds[0] = gameData.userId1;
-        this.userIds[1] = gameData.userId2;
+        this.playerIds[0] = gameData.playerId1;
+        this.playerIds[1] = gameData.playerId2;
     }
 }

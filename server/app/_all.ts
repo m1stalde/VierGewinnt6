@@ -19,6 +19,6 @@
 /// <reference path="services/userService.ts"/>
 /// <reference path="services/gameService.ts"/>
 
-/// <reference path="utils/helperFunctions.ts"/>
+/// <reference path="utils/utils.ts"/>
 
 /// <reference path="logic/gameLogic.ts"/>

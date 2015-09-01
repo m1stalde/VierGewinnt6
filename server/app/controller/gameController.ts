@@ -27,9 +27,9 @@ export function getGame(req: GameControllerRequest, res: express.Response, next:
 }
 
 export function newGame(req: GameControllerRequest, res: express.Response, next: Function) {
-    var userId = security.currentUserId(req);
+    var playerId = security.getServerSession(req).getPlayerId();
 
-    gameService.newGame(userId, userId, gameLogic.Color.Yellow, function(err, gameData, gameId) {
+    gameService.newGame(playerId, playerId, gameLogic.Color.Yellow, function(err, gameData, gameId) {
         if (err) {
             next(err);
             return;
@@ -44,7 +44,7 @@ export function newGame(req: GameControllerRequest, res: express.Response, next:
 }
 
 export function doMove(req: GameControllerRequest, res: express.Response, next: Function) {
-    var userId = security.currentUserId(req);
+    var playerId = security.getServerSession(req).getPlayerId();
 
     var gameId = req.body.gameId;
     if (!gameId) {
@@ -58,7 +58,7 @@ export function doMove(req: GameControllerRequest, res: express.Response, next: 
         return;
     }
 
-    gameService.doMove(gameId, userId, col, function (err, gameData) {
+    gameService.doMove(gameId, playerId, col, function (err, gameData) {
         if (err) {
             res.status(400).send('Bad Request: ' + err.message);
             return;

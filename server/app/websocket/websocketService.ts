@@ -75,20 +75,12 @@ export function setUpWebsocketService(server) {
 function mapMetaDataToConn(conn: WebSocket){
     security.getServerSessionFromWebSocket(conn, function(err, serverSession) {
         var userName = "User " + (clients.length + 1);
-        var playerId = helperFn.Utils.createGuidcreateGuid();
-        var userId = null;
-
-        // link server session with client connection if a server session exists
-        if (!err) {
-            userId = serverSession.getUserId();
-            serverSession.setClientId(playerId);
-        }
+        var playerId = serverSession.getPlayerId();
 
         clients.push({
             userName: userName,
             clientObj : conn,
-            playerId: playerId,
-            userId: userId
+            playerId: playerId
         });
 
         conn.send(JSON.stringify({
@@ -130,18 +122,20 @@ export function broadcastData(data) {
  */
 function sendMessage(message: messageService.IMessage) {
     // check for userIds to broadcast to
-    if (!message.userIds || message.userIds.length === 0) {
+    if (!message.playerIds || message.playerIds.length === 0) {
         return;
     }
 
     // send message to clients matching the messages userIds
     console.log("sending message to clients:\n " + util.inspect(message, {showHidden: false, depth: 1}));
     clients.forEach(client => {
-        // TODO implement userId for client connections
-        //if (message.userIds.indexOf(client.playerId) != -1) {
-            // TODO implement exception handling to prevent server from shutdown on send error
-            client.clientObj.send(JSON.stringify(message));
-        //}
+        if (client.playerId && message.playerIds.indexOf(client.playerId) != -1) {
+            try {
+                client.clientObj.send(JSON.stringify(message));
+            } catch (ex) {
+                console.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
+            }
+        }
     });
 };
 

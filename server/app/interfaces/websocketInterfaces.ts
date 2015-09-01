@@ -2,6 +2,7 @@
  * Created by Alexander on 13.08.2015.
  */
 import http   = require('http');
+import WebSocket = require('ws');
 
 export interface IMessage {
     header : {
@@ -19,6 +20,7 @@ export interface IChatHistory extends IMessage{
 export interface IClient {
     playerId : string;
     userName? : string;
+    clientObj : WebSocket;
 }
 
 export interface IChatMessage extends IMessage {

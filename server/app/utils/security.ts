@@ -1,11 +1,14 @@
 /// <reference path="../_all.ts"/>
+'use strict';
 
 import express = require('express');
 import session = require('express-session');
 import cookie = require('cookie-parser');
 import WebSocket = require('ws');
 import sessionService = require('../services/sessionService');
+import utils = require('../utils/utils');
 
+const COOKIE_NAME = 'game.sid';
 const COOKIE_SECRET = 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda';
 
 var cookieParser: express.RequestHandler;
@@ -18,23 +21,27 @@ export function init(app: express.Application): void {
 
     // create and register session with provided session store
     sessionStore = new session.MemoryStore();
-    var sessionHandler: express.RequestHandler = session({ store: sessionStore, secret: COOKIE_SECRET, resave: false, saveUninitialized: true});
+    var sessionHandler: express.RequestHandler = session({ name: COOKIE_NAME, store: sessionStore, secret: COOKIE_SECRET, resave: false, saveUninitialized: true});
     app.use(sessionHandler);
 }
 
-function getServerSession(req: Express.Request): IServerSession {
+export function getServerSession(req: Express.Request): IServerSession {
     return new ServerSession(req.session);
 }
 
 export function getServerSessionFromWebSocket(conn: WebSocket, callback: (err: Error, serverSession: IServerSession) => void): void {
     cookieParser(<express.Request> conn.upgradeReq, null, function () {
         var req = <express.Request>conn.upgradeReq;
-        var sessionID = req.signedCookies['connect.sid'];
+        var sessionID = req.signedCookies[COOKIE_NAME];
 
         sessionStore.get(sessionID, function (err, session: Express.Session) {
             if (err) {
-                callback (err, null);
+                callback(err, null);
                 return;
+            }
+
+            if (!session) {
+                callback(new Error('session missing'), null);
             }
 
             callback(err, new ServerSession(session));
@@ -42,13 +49,13 @@ export function getServerSessionFromWebSocket(conn: WebSocket, callback: (err: E
     });
 }
 
-export function login(req : express.Request, callback: (err: Error, session: sessionService.Session) => void)
-{
+export function login(req : express.Request, callback: (err: Error, session: sessionService.Session) => void) {
     sessionService.authenticateUser(req.body.username, req.body.password, function(err, result, session, userId) {
         if (result) {
             var serverSession = getServerSession(req);
             serverSession.setUserId(userId);
-            console.log('login: sessionId=' + serverSession.getSessionId() + ', userId=' + userId + ', userName=' + req.body.username);
+            var playerId = serverSession.getPlayerId(); // init player id too
+            console.log('login: sessionId=' + serverSession.getSessionId() + ', userId=' + userId + ', userName=' + req.body.username + ', playerId=' + playerId);
         }
 
         if (callback) callback(err, session);
@@ -88,8 +95,12 @@ export function logout(req : express.Request, callback: (err: Error, session: se
 export interface IServerSession {
     getSessionId(): string;
 
-    getClientId(): string;
-    setClientId(clientId: string): void;
+    /**
+     * Gets or creates new player id.
+     * @returns {*}
+     */
+    getPlayerId(): string;
+    setPlayerId(playerId: string): void;
 
     getUserId(): string;
     setUserId(userId: string): void;
@@ -97,8 +108,8 @@ export interface IServerSession {
 
 class ServerSession implements IServerSession {
 
-    private static SESSION_USER_KEY = 'userId';
-    private static SESSION_CLIENT_KEY = 'clientId';
+    private static SESSION_USER_ID = 'userId';
+    private static SESSION_PLAYER_ID = 'playerId';
 
     private session: Express.Session;
 
@@ -110,19 +121,29 @@ class ServerSession implements IServerSession {
         return this.session['id'];
     }
 
-    getClientId(): string {
-        return this.session[ServerSession.SESSION_CLIENT_KEY];
+    /**
+     * Gets or creates new player id.
+     * @returns {*}
+     */
+    getPlayerId(): string {
+        var playerId = this.session[ServerSession.SESSION_PLAYER_ID];
+        if (!playerId) {
+            playerId = utils.createGuid();
+            this.setPlayerId(playerId);
+            console.log('playerId ' + playerId + ' generated for session ' + this.getSessionId());
+        }
+        return playerId;
     }
 
-    setClientId(clientId: string): void {
-        this.session[ServerSession.SESSION_CLIENT_KEY] = clientId;
+    setPlayerId(playerId: string): void {
+        this.session[ServerSession.SESSION_PLAYER_ID] = playerId;
     }
 
     getUserId(): string {
-        return this.session[ServerSession.SESSION_USER_KEY];
+        return this.session[ServerSession.SESSION_USER_ID];
     }
 
     setUserId(userId: string): void {
-        this.session[ServerSession.SESSION_USER_KEY] = userId;
+        this.session[ServerSession.SESSION_USER_ID] = userId;
     }
 }
