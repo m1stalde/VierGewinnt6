@@ -1,7 +1,9 @@
 module lobby.directives {
   "use strict";
   export class StopEvent implements ng.IDirective{
-    restrict = 'A';
+    public restrict = 'A';
+
+    public static DirectoryName = "stopEvent";
 
     public link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
       element.bind('click', function (e) {
@@ -11,12 +13,63 @@ module lobby.directives {
 
     public static factory(): ng.IDirectiveFactory {
       var directive = () => new StopEvent();
-      //directive.$inject = [];
       return directive;
+    }
+  }
+
+  export class RoomValidator implements ng.IDirective{
+    public restrict = 'A';
+    public require = 'ngModel';
+
+    public static DirectoryName = "room";
+
+    public link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl : IRoomValidation) => {
+      ctrl.$validators.room = function(modelValue, viewValue) {
+        var ROOM_REGEXP = /^\w+$/;
+        if (ROOM_REGEXP.test(viewValue)) {
+          // consider empty models to be valid
+          angular.element(element).parent().parent().addClass('has-success').removeClass('has-error');
+          return true;
+        }
+        // it is invalid
+        angular.element(element).parent().parent().addClass('has-error').removeClass('has-success');
+        return false;
+      };
+    }
+
+    public static factory(): ng.IDirectiveFactory {
+      var directive = () => new RoomValidator();
+      return directive;
+    }
+  }
+
+  export class ActionMessageDisplay implements ng.IDirective{
+    public restrict = 'E';
+
+    public static DirectoryName = "room";
+
+    public link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl : IRoomValidation) => {
+
+    }
+
+    public static factory(): ng.IDirectiveFactory {
+      var directive = () => new ActionMessageDisplay();
+      return directive;
+    }
+  }
+
+  interface IRoomValidation extends ng.INgModelController {
+    $validators : {
+      room(modelValue : string, viewValue : string);
     }
   }
 }
 
 angular
   .module('lobby')
-  .directive('stopEvent', lobby.directives.StopEvent.factory());
+  .directive(lobby.directives.StopEvent.DirectoryName, lobby.directives.StopEvent.factory())
+  .directive(lobby.directives.RoomValidator.DirectoryName, lobby.directives.RoomValidator.factory())
+  .directive(lobby.directives.ActionMessageDisplay.DirectoryName, lobby.directives.ActionMessageDisplay.factory());
+
+
+

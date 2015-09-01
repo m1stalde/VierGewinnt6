@@ -13,6 +13,7 @@ module lobby.controllers {
     public currentItem : lobby.interfaces.IRoom = {};
     public chat = {};
     public displayUser: User.Services.IUser;
+    public showMessage : string;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
