@@ -19,13 +19,25 @@ module Common.Services {
     private messageListeners: any = {};
 
     public static $inject = [
-      '$log', '$rootScope', 'appConfig'
+      '$log', '$rootScope', 'appConfig', '$http'
     ];
 
-    constructor(private $log : ng.ILogService, private $rootScope: ng.IScope, private appConfig: vierGewinnt6.IAppConfig) {
-      // Websocket configuration
-      this.ws = new WebSocket(appConfig.baseWsUrl);
+    constructor(private $log : ng.ILogService, private $rootScope: ng.IScope, private appConfig: vierGewinnt6.IAppConfig, private $http: ng.IHttpService) {
+      $log.debug('trying to reach server ' + this.appConfig.baseUrl + ' before connecting websocket');
       var self = this;
+
+      // connect server through http first to initialize session and get session cookie
+      $http.get(this.appConfig.baseUrl + '/session')
+        .then(function(response) {
+          self.connect(appConfig.baseWsUrl);
+        });
+    }
+
+    private connect(baseWsUrl: string) {
+      this.$log.debug('connecting websocket to ' + baseWsUrl);
+      var self = this;
+
+      this.ws = new WebSocket(baseWsUrl);
 
       this.ws.onmessage = (event) => self.onMessage(event);
       this.ws.onopen = (event) => self.onOpen(event);

@@ -6,9 +6,8 @@ var path = require("path");
 var WebSocketServer = WebSocket.Server;
 import express = require('express');
 var util = require('util');
-var helperFn = require(path.join(__dirname, '..', 'utils', 'helperFunctions.js'));
+var helperFn = require(path.join(__dirname, '..', 'utils', 'helperFunctions'));
 var chatWebsocket = require(path.join(__dirname, 'chatWebsocketService.js'));
-var gameWebsocket = require(path.join(__dirname, 'gameWebsocketService.js'));
 //import gameWebsocket = require('./gameWebsocketService');
 
 import messageService = require('../services/messageService');
@@ -76,6 +75,8 @@ function mapMetaDataToConn(conn: WebSocket){
     security.getServerSessionFromWebSocket(conn, function(err, serverSession) {
         var userName = "User " + (clients.length + 1);
         var playerId = serverSession.getPlayerId();
+
+        console.info('player ' + playerId + ' connected');
 
         clients.push({
             userName: userName,

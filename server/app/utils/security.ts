@@ -6,7 +6,7 @@ import session = require('express-session');
 import cookie = require('cookie-parser');
 import WebSocket = require('ws');
 import sessionService = require('../services/sessionService');
-import utils = require('../utils/utils');
+import utils = require('../utils/helperFunctions');
 
 const COOKIE_NAME = 'game.sid';
 const COOKIE_SECRET = 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda';
