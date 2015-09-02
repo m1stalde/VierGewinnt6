@@ -3,6 +3,16 @@
 module lobby.controllers {
   'use strict';
 
+  interface IActionMessage {
+    isError? : boolean;
+    message? : string;
+  }
+
+  class ActionMessage implements IActionMessage {
+    constructor() {}
+    constructor(private isError: boolean, private message: string) {}
+  }
+
   class LobbyCtrl{
 
     private chatWindow:JQuery;
@@ -13,7 +23,7 @@ module lobby.controllers {
     public currentItem : lobby.interfaces.IRoom = {};
     public chat = {};
     public displayUser: User.Services.IUser;
-    public showMessage : string;
+    public actionMessage : IActionMessage = new ActionMessage();
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor

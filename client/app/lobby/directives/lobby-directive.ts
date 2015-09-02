@@ -45,11 +45,14 @@ module lobby.directives {
 
   export class ActionMessageDisplay implements ng.IDirective{
     public restrict = 'E';
+    public scope = {
+      message : '='
+    }
 
-    public static DirectoryName = "room";
+    public static DirectoryName = "actionMessageDisplay";
 
     public link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl : IRoomValidation) => {
-
+        var k = 4;
     }
 
     public static factory(): ng.IDirectiveFactory {

@@ -61,9 +61,12 @@
       </div>
 
       <!-- Show messages regarding actions to the user -->
-      <div class="panel panel-default message-panel" ng-show="lobby.showMessage">
+      <action-message-display message="lobby.actionMessage"></action-message-display>
+
+
+     <!-- <div class="panel panel-default message-panel" ng-show="lobby.showMessage">
         <span></span>
-      </div>
+      </div>-->
 
       <!-- Display Games -->
       <div class="panel panel-default">

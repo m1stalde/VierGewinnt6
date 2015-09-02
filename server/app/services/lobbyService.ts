@@ -3,10 +3,8 @@
 import express = require('express');
 import gameService = require('../services/gameService');
 import gameLogic = require('../logic/gameLogic');
-
-var path = require("path");
-var utils = require(path.join(__dirname, '..', 'utils', 'helperFunctions.js'));
-var websocketService = require(path.join(__dirname, '..', 'websocket', 'websocketService.js'));
+import utils = require("../utils/helperFunctions");
+import websocketService = require("../websocket/websocketService");
 
 var listOfRooms:Array<IRoom> = [
     {

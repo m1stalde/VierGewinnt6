@@ -3,15 +3,8 @@
 import http = require('http');
 import express = require('express');
 import security = require('../utils/security');
-var path = require("path");
-
-var lobbyService = require(path.join(__dirname, '..', 'services', 'lobbyService.js'));
-var websocketService = require(path.join(__dirname, '..', 'websocket', 'websocketService.js'));
-var sessionService = require(path.join(__dirname, '..', 'services', 'sessionService.js'));
-var userService = require(path.join(__dirname, '..', 'services', 'userService.js'));
-
-// var lobbyService = require('../services/lobbyService');
-// var websocketService = require('../websocket/websocketService');
+import lobbyService = require("../services/lobbyService");
+import sessionService = require("../services/sessionService");
 
 export function retrieveLobbyData(req:express.Request, res:express.Response) {
     lobbyService.getAllRooms(function (err, data) {

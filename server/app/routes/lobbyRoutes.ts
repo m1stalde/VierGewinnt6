@@ -1,11 +1,8 @@
 /// <reference path="../_all.ts"/>
 
 import express = require('express');
-var path = require("path");
-
-var controller = require(path.join(__dirname, '..', 'controller', 'lobbyController.js'));
-//import controller = require('../controller/lobbyController');
-var security = require(path.join(__dirname, '..', 'utils', 'security.js'));
+import controller = require("../controller/lobbyController");
+import security = require("../utils/security");
 
 var router: express.Router = express.Router();
 
