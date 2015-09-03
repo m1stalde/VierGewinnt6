@@ -9,7 +9,6 @@ module lobby.controllers {
   }
 
   class ActionMessage implements IActionMessage {
-    constructor() {}
     constructor(private isError: boolean, private message: string) {}
   }
 
@@ -23,7 +22,7 @@ module lobby.controllers {
     public currentItem : lobby.interfaces.IRoom = {};
     public chat = {};
     public displayUser: User.Services.IUser;
-    public actionMessage : IActionMessage = new ActionMessage();
+    public actionMessage : IActionMessage = new ActionMessage(true, "Message 1");
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
