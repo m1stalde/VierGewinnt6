@@ -40,7 +40,7 @@ export function saveRoom(roomObj, cb) {
 
     // Update & Delete an existing room
     if(roomObj.roomId){
-        var pos = utils.Utils.getPositionOfElement(listOfRooms, "roomId", roomObj.roomId);
+        var pos = utils.getPositionOfElement(listOfRooms, "roomId", roomObj.roomId);
 
         // Delete
         if(roomObj.isDelete){
@@ -117,7 +117,7 @@ export function joinRoom(roomId: number, playerId: string, userName : string, cb
 
 export function retrieveRoom(roomId, cb){
 
-    var pos = utils.Utils.getPositionOfElement(listOfRooms, "roomId", roomId);
+    var pos = utils.getPositionOfElement(listOfRooms, "roomId", roomId);
     var room = listOfRooms[pos];
 
     // Validation

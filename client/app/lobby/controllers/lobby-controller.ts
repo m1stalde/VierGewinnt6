@@ -3,14 +3,43 @@
 module lobby.controllers {
   'use strict';
 
-  interface IActionMessage {
-    isError? : boolean;
-    message? : string;
+  // Action Message Interfaces
+  interface IActionMessage{
+    data : string
   }
 
-  class ActionMessage implements IActionMessage {
-    constructor(private isError: boolean, private message: string) {}
+  interface IActionMessageError extends IActionMessage {
+    statusText : string;
+    status : string;
   }
+
+  interface IActionMessageSuccess extends IActionMessage {}
+
+  // Action Message Classes (share the common data property which is either the error or a normal message towards the user)
+  export class ActionMessage implements IActionMessage{
+    public data : string;
+    constructor(data : string){
+      this.data = data;
+    }
+  }
+
+  export class ActionMessageError extends ActionMessage implements IActionMessageError{
+    public status : string;
+    public statusText : string;
+
+    constructor(messageObj : IActionMessageError){
+      this.status = messageObj.status;
+      this.statusText = messageObj.statusText;
+      super(messageObj.data);
+    }
+  }
+
+  export class ActionMessageSuccess extends ActionMessage implements IActionMessageSuccess{
+    constructor(messageObj : IActionMessageSuccess){
+      super(messageObj.data);
+    }
+  }
+
 
   class LobbyCtrl{
 
@@ -22,7 +51,7 @@ module lobby.controllers {
     public currentItem : lobby.interfaces.IRoom = {};
     public chat = {};
     public displayUser: User.Services.IUser;
-    public actionMessage : IActionMessage = new ActionMessage(true, "Message 1");
+    public actionMessage : IActionMessage;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor

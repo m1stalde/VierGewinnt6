@@ -53,8 +53,17 @@ module lobby.services {
       var newRoom = this.lobbyStorage.LobbyRoom();
       newRoom.get({id: id},function(room : lobby.interfaces.IRoom){
         room.name = name;
-        room.$save(function(room) {
+        room.$save(function(room) { // success callback
           self.lobbyData[pos] = room;
+          self.actionMessage = new lobby.controllers.ActionMessageSuccess({
+            data: "Your room has been updated!"
+        })
+        }, function(err){ // error callback
+          self.actionMessage = new lobby.controllers.ActionMessageError({
+            status : err.status,
+            statusText : err.statusText,
+            data : err.data
+          });
         });
       });
     }
