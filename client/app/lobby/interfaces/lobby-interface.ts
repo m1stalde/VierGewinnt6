@@ -11,6 +11,7 @@ module lobby.interfaces{
     status?: string;
     creationTime?: string;
     players?: Array<string>;
+    delete : boolean;
   }
 
   export interface IRoomResource extends ng.resource.IResourceClass<IRoom> {

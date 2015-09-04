@@ -14,8 +14,8 @@ module lobby.services {
 
     constructor(private $q: ng.IQService, private $log : ng.ILogService, private lobbyStorage) {}
 
-    public joinLobbyRoom(lobbyData : Array<lobby.interfaces.IRoom>, res : lobby.interfaces.IRoom){
-
+    public joinLobbyRoom(self : any, res : lobby.interfaces.IRoom){
+      var lobbyData : Array<lobby.interfaces.IRoom> = self.lobbyData;
       var isUpdated = false;
 
       for(var i = 0; i < lobbyData.length; i++){
@@ -27,8 +27,14 @@ module lobby.services {
       }
 
       if(isUpdated){
+        self.actionMessage = new lobby.controllers.ActionMessageSuccess({
+          data: "You've entered the room " + res.name + ", the game will start any time soon."
+        });
         this.deferred.resolve(lobbyData);
       } else {
+        self.actionMessage = new lobby.controllers.ActionMessageError({
+          data: "Couldn't update the given room"
+        });
         this.deferred.reject(lobbyData);
       }
 

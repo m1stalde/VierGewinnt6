@@ -9,8 +9,8 @@ module lobby.controllers {
   }
 
   interface IActionMessageError extends IActionMessage {
-    statusText : string;
-    status : string;
+    statusText? : string;
+    status? : string;
   }
 
   interface IActionMessageSuccess extends IActionMessage {}
@@ -128,8 +128,8 @@ module lobby.controllers {
       var self = this;
       var newRoom = this.lobbyStorage.LobbyRoom();
       newRoom.save({id: room.roomId, userName : this.displayUser.name},
-        (data) => self.lobbyService.joinLobbyRoom(self.lobbyData, data),
-        (err) => self.handleErr("Couldn't create a room on the server."));
+        (data) => self.lobbyService.joinLobbyRoom(self, data),
+        (err) => self.handleErr(self, err));
     }
 
     public editRoom(room : lobby.interfaces.IRoom){
@@ -163,8 +163,12 @@ module lobby.controllers {
       }
     }
 
-    private handleErr(err : string) {
-        this.$log.error(err);
+    private handleErr(self, errObj) {
+      self.actionMessage = new lobby.controllers.ActionMessageError({
+        status : errObj.status,
+        statusText : errObj.statusText,
+        data : errObj.data
+      });
     }
 
     public wsSendChatMessage(message : string, sentTo : Array<string>){
