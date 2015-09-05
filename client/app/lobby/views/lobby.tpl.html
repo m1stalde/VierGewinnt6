@@ -37,7 +37,7 @@
               </div>
             </form>
           </div>
-          <button type="submit" class="btn btn-default" ng-click="createRoomForm.$valid && lobby.createRoom(lobby.currentItem.name)">Create
+          <button type="submit" class="btn btn-default" ng-click="createRoomForm.$valid && lobby.createRoom({name : lobby.currentItem.name})">Create
           </button>
         </div>
       </div>
@@ -62,7 +62,7 @@
               </div>
             </form>
           </div>
-          <button type="submit" class="btn btn-default" ng-click="editRoomForm.$valid && lobby.changeRoomName(lobby.currentItem.name, lobby.currentItem.roomId)">Edit
+          <button type="submit" class="btn btn-default" ng-click="editRoomForm.$valid && lobby.updateRoom({roomId : lobby.currentItem.roomId, name : lobby.currentItem.name})">Edit
           </button>
         </div>
       </div>

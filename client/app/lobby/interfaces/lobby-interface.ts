@@ -10,11 +10,13 @@ module lobby.interfaces{
     name?: string;
     status?: string;
     creationTime?: string;
-    players?: Array<string>;
-    delete : boolean;
+    players?: Array<IPlayer>;
+    isDelete? : boolean;
+    isJoin? : boolean;
   }
 
-  export interface IRoomResource extends ng.resource.IResourceClass<IRoom> {
-
+  export interface IPlayer {
+    userName : string;
+    playerId : string;
   }
 }

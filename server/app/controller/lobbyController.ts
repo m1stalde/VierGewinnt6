@@ -6,7 +6,7 @@ import security = require('../utils/security');
 import lobbyService = require("../services/lobbyService");
 import sessionService = require("../services/sessionService");
 
-export function retrieveLobbyData(req:express.Request, res:express.Response) {
+export function getAllRooms(req:express.Request, res:express.Response) {
     lobbyService.getAllRooms(function (err, data) {
         res.format({
             'application/json': function () {
@@ -19,13 +19,6 @@ export function retrieveLobbyData(req:express.Request, res:express.Response) {
 export function saveRoom(req:express.Request, res:express.Response) {
     var userId = security.currentUserId(req);
 
-    var roomObj = {
-        roomId: req.body.roomId || null,
-        playerId: "123456",  // temporary fix, retrieve the playerId in the future from the session object
-        roomName: req.body.name,
-        isDelete: req.body.delete || null
-    }
-
     sessionService.getCurrentSession(userId, function (err, sessionObj) {
         if (err) {
             // Development only => security issue in production => generic exception
@@ -35,15 +28,38 @@ export function saveRoom(req:express.Request, res:express.Response) {
             // Development only => security issue in production => generic exception
             res.status(400).send("The is no username associated with the session.");
             return;
-        } else if (!roomObj.roomName) {
+        } else if (!req.body.name) {
             // Development only => security issue in production => generic exception
             res.status(400).send("There was no room name passed to the function.");
             return;
         }
 
-        roomObj.userName = sessionObj.username;
+        var players : Array<lobbyService.IPlayer> = [];
+        var isCreate : boolean = false;
+        if(req.body.players && req.body.players.length === 0){ // CREATE
+            players.push(new lobbyService.Player(
+                {
+                    userName : sessionObj.username, // gets the username from the session object
+                    playerId : "12334456"} // gets the playerID from the session data
+            ));
 
-        lobbyService.saveRoom(roomObj, function (err, data) {
+            // Needed to avoid malicious requests
+            isCreate = true;
+        }
+
+        // Map the room object
+        var roomObj : lobbyService.IRoom = new lobbyService.Room(
+            {
+                roomId: req.body.roomId || null,
+                players: players,
+                name: req.body.name,
+                creationTime : req.body.creationTime || null,
+                status : req.body.status || null,
+                isDelete: req.body.isDelete || null
+            }
+        );
+
+        lobbyService.saveRoom(roomObj, sessionObj.username, isCreate, function (err, data) {
             if (err) {
                 res.status(400).send(err);
             } else {
@@ -57,7 +73,7 @@ export function saveRoom(req:express.Request, res:express.Response) {
     });
 }
 
-export function joinRoom(req:express.Request, res:express.Response) {
+export function updateRoom(req:express.Request, res:express.Response) {
     var userId = security.currentUserId(req);
     // temporary fix, retrieve the playerId in the future from the session object
     var playerId = "123456";
@@ -93,7 +109,7 @@ export function joinRoom(req:express.Request, res:express.Response) {
     });
 }
 
-export function retrieveRoom(req:express.Request, res:express.Response) {
+export function getRoom(req:express.Request, res:express.Response) {
     var userId = security.currentUserId(req);
     var roomId = req.params.id;
 
@@ -113,7 +129,7 @@ export function retrieveRoom(req:express.Request, res:express.Response) {
             res.status(400).send("There was no room id passed to the function.");
             return;
         }
-        lobbyService.retrieveRoom(roomId, function (err, data) {
+        lobbyService.getRoom(roomId, function (err, data) {
             if (err) {
                 res.status(400).send(err);
             } else {
@@ -125,12 +141,6 @@ export function retrieveRoom(req:express.Request, res:express.Response) {
             }
         });
     });
-
-
-}
-
-export function deleteRoom() {
-    lobbyService.LobbyService.getAllRooms();
 }
 
 

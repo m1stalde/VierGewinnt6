@@ -35,46 +35,50 @@ var listOfRooms:Array<IRoom> = [
     }
 ];
 
-export function saveRoom(roomObj, cb) {
-    var room : IRoom = {};
+export function saveRoom(roomObj, sessionUserName, isCreate, cb) {
+    var room:IRoom;
+    var pos : number = utils.getPositionOfElement(listOfRooms, "roomId", roomObj.roomId);
 
     // Update & Delete an existing room
-    if(roomObj.roomId){
-        var pos = utils.getPositionOfElement(listOfRooms, "roomId", roomObj.roomId);
+    // isCreate avoids malicious requests => DELETE => {roomId = 3, players[]}
+    if (!isCreate && roomObj.roomId && (pos > -1)) { // -1 indicates that a new room should be created
 
+        // Verification
+        room = listOfRooms[pos];
+
+        // Only the creator of the room can trigger update & delete actions
+        // Compares the storage with the user who tries to do a modification
+        if (room.players[0].userName !== sessionUserName) {
+            cb("Access denied - can't edit this room.", null);
+            return;
+        }
         // Delete
-        if(roomObj.isDelete){
+        if (roomObj.isDelete) {
             listOfRooms.splice(pos, 1);
         } else { // Update
-            room = listOfRooms[pos];
-            // Verification
-            if(room.players[0].userName !== roomObj.userName){ // Only the creator of the room can also update it
-                cb("Access denied - can't edit this room.", null);
-                return;
-            }
-
-            room.name = roomObj.roomName;
+            room.name = roomObj.name;
         }
     } else { // Create
-        room = {
-            roomId: ++listOfRooms.length,
-            name: roomObj.roomName,
+        var nextId = utils.getHighestValue<number>(listOfRooms, "roomId") + 1;
+        room = new Room({
+            roomId: nextId,
+            name: roomObj.name,
             status: "Waiting for Opponent",
             creationTime: new Date().toLocaleTimeString().toString(),
             players: [{
-                playerId : roomObj.playerId,
-                userName : roomObj.userName
+                playerId: roomObj.players[0].playerId,
+                userName: roomObj.players[0].userName
             }],
-            gameId : null
-        };
+            gameId: null
+        });
 
-        listOfRooms[room.roomId - 1] = room;
+        listOfRooms.push(room);
     }
 
     cb(null, room);
 }
 
-export function joinRoom(roomId: number, playerId: string, userName : string, cb) {
+export function joinRoom(roomId:number, playerId:string, userName:string, cb) {
 
     // Retrieve the room which the player wants to join
     var room = listOfRooms[roomId - 1];
@@ -105,8 +109,8 @@ export function joinRoom(roomId: number, playerId: string, userName : string, cb
 
         // update room
         room.players[1] = {
-            playerId : playerId2,
-            userName : userName
+            playerId: playerId2,
+            userName: userName
         };
 
         room.gameId = gameId;
@@ -115,18 +119,23 @@ export function joinRoom(roomId: number, playerId: string, userName : string, cb
     });
 }
 
-export function retrieveRoom(roomId, cb){
-
-    var pos = utils.getPositionOfElement(listOfRooms, "roomId", roomId);
-    var room = listOfRooms[pos];
-
-    // Validation
-    if (!room) {
-        cb("Couldn't find a room with the id " + roomId, null)
-        return;
+export function getRoom(roomId, cb) {
+    var room:Room;
+    var pos: number = utils.getPositionOfElement(listOfRooms, "roomId", roomId);
+    if (pos < 0) { // Room doesn't exist yet => user tries to create a new room
+        var nextRoomId = utils.getHighestValue<number>(listOfRooms, "roomId") + 1;
+        room = new Room({roomId: nextRoomId});
+    } else { // Room already exists and can be send back to the user
+        room = listOfRooms[pos];
+        // Validation
+        if (!room) {
+            cb("Couldn't find a room with the id " + roomId, null)
+            return;
+        }
     }
 
     cb(null, room);
+
 }
 
 export function getAllRooms(callback) {
@@ -143,21 +152,55 @@ export function checkForRoom(room:IRoom) {
         if (listOfRooms[i].roomId === room.roomId) {
             return true;
         }
-    };
-
+    }
+    ;
     return false;
 }
 
+export interface IPlayer {
+    userName : string,
+    playerId : string,
+}
 
+export class Player implements IPlayer {
+    public userName : string;
+    public playerId : string;
+    constructor(player : IPlayer){
+        this.userName = player.userName;
+        this.playerId = player.playerId;
+    }
+}
 
+export class Room implements IRoom {
+    public roomId:number;
+    public name:string;
+    public status:string;
+    public creationTime:string;
+
+    public gameId:string;
+    public players:Array<IPlayer>;
+
+    public isDelete : boolean;
+
+    constructor(room:IRoom) {
+        this.roomId = room.roomId;
+        this.name = room.name || "";
+        this.status = room.status || "";
+        this.creationTime = room.creationTime || "";
+        this.players = room.players || [];
+        this.gameId = room.gameId || "";
+        this.isDelete = room.isDelete || false;
+    }
+}
 
 export interface IRoom {
-    roomId? : number;
-    name : string;
+    roomId : number;
+    name? : string;
     status? : string;
-    creationTime : string;
-    players : Array<any>;
-    gameId : string;
+    creationTime? : string;
+    players? : Array<any>;
+    gameId? : string;
+    isDelete? : boolean;
 }
 
 
