@@ -7,9 +7,9 @@ import security = require("../utils/security");
 var router: express.Router = express.Router();
 
 router.all('/*', security.handleAuthenticate);
-router.get("/", controller.retrieveLobbyData);
+router.get("/", controller.getAllRooms);
+router.get("/:id", controller.getRoom);
 router.post("/", controller.saveRoom);
-router.get("/:id", controller.retrieveRoom);
-router.post("/:id", controller.joinRoom);
+router.post("/:id", controller.updateRoom);
 
 export = router;

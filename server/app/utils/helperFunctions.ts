@@ -30,3 +30,25 @@ export function getPositionOfElement(array, element, value){
     }
     return pos;
 }
+
+export function getHighestValue<T>(array : Array, element) : T{
+    var value : T = -1;
+    for (var i = 0, len = array.length; i < len; i++) {
+        if (array[i][element] > value) {
+            value = array[i][element];
+        }
+    }
+    return value;
+}
+
+export function getLowestValue<T>(array : Array, element) : T{
+    var value : T;
+    for (var i = 0, len = array.length; i < len; i++) {
+        if(i == 0){
+            value = array[i][element];
+        } else if(array[i][element] < value){
+            value = array[i][element];
+        }
+    }
+    return value;
+}

@@ -26,16 +26,15 @@ module lobby.directives {
     public link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl : IRoomValidation) => {
       ctrl.$validators.room = function(modelValue, viewValue) {
         var ROOM_REGEXP = /^\w+$/;
-        if (ROOM_REGEXP.test(viewValue)) {
-          // consider empty models to be valid
-          angular.element(element).parent().parent().addClass('has-success').removeClass('has-error');
+
+      if (ROOM_REGEXP.test(viewValue)) {
           return true;
         }
-        // it is invalid
-        angular.element(element).parent().parent().addClass('has-error').removeClass('has-success');
+
         return false;
       };
     }
+
 
     public static factory(): ng.IDirectiveFactory {
       var directive = () => new RoomValidator();
@@ -45,9 +44,9 @@ module lobby.directives {
 
   export class ActionMessageDisplay implements ng.IDirective{
     public restrict = 'E';
-    public scope = {
-      message : '='
-    }
+    public transclude = true;
+    public scope = {}
+    public templateUrl = "/lobby/directives/action-message.html"
 
     public static DirectoryName = "actionMessageDisplay";
 
