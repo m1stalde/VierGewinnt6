@@ -24,19 +24,9 @@ module GameField {
 
   function gameField(): ng.IDirective {
     return {
-      restrict: 'EA',
-      scope: {},
-      templateUrl: 'game/directives/game-field-directive.tpl.html',
-      replace: false,
-      controllerAs: 'gameField',
-      controller: function () {
-        var vm = this;
-        vm.name = 'gameField';
-      },
-      link: function (scope: ng.IScope, element: JQuery, attrs: any) {
-        /*jshint unused:false */
-        /*eslint "no-unused-vars": [2, {"args": "none"}]*/
-      }
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'game/directives/game-field-directive.tpl.html'
     };
   }
 }

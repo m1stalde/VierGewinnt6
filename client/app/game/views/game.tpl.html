@@ -8,19 +8,17 @@
 
   <div class="row">
 
-    <div class="col-xs-12 col-md-8">
+    <div class="col-xs-12 col-md-6">
 
       <div class="game-container" ng-click="game.doMove($event)">
           <div class="game-row" ng-repeat="gameFieldRow in game.getCurrentGame().cells track by $index">
-            <div class="game-box" ng-repeat="gameField in gameFieldRow track by $index">
-              <div class="game-field" ng-class="{'red':gameField==1, 'yellow':gameField==2}" data-x="{{$index}}" data-y="{{$parent.$index}}"></div>
-            </div>
+            <game-field ng-repeat="gameField in gameFieldRow track by $index"></game-field>
           </div>
       </div>
 
     </div>
 
-    <div class="col-xs-6 col-md-4">
+    <div class="col-xs-6 col-md-6">
       TODO Insert Chat here.<br>
       Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat
       Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat Chat

@@ -1,1 +1,3 @@
-<div>{{gameField.name}}</div>
+<div class="game-box">
+  <div class="game-field" ng-class="{'red':gameField==1, 'yellow':gameField==2}" data-x="{{$index}}" data-y="{{$parent.$index}}"></div>
+</div>
