@@ -27,7 +27,7 @@ describe('Game Logic Tests:', () => {
                 gameData.should.not.be.null;
                 gameData.playerId1.should.equal(playerId1);
                 gameData.playerId2.should.equal(playerId2);
-                gameData.nextColor.should.equal(gameLogic.Color.Red);
+                (<number>gameData.nextColor).should.equal(gameLogic.Color.Red);
                 gameData.nextPlayerId.should.equal(playerId1);
                 done();
             });
@@ -38,7 +38,7 @@ describe('Game Logic Tests:', () => {
                 gameData.should.not.be.null;
                 gameData.playerId1.should.equal(playerId1);
                 gameData.playerId2.should.equal(playerId2);
-                gameData.nextColor.should.equal(gameLogic.Color.Yellow);
+                (<number>gameData.nextColor).should.equal(gameLogic.Color.Yellow);
                 gameData.nextPlayerId.should.equal(playerId1);
                 done();
             });
