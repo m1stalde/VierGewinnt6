@@ -10,10 +10,10 @@ module lobby.controllers {
     public lobbyData:Array<lobby.interfaces.IRoom>;
     public gameCreation:boolean = true;
     public gameEditing:boolean = true;
-    public currentItem:lobby.interfaces.IRoom = {};
+    public currentItem:lobby.interfaces.IRoom = new lobby.interfaces.Room(null);
     public chat = {};
     public displayUser:User.Services.IUser;
-    public actionMessage:IActionMessage;
+    public actionMessage:IActionMessage = new ActionMessage(null, null);
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -82,22 +82,29 @@ module lobby.controllers {
       this.toggleEditingGame();
     }
 
+    public joinRoom(room:lobby.interfaces.IRoom){
+      room.isJoin = true;
+      this.updateRoom(room);
+    }
+
     // CRUD Operations with $resources
 
     // CREATE => (GET /:id + POST /:id)
     public createRoom(room:lobby.interfaces.IRoom):void {
       var self = this;
-      var nextRoomId = this.getHighestValue<number>(this.lobbyData, "roomId") + 1;
+      var nextRoomId = this.getHighestValue<number>(this.lobbyData, "roomId", -1) + 1;
       var roomRes = this.lobbyStorage.LobbyRoom();
       roomRes.get({id: nextRoomId}, function (newRoom:lobby.interfaces.IRoom) { // success callback
         newRoom.name = room.name;
         newRoom.$save(function (room) { // success callback
           self.lobbyData.push(room);
           self.actionMessage = new lobby.controllers.ActionMessageSuccess({
+            isError : false,
             data: "The room has been created!"
           })
         }, function (err) { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
+            isError : true,
             status: err.status,
             statusText: err.statusText,
             data: err.data
@@ -118,10 +125,12 @@ module lobby.controllers {
         room.$save(function (room) { // success callback
           self.lobbyData.splice(pos, 1);
           self.actionMessage = new lobby.controllers.ActionMessageSuccess({
+            isError : false,
             data: "The room has been deleted!"
           })
         }, function (err) { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
+            isError : true,
             status: err.status,
             statusText: err.statusText,
             data: err.data
@@ -137,6 +146,7 @@ module lobby.controllers {
         self.lobbyData = res;
       }, function (err) { // error callback
         self.actionMessage = new lobby.controllers.ActionMessageError({
+          isError : true,
           status: err.status,
           statusText: err.statusText,
           data: err.data
@@ -151,14 +161,16 @@ module lobby.controllers {
       var roomRes = this.lobbyStorage.LobbyRoom();
       roomRes.get({id: newRoom.roomId}, function (room:lobby.interfaces.IRoom) {
         room.name = newRoom.name; // Update the name of the room
-        room.isJoin = room.isJoin || null;
+        room.isJoin = newRoom.isJoin || null;
         room.$save(function (room) { // success callback
           self.lobbyData[pos] = room;
           self.actionMessage = new lobby.controllers.ActionMessageSuccess({
+            isError : false,
             data: "Your room has been updated!"
           })
         }, function (err) { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
+            isError : true,
             status: err.status,
             statusText: err.statusText,
             data: err.data
@@ -169,7 +181,7 @@ module lobby.controllers {
 
 
 
-    private getPositionOfElement(array:Array, element, value) {
+    private getPositionOfElement(array:Array<any>, element, value) {
       var pos:number = -1;
       for (var i = 0, len = array.length; i < len; i++) {
         if (array[i][element] == value) pos = i;
@@ -177,8 +189,8 @@ module lobby.controllers {
       return pos;
     }
 
-    private getHighestValue<T>(array:Array, element):T {
-      var value:T = -1;
+    private getHighestValue<T>(array:Array<any>, element, seed : T):T {
+      var value:T = seed;
       for (var i = 0, len = array.length; i < len; i++) {
         if (array[i][element] > value) {
           value = array[i][element];
@@ -207,24 +219,27 @@ module lobby.controllers {
   }
 
   // Action Message Interfaces
-  interface IActionMessage {
+  export interface IActionMessage {
+    isError : boolean;
     data : string
   }
 
-  interface IActionMessageError extends IActionMessage {
+  export interface IActionMessageError extends IActionMessage {
     statusText? : string;
     status? : string;
   }
 
-  interface IActionMessageSuccess extends IActionMessage {
+  export interface IActionMessageSuccess extends IActionMessage {
   }
 
   // Action Message Classes (share the common data property which is either the error or a normal message towards the user)
   export class ActionMessage implements IActionMessage {
+    public isError : boolean;
     public data:string;
 
-    constructor(data:string) {
+    constructor(data:string, isError : boolean) {
       this.data = data;
+      this.isError = isError;
     }
   }
 
@@ -235,13 +250,13 @@ module lobby.controllers {
     constructor(messageObj:IActionMessageError) {
       this.status = messageObj.status;
       this.statusText = messageObj.statusText;
-      super(messageObj.data);
+      super(messageObj.data, messageObj.isError);
     }
   }
 
   export class ActionMessageSuccess extends ActionMessage implements IActionMessageSuccess {
     constructor(messageObj:IActionMessageSuccess) {
-      super(messageObj.data);
+      super(messageObj.data, messageObj.isError);
     }
   }
 

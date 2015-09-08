@@ -28,9 +28,17 @@ a.icon  {
 
 // Action Message panel (error, success)
 
-.message-panel-error {
-  border: 2px solid #a94442;
-  background-color: #e4b9b9;
+.action-message-div {
+  height: 75px;
+  line-height: 75px;
+  text-align: center;
+}
+
+
+.action-message-span{
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
 }
 
 .message-panel-success {
@@ -38,14 +46,34 @@ a.icon  {
   background-color: #90EE90;
 }
 
-.action-message-div {
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
+.message-panel-success.ng-hide-add, .message-panel-success.ng-hide-remove {
+  transition: all ease-out 1s;
+  -webkit-transition: all ease-out 1s;
+  -moz-transition: all ease-out 1s;
+  -o-transition: all ease-out 1s;
+  -ms-transition: all ease-out 1s;
 }
 
-.action-message-span{
-  display: inline-block;
-  vertical-align: middle;
-  line-height: normal;
+.message-panel-success.ng-hide {
+  opacity: 0;
+  padding: 0 10px;
+}
+
+.message-panel-error {
+  border: 2px solid #a94442;
+  background-color: #e4b9b9;
+
+}
+
+.message-panel-error.ng-hide-add, .message-panel-error.ng-hide-remove {
+  transition: all ease-out 1s;
+  -webkit-transition: all ease-out 1s;
+  -moz-transition: all ease-out 1s;
+  -o-transition: all ease-out 1s;
+  -ms-transition: all ease-out 1s;
+}
+
+.message-panel-error.ng-hide {
+  opacity: 0;
+  padding: 0 10px;
 }

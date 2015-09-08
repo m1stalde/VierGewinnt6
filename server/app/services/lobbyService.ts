@@ -35,7 +35,7 @@ var listOfRooms:Array<IRoom> = [
     }
 ];
 
-export function saveRoom(roomObj, sessionUserName, isCreate, cb) {
+export function saveRoom(roomObj, sessionData, isCreate, cb) {
     var room:IRoom;
     var pos : number = utils.getPositionOfElement(listOfRooms, "roomId", roomObj.roomId);
 
@@ -43,23 +43,73 @@ export function saveRoom(roomObj, sessionUserName, isCreate, cb) {
     // isCreate avoids malicious requests => DELETE => {roomId = 3, players[]}
     if (!isCreate && roomObj.roomId && (pos > -1)) { // -1 indicates that a new room should be created
 
-        // Verification
-        room = listOfRooms[pos];
-
-        // Only the creator of the room can trigger update & delete actions
-        // Compares the storage with the user who tries to do a modification
-        if (room.players[0].userName !== sessionUserName) {
-            cb("Access denied - can't edit this room.", null);
+        if(roomObj.isDelete & roomObj.isJoin)
+        {
+            cb("Error while processing the request", null)
             return;
         }
-        // Delete
-        if (roomObj.isDelete) {
-            listOfRooms.splice(pos, 1);
-        } else { // Update
-            room.name = roomObj.name;
+
+        // Retrieve the room
+        room = listOfRooms[pos];
+
+        // Join
+        if(roomObj.isJoin){
+            // Validation
+            if (!room) {
+                cb("Couldn't find a room with the id " + room.roomId, null)
+                return;
+            } else if (room.players.length === 0) {
+                cb("Can't join an empty room.", null)
+                return;
+            } else if (room.players.length === 2) {
+                cb("The selected room has already reached the maximum capacity of 2 players.", null)
+                return;
+            } else if (room.players[0].playerId === sessionData.playerId) {
+                cb("The player has already enrolled for this particular room.", null)
+                return;
+            }
+
+            // start game
+            var playerId1 = <string>room.players[0].playerId;
+            var playerId2 = sessionData.playerId;
+
+            gameService.newGame(playerId1, playerId2, gameLogic.Color.Yellow, function (err, gameData, gameId) {
+                if (err) {
+                    cb(err, null);
+                    return;
+                }
+
+                // update room
+                room.players.push(new Player({
+                    playerId: playerId2,
+                    userName: sessionData.userName
+                }));
+
+                room.gameId = gameId;
+
+                cb(null, room);
+            });
+
+        } else { // Update & Delete
+
+            // Only the creator of the room can trigger update & delete actions
+            // Compares the storage with the user who tries to do a modification
+            if (room.players[0].userName !== sessionData.userName) {
+                cb("Access denied - can't edit this room.", null);
+                return;
+            }
+
+            // Delete
+            if (roomObj.isDelete) {
+                listOfRooms.splice(pos, 1);
+            } else { // Update
+                room.name = roomObj.name;
+            }
+
+            cb(null, room);
         }
     } else { // Create
-        var nextId = utils.getHighestValue<number>(listOfRooms, "roomId") + 1;
+        var nextId = utils.getHighestValue<number>(listOfRooms, "roomId", -1) + 1;
         room = new Room({
             roomId: nextId,
             name: roomObj.name,
@@ -73,57 +123,15 @@ export function saveRoom(roomObj, sessionUserName, isCreate, cb) {
         });
 
         listOfRooms.push(room);
-    }
-
-    cb(null, room);
-}
-
-export function joinRoom(roomId:number, playerId:string, userName:string, cb) {
-
-    // Retrieve the room which the player wants to join
-    var room = listOfRooms[roomId - 1];
-
-    // Validation
-    if (!room) {
-        cb("Couldn't find a room with the id " + roomId, null)
-        return;
-    } else if (room.players.length === 0) {
-        cb("Can't join an empty room.", null)
-        return;
-    } else if (room.players.length === 2) {
-        cb("The selected room has already reached the maximum capacity of 2 players.", null)
-        return;
-    } else if (room.players[0].playerId === playerId) {
-        cb("The player has already enrolled for this particular room.", null)
-        return;
-    }
-
-    // start game
-    var playerId1 = <string>room.players[0].playerId;
-    var playerId2 = playerId;
-    gameService.newGame(playerId, playerId2, gameLogic.Color.Yellow, function (err, gameData, gameId) {
-        if (err) {
-            cb(err, null);
-            return;
-        }
-
-        // update room
-        room.players[1] = {
-            playerId: playerId2,
-            userName: userName
-        };
-
-        room.gameId = gameId;
-
         cb(null, room);
-    });
+    }
 }
 
 export function getRoom(roomId, cb) {
-    var room:Room;
+    var room:IRoom;
     var pos: number = utils.getPositionOfElement(listOfRooms, "roomId", roomId);
     if (pos < 0) { // Room doesn't exist yet => user tries to create a new room
-        var nextRoomId = utils.getHighestValue<number>(listOfRooms, "roomId") + 1;
+        var nextRoomId = utils.getHighestValue<number>(listOfRooms, "roomId", -1) + 1;
         room = new Room({roomId: nextRoomId});
     } else { // Room already exists and can be send back to the user
         room = listOfRooms[pos];
@@ -181,6 +189,7 @@ export class Room implements IRoom {
     public players:Array<IPlayer>;
 
     public isDelete : boolean;
+    public isJoin : boolean;
 
     constructor(room:IRoom) {
         this.roomId = room.roomId;
@@ -190,6 +199,7 @@ export class Room implements IRoom {
         this.players = room.players || [];
         this.gameId = room.gameId || "";
         this.isDelete = room.isDelete || false;
+        this.isJoin = room.isJoin || false;
     }
 }
 
@@ -201,6 +211,23 @@ export interface IRoom {
     players? : Array<any>;
     gameId? : string;
     isDelete? : boolean;
+    isJoin? : boolean;
+}
+
+// Lobby Session Data
+export interface ILobbySessionData{
+    userName : string;
+    playerId : string;
+}
+
+export class LobbySessionData{
+    public userName:string;
+    public playerId:string;
+
+    constructor(sessionData : ILobbySessionData){
+        this.userName = sessionData.userName;
+        this.playerId = sessionData.playerId;
+    }
 }
 
 

@@ -10,6 +10,7 @@ module lobby {
   angular
     .module('lobby', [
       'ngRoute',
-      'ngResource'
+      'ngResource',
+      'ngAnimate'
     ])
 }

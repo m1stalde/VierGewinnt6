@@ -31,8 +31,8 @@ export function getPositionOfElement(array, element, value){
     return pos;
 }
 
-export function getHighestValue<T>(array : Array, element) : T{
-    var value : T = -1;
+export function getHighestValue<T>(array : Array<any>, element : string, seed : T) : T{
+    var value : T = seed;
     for (var i = 0, len = array.length; i < len; i++) {
         if (array[i][element] > value) {
             value = array[i][element];
@@ -41,8 +41,8 @@ export function getHighestValue<T>(array : Array, element) : T{
     return value;
 }
 
-export function getLowestValue<T>(array : Array, element) : T{
-    var value : T;
+export function getLowestValue<T>(array : Array<any>, element, seed : T) : T{
+    var value : T = seed;
     for (var i = 0, len = array.length; i < len; i++) {
         if(i == 0){
             value = array[i][element];

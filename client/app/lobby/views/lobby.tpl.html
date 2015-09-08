@@ -68,7 +68,7 @@
       </div>
 
       <!-- Show messages regarding actions to the user -->
-      <action-message-display><span class="action-message-span">{{lobby.actionMessage.data}} {{lobby.actionMessage.status}} {{lobby.actionMessage.statusText}}</span></action-message-display>
+      <action-message-display></action-message-display>
 
      <!-- <div class="panel panel-default message-panel" ng-show="lobby.showMessage">
         <span></span>
@@ -172,115 +172,6 @@
     </div>
 
   </div>
-  <!--div.row -->
-  <!-- <div class="row">
-     <div class="row-height">
-       <div class="col-xs-8 col-xs-height col-xs-bottom">
-         <div class="inside inside-full-height">
-           <div class="content">
-
-             &lt;!&ndash;Panel Heading - Create New Game &ndash;&gt;
-             <div class="panel panel-default" ng-hide="lobby.gameCreation">
-               <div class="panel-heading">
-                 <span class="glyphicon glyphicon-file icon"></span>
-                 Create New Game
-               </div>
-               <div class="panel-body">
-                 <div class="form-group">
-                   <label for="name">Name:</label>
-                   <input type="text" name="name" class="form-control" id="name" ng-model="lobby.currentItem.name">
-                 </div>
-                 <button type="submit" class="btn btn-default" ng-click="lobby.createRoom(lobby.currentItem.name)">Create</button>
-                 </form>
-               </div>
-             </div>
-
-             &lt;!&ndash; Display Games &ndash;&gt;
-             <div class="panel panel-default">
-               <div class="panel-heading">
-                 <span class="glyphicon glyphicon-list-alt icon"></span>
-                 Games
-               </div>
-               <div class="panel-body">
-                 <table class="table note-table">
-                   <thead class="game-table-header">
-                   <tr>
-                     <th>
-                       RoomId
-                       <a href="#">
-                         <span class="glyphicon glyphicon-chevron-down"></span>
-                       </a>
-                     </th>
-                     <th>
-                       Name
-                       <a href="#">
-                         <span class="glyphicon glyphicon-chevron-down"></span>
-                       </a>
-                     </th>
-                     <th>
-                       Status
-                       <a href="#">
-                         <span class="glyphicon glyphicon-chevron-down"></span>
-                       </a>
-                     </th>
-                     <th>
-                       Creation
-                       <a href="#">
-                         <span class="glyphicon glyphicon-chevron-down"></span>
-                       </a>
-                     </th>
-                     <th>
-                       Actions
-                       <a href="#">
-                         <span class="glyphicon glyphicon-chevron-down"></span>
-                       </a>
-                     </th>
-                   </tr>
-                   </thead>
-                   <tbody class="note-table-body">
-                   <tr class="noteTableRow" ng-repeat="item in lobby.lobbyData">
-                     <td>{{item.roomId}}</td>
-                     <td>{{item.name}}</td>
-                     <td>{{item.status}}</td>
-                     <td>{{item.creationDate}}</td>
-                     <td>
-                       <a href="#" class="icon" ng-click="lobby.joinRoom(item)">
-                         <span class="glyphicon glyphicon-plus"></span>
-                       </a>
-                       <a href="#" class="icon" ng-click="lobby.editRoom(item)">
-                         <span class="glyphicon glyphicon-pencil"></span>
-                       </a>
-                       <a href="#" class="icon" ng-click="lobby.deleteRoom(item)">
-                         <span class="glyphicon glyphicon-trash"></span>
-                       </a>
-                     </td>
-                   </tr>
-                   </tbody>
-                 </table>
-               </div>
-             </div> &lt;!&ndash; gameDiv &ndash;&gt;
-           </div> &lt;!&ndash; class="col-xs-8" &ndash;&gt;
-         </div>
-       </div >
-       <div class="col-xs-4 col-xs-height col-xs-top">
-         <div class="inside inside-full-height">
-           <div class="chat-window">
-           <aside>
-             <div class="panel panel-default">
-               <div class="panel-heading">
-                 <span class="glyphicon glyphicon-list-alt icon"></span>
-                 Chat
-               </div>
-               <form action="">
-                 <input id="msgInput" autocomplete="off" /><button ng-click="lobby.sendMessage()">Send</button>
-               </form>
-             </div>
-           </aside>
-         </div>
-         </div>
-       </div>
-     </div>
-   </div>-->
 </section>
 
 

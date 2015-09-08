@@ -1,33 +1,33 @@
 module lobby.directives {
   "use strict";
-  export class StopEvent implements ng.IDirective{
+  export class StopEvent implements ng.IDirective {
     public restrict = 'A';
 
     public static DirectoryName = "stopEvent";
 
-    public link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+    public link = (scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
       element.bind('click', function (e) {
         e.stopPropagation();
       });
     }
 
-    public static factory(): ng.IDirectiveFactory {
+    public static factory():ng.IDirectiveFactory {
       var directive = () => new StopEvent();
       return directive;
     }
   }
 
-  export class RoomValidator implements ng.IDirective{
+  export class RoomValidator implements ng.IDirective {
     public restrict = 'A';
     public require = 'ngModel';
 
     public static DirectoryName = "room";
 
-    public link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl : IRoomValidation) => {
-      ctrl.$validators.room = function(modelValue, viewValue) {
+    public link = (scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
+      ctrl.$validators.room = function (modelValue, viewValue) {
         var ROOM_REGEXP = /^\w+$/;
 
-      if (ROOM_REGEXP.test(viewValue)) {
+        if (ROOM_REGEXP.test(viewValue)) {
           return true;
         }
 
@@ -36,34 +36,55 @@ module lobby.directives {
     }
 
 
-    public static factory(): ng.IDirectiveFactory {
+    public static factory():ng.IDirectiveFactory {
       var directive = () => new RoomValidator();
       return directive;
     }
   }
 
-  export class ActionMessageDisplay implements ng.IDirective{
+  export class ActionMessageDisplay implements ng.IDirective {
     public restrict = 'E';
     public transclude = true;
-    public scope = {}
-    public templateUrl = "/lobby/directives/action-message.html"
+    public templateUrl = "/lobby/directives/action-message.html";
+    public $timeout;
+
+    constructor($timeout){
+      this.$timeout = $timeout;
+    }
 
     public static DirectoryName = "actionMessageDisplay";
 
-    public link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl : IRoomValidation) => {
-        var k = 4;
+    public link = ($scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
+      var elem = element;
+      $scope.$watch(() => {
+        return $scope.lobby.actionMessage;
+      },(newValue : lobby.controllers.IActionMessage, oldValue : lobby.controllers.IActionMessage) => {
+        if(oldValue.isError === null && newValue.isError !== null){
+          if(newValue.isError){ // Error
+            element.find('div:first').addClass('message-panel-error');
+          } else if(!newValue.isError){
+            element.find('div:last').addClass('message-panel-success');
+          }
+          this.$timeout(function () {
+            $scope.lobby.actionMessage.isError = null;
+          }, 5000)
+        }
+      })
     }
 
-    public static factory(): ng.IDirectiveFactory {
-      var directive = () => new ActionMessageDisplay();
+    public static factory():ng.IDirectiveFactory {
+      var directive = ($timeout) => new ActionMessageDisplay($timeout);
+      directive.$inject = ['$timeout'];
       return directive;
     }
   }
 
   interface IRoomValidation extends ng.INgModelController {
-    $validators : {
-      room(modelValue : string, viewValue : string);
-    }
+    $validators : ICustomValidator;
+  }
+
+  interface ICustomValidator extends ng.IModelValidators{
+    room(modelValue:string, viewValue:string) : boolean;
   }
 }
 

@@ -18,13 +18,20 @@ export function getAllRooms(req:express.Request, res:express.Response) {
 
 export function saveRoom(req:express.Request, res:express.Response) {
     var userId = security.currentUserId(req);
+    var playerId = "12334456"; // gets the playerID from the session data
 
     sessionService.getCurrentSession(userId, function (err, sessionObj) {
+
+        var sessionData = new lobbyService.LobbySessionData({
+            userName : sessionObj.username,
+            playerId : playerId
+        });
+
         if (err) {
             // Development only => security issue in production => generic exception
             res.status(400).send("Couldn't find a session with the delivered sessionId");
             return;
-        } else if (!sessionObj.username) {
+        } else if (!sessionData.userName) {
             // Development only => security issue in production => generic exception
             res.status(400).send("The is no username associated with the session.");
             return;
@@ -39,12 +46,14 @@ export function saveRoom(req:express.Request, res:express.Response) {
         if(req.body.players && req.body.players.length === 0){ // CREATE
             players.push(new lobbyService.Player(
                 {
-                    userName : sessionObj.username, // gets the username from the session object
-                    playerId : "12334456"} // gets the playerID from the session data
+                    userName : sessionData.userName, // gets the username from the session object
+                    playerId}
             ));
 
             // Needed to avoid malicious requests
             isCreate = true;
+        } else {
+            players = req.body.players;
         }
 
         // Map the room object
@@ -55,47 +64,12 @@ export function saveRoom(req:express.Request, res:express.Response) {
                 name: req.body.name,
                 creationTime : req.body.creationTime || null,
                 status : req.body.status || null,
-                isDelete: req.body.isDelete || null
+                isDelete: req.body.isDelete || null,
+                isJoin: req.body.isJoin || null
             }
         );
 
-        lobbyService.saveRoom(roomObj, sessionObj.username, isCreate, function (err, data) {
-            if (err) {
-                res.status(400).send(err);
-            } else {
-                res.format({
-                    'application/json': function () {
-                        res.json(data);
-                    }
-                });
-            }
-        });
-    });
-}
-
-export function updateRoom(req:express.Request, res:express.Response) {
-    var userId = security.currentUserId(req);
-    // temporary fix, retrieve the playerId in the future from the session object
-    var playerId = "123456";
-    var roomId = req.body.id;
-
-    sessionService.getCurrentSession(userId, function (err, sessionObj) { // retrieve the userName from the sessionObj
-        if (err) {
-            // Development only => security issue in production => generic exception
-            res.status(400).send("Couldn't find a session with the delivered sessionId");
-            return;
-        }
-        else if (!sessionObj.username) {
-            // Development only => security issue in production => generic exception
-            res.status(400).send("The is no username associated with the session.");
-            return;
-        }
-        else if (!roomId) {
-            // Development only => security issue in production => generic exception
-            res.status(400).send("There was no room id passed to the function.");
-            return;
-        }
-        lobbyService.joinRoom(roomId, playerId, sessionObj.username, function (err, data) {
+        lobbyService.saveRoom(roomObj, sessionData, isCreate, function (err, data) {
             if (err) {
                 res.status(400).send(err);
             } else {
@@ -142,6 +116,7 @@ export function getRoom(req:express.Request, res:express.Response) {
         });
     });
 }
+
 
 
 

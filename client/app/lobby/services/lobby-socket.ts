@@ -18,7 +18,7 @@ module lobby.services {
     ];
 
     constructor(private appConfig: vierGewinnt6.IAppConfig) {
-      this.chatHistory = {};
+      this.chatHistory = new ChatHistory(null);
       // DOM related initialisation
       this.chatWindow = $('.chat-output');
     }
@@ -136,6 +136,12 @@ module lobby.services {
   export interface IChatHistory extends IMessage {
     body : {
       data : Array<IChatMessage>;
+    }
+  }
+
+  export class ChatHistory{
+    constructor(chatHistory : IChatHistory){
+
     }
   }
 }

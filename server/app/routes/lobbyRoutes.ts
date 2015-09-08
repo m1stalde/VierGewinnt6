@@ -10,6 +10,5 @@ router.all('/*', security.handleAuthenticate);
 router.get("/", controller.getAllRooms);
 router.get("/:id", controller.getRoom);
 router.post("/", controller.saveRoom);
-router.post("/:id", controller.updateRoom);
 
 export = router;

@@ -1,12 +1,14 @@
 /// <reference path="../_all.ts"/>
 
-var chatHistory: Array<app.interfaces.IChatMessage> = [];
+import interfaces = require("../interfaces/websocketInterfaces");
 
-export function retrieveChatHistory() : Array<app.interfaces.IChatMessage>{
+var chatHistory: Array<interfaces.IChatMessage> = [];
+
+export function retrieveChatHistory() : Array<interfaces.IChatMessage>{
     return chatHistory;
 }
 
-export function handleChatMessage(chatMessageObj:app.interfaces.IChatMessage) {
+export function handleChatMessage(chatMessageObj:interfaces.IChatMessage) {
 
     switch (chatMessageObj.header.subType) {
         case "sendMessage":
@@ -15,7 +17,7 @@ export function handleChatMessage(chatMessageObj:app.interfaces.IChatMessage) {
     }
 }
 
-export function returnChatHistoryWsObject(): app.interfaces.IChatHistory {
+export function returnChatHistoryWsObject(): interfaces.IChatHistory {
     if (chatHistory.length) {
         return {
             header: {
@@ -29,7 +31,7 @@ export function returnChatHistoryWsObject(): app.interfaces.IChatHistory {
     }
 }
 
-export function retrieveChatMessageWsObject(chatMessageObj:app.interfaces.IChatMessage) {
+export function retrieveChatMessageWsObject(chatMessageObj:interfaces.IChatMessage) {
 
     // Process the message object
     chatMessageObj.body.creationDate = new Date().toLocaleTimeString().toString();
