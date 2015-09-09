@@ -1,6 +1,6 @@
 /// <reference path='../_lobby.ts' />
 
-module lobby.services {
+/*module lobby.services {
   "use strict";
   export class Socket {
 
@@ -144,11 +144,11 @@ module lobby.services {
 
     }
   }
-}
+}*/
 
 
-angular
-  .module('lobby')
-  .service('socketService', lobby.services.Socket);
+//angular
+  //.module('lobby')
+  //service('socketService', lobby.services.Socket);
 
 

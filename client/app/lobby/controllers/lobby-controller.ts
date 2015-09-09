@@ -7,10 +7,10 @@ module lobby.controllers {
 
     private chatWindow:JQuery;
 
-    public lobbyData:Array<lobby.interfaces.IRoom>;
+    public lobbyData:Array<lobby.interfaces.IRoomRessource>;
     public gameCreation:boolean = true;
     public gameEditing:boolean = true;
-    public currentItem:lobby.interfaces.IRoom = new lobby.interfaces.Room(null);
+    public currentItem:lobby.interfaces.IRoomRessource = new lobby.interfaces.Room(null);
     public chat = {};
     public displayUser:User.Services.IUser;
     public actionMessage:IActionMessage = new ActionMessage(null, null);
@@ -24,13 +24,12 @@ module lobby.controllers {
       '$log',
       '$rootScope',
       'lobbyStorage',
-      'socketService',
       'UserService'
     ];
 
     // dependencies are injected via AngularJS $injector
     constructor(private $scope, private $log:ng.ILogService, private $rootScope:ng.IScope,
-                private lobbyStorage, private socketService, private userService:User.Services.IUserService) {
+                private lobbyStorage, private userService:User.Services.IUserService) {
       this.displayUser = userService.getCurrentUser();
       this.init();
     }
@@ -39,29 +38,6 @@ module lobby.controllers {
     private init() {
       this.lobbyData = [];
       this.getRooms();
-
-      // DOM related initialisation
-      this.chatWindow = $('.chat-output');
-
-      var self = this;
-      this.$scope.$watch(
-        function () {
-          return self.socketService.chatHistory
-        },
-        function (newValue, oldValue) {
-          if (newValue !== oldValue) {
-            // Delete existing records
-            self.chatWindow.empty();
-
-            for (var i = 0; i < newValue.body.data.length; ++i) {
-              self.chatWindow.append($('<span><strong>' + newValue.body.data[i].body.userName + '</strong>&nbsp' + newValue.body.data[i].body.message + '<br></span>'));
-            }
-          }
-        }
-      );
-
-      this.socketService.setUpWebsocketService();
-
     }
 
     public toggleNewGame():void {
@@ -74,13 +50,13 @@ module lobby.controllers {
       this.gameEditing = this.gameEditing === false ? true : false;
     }
 
-    public editRoom(room:lobby.interfaces.IRoom) : void {
+    public editRoom(room:lobby.interfaces.IRoomRessource):void {
       this.currentItem.name = room.name;
       this.currentItem.roomId = room.roomId;
       this.toggleEditingGame();
     }
 
-    public joinRoom(room:lobby.interfaces.IRoom){
+    public joinRoom(room:lobby.interfaces.IRoomRessource) {
       room.isJoin = true;
       this.updateRoom(room);
     }
@@ -88,21 +64,21 @@ module lobby.controllers {
     // CRUD Operations with $resources
 
     // CREATE => (GET /:id + POST /:id)
-    public createRoom(room:lobby.interfaces.IRoom):void {
+    public createRoom(room:lobby.interfaces.IRoomRessource):void {
       var self = this;
       var nextRoomId = this.getHighestValue<number>(this.lobbyData, "roomId", -1) + 1;
       var roomRes = this.lobbyStorage.LobbyRoom();
-      roomRes.get({id: nextRoomId}, function (newRoom:lobby.interfaces.IRoom) { // success callback
+      roomRes.get({id: nextRoomId}, function (newRoom:lobby.interfaces.IRoomRessource) { // success callback
         newRoom.name = room.name;
         newRoom.$save(function (room) { // success callback
           self.lobbyData.push(room);
           self.actionMessage = new lobby.controllers.ActionMessageSuccess({
-            isError : false,
+            isError: false,
             data: "The room has been created!"
           })
         }, function (err) { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
-            isError : true,
+            isError: true,
             status: err.status,
             statusText: err.statusText,
             data: err.data
@@ -114,21 +90,21 @@ module lobby.controllers {
     }
 
     // DELETE => (GET /:id + POST /id)
-    public deleteRoom(room:lobby.interfaces.IRoom):void {
+    public deleteRoom(room:lobby.interfaces.IRoomRessource):void {
       var self = this;
       var pos = this.getPositionOfElement(self.lobbyData, "roomId", room.roomId);
       var roomRes = this.lobbyStorage.LobbyRoom();
-      roomRes.get({id: room.roomId}, function (room:lobby.interfaces.IRoom) {
+      roomRes.get({id: room.roomId}, function (room:lobby.interfaces.IRoomRessource) {
         room.isDelete = true;
         room.$save(function (room) { // success callback
           self.lobbyData.splice(pos, 1);
           self.actionMessage = new lobby.controllers.ActionMessageSuccess({
-            isError : false,
+            isError: false,
             data: "The room has been deleted!"
           })
         }, function (err) { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
-            isError : true,
+            isError: true,
             status: err.status,
             statusText: err.statusText,
             data: err.data
@@ -144,7 +120,7 @@ module lobby.controllers {
         self.lobbyData = res;
       }, function (err) { // error callback
         self.actionMessage = new lobby.controllers.ActionMessageError({
-          isError : true,
+          isError: true,
           status: err.status,
           statusText: err.statusText,
           data: err.data
@@ -153,22 +129,22 @@ module lobby.controllers {
     }
 
     // UPDATE => (POST /:id)
-    public updateRoom(newRoom:lobby.interfaces.IRoom):void {
+    public updateRoom(newRoom:lobby.interfaces.IRoomRessource):void {
       var self = this;
       var pos = this.getPositionOfElement(self.lobbyData, "roomId", newRoom.roomId);
       var roomRes = this.lobbyStorage.LobbyRoom();
-      roomRes.get({id: newRoom.roomId}, function (room:lobby.interfaces.IRoom) {
+      roomRes.get({id: newRoom.roomId}, function (room:lobby.interfaces.IRoomRessource) {
         room.name = newRoom.name; // Update the name of the room
         room.isJoin = newRoom.isJoin || null;
         room.$save(function (room) { // success callback
           self.lobbyData[pos] = room;
           self.actionMessage = new lobby.controllers.ActionMessageSuccess({
-            isError : false,
+            isError: false,
             data: "Your room has been updated!"
           })
         }, function (err) { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
-            isError : true,
+            isError: true,
             status: err.status,
             statusText: err.statusText,
             data: err.data
@@ -176,7 +152,6 @@ module lobby.controllers {
         });
       });
     }
-
 
 
     private getPositionOfElement(array:Array<any>, element, value) {
@@ -187,8 +162,8 @@ module lobby.controllers {
       return pos;
     }
 
-    private getHighestValue<T>(array : Array<any>, element : string, seed : T) : T{
-      var value : T = seed;
+    private getHighestValue<T>(array:Array<any>, element:string, seed:T):T {
+      var value:T = seed;
       for (var i = 0, len = array.length; i < len; i++) {
         if (array[i][element] > value) {
           value = array[i][element];
@@ -196,24 +171,6 @@ module lobby.controllers {
       }
       return value;
     }
-
-    public wsSendChatMessage(message:string, sentTo:Array<string>) {
-      var chatObj:lobby.services.IChatMessage = {
-        header: {
-          type: "chat",
-          subType: "sendMessage"
-        },
-        body: {
-          userName: this.socketService.currentUser,
-          message: message,
-          sendTo: sentTo
-        }
-      };
-      this.socketService.sendMessage(chatObj);
-    }
-  }
-
-  interface callbackFn {(resOrErr:string) : void
   }
 
   // Action Message Interfaces
@@ -256,6 +213,19 @@ module lobby.controllers {
     constructor(messageObj:IActionMessageSuccess) {
       super(messageObj.data, messageObj.isError);
     }
+  }
+
+  export interface ILobby extends ng.IScope {
+    lobby: ILobbyScope;
+  }
+
+  export interface ILobbyScope {
+      gameCreation: boolean;
+      gameEditing: boolean;
+      currentItem: lobby.interfaces.IRoomRessource;
+      chat : any;
+      displayUser: User.Services.IUser;
+      actionMessage: IActionMessage;
   }
 
   /**

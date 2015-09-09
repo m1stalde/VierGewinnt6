@@ -5,7 +5,7 @@
 module lobby.interfaces{
   "use strict";
 
-  export interface IRoom extends ng.resource.IResource<IRoom> {
+  export interface IRoomRessource extends ng.resource.IResource<IRoomRessource> {
     roomId?: string;
     name?: string;
     status?: string;
@@ -20,7 +20,7 @@ module lobby.interfaces{
     playerId : string;
   }
 
-  export class Room implements IRoom {
+  export class Room implements IRoomRessource {
     public roomId : string;
     public name: string;
     public status: string;
@@ -29,7 +29,7 @@ module lobby.interfaces{
     public isDelete : boolean;
     public isJoin : boolean;
 
-      constructor(room : IRoom){
+      constructor(room : IRoomRessource){
         if(room !== null){
           this.roomId = room.roomId;
           this.name= room.name;

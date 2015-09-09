@@ -54,7 +54,7 @@ module lobby.directives {
 
     public static DirectoryName = "actionMessageDisplay";
 
-    public link = ($scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
+    public link = ($scope: lobby.controllers.ILobby, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
       $scope.$watch(() => {
         return $scope.lobby.actionMessage;
       },(newValue : lobby.controllers.IActionMessage, oldValue : lobby.controllers.IActionMessage) => {
