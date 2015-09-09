@@ -25,14 +25,12 @@ module lobby.controllers {
       '$rootScope',
       'lobbyStorage',
       'socketService',
-      'UserService',
-      'lobbyService'
+      'UserService'
     ];
 
     // dependencies are injected via AngularJS $injector
     constructor(private $scope, private $log:ng.ILogService, private $rootScope:ng.IScope,
-                private lobbyStorage, private socketService, private userService:User.Services.IUserService,
-                private lobbyService) {
+                private lobbyStorage, private socketService, private userService:User.Services.IUserService) {
       this.displayUser = userService.getCurrentUser();
       this.init();
     }
@@ -189,8 +187,8 @@ module lobby.controllers {
       return pos;
     }
 
-    private getHighestValue<T>(array:Array<any>, element, seed : T):T {
-      var value:T = seed;
+    private getHighestValue<T>(array : Array<any>, element : string, seed : T) : T{
+      var value : T = seed;
       for (var i = 0, len = array.length; i < len; i++) {
         if (array[i][element] > value) {
           value = array[i][element];

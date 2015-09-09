@@ -17,7 +17,8 @@ module vierGewinnt6 {
       'lobby',
       'user',
       'session',
-      'common'
+      'common',
+      'chat'
     ])
     .constant('appConfig', {
       baseUrl: 'http://127.0.0.1:2999',
