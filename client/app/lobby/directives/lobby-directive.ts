@@ -2,7 +2,6 @@ module lobby.directives {
   "use strict";
   export class StopEvent implements ng.IDirective {
     public restrict = 'A';
-
     public static DirectoryName = "stopEvent";
 
     public link = (scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
@@ -20,7 +19,6 @@ module lobby.directives {
   export class RoomValidator implements ng.IDirective {
     public restrict = 'A';
     public require = 'ngModel';
-
     public static DirectoryName = "room";
 
     public link = (scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
@@ -44,24 +42,23 @@ module lobby.directives {
 
   export class ActionMessageDisplay implements ng.IDirective {
     public restrict = 'E';
+    public static DirectoryName = "actionMessageDisplay";
     public transclude = true;
     public templateUrl = "/lobby/directives/action-message.html";
-    public $timeout;
+    private $timeout;
 
-    constructor($timeout){
+    constructor($timeout) {
       this.$timeout = $timeout;
     }
 
-    public static DirectoryName = "actionMessageDisplay";
-
-    public link = ($scope: lobby.controllers.ILobby, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
+    public link = ($scope:lobby.controllers.ILobby, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
       $scope.$watch(() => {
         return $scope.lobby.actionMessage;
-      },(newValue : lobby.controllers.IActionMessage, oldValue : lobby.controllers.IActionMessage) => {
-        if(oldValue.isError === null && newValue.isError !== null){
-          if(newValue.isError){ // Error
+      }, (newValue:lobby.controllers.IActionMessage, oldValue:lobby.controllers.IActionMessage) => {
+        if (oldValue.isError === null && newValue.isError !== null) {
+          if (newValue.isError) { // Error
             element.find('div:first').addClass('message-panel-error');
-          } else if(!newValue.isError){
+          } else if (!newValue.isError) {
             element.find('div:last').addClass('message-panel-success');
           }
           this.$timeout(function () {
@@ -82,7 +79,7 @@ module lobby.directives {
     $validators : ICustomValidator;
   }
 
-  interface ICustomValidator extends ng.IModelValidators{
+  interface ICustomValidator extends ng.IModelValidators {
     room(modelValue:string, viewValue:string) : boolean;
   }
 }

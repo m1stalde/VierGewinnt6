@@ -3,15 +3,12 @@
 module lobby.controllers {
   'use strict';
 
-  class LobbyCtrl {
-
-    private chatWindow:JQuery;
+  class LobbyCtrl implements ILobbyScope {
 
     public lobbyData:Array<lobby.interfaces.IRoomRessource>;
     public gameCreation:boolean = true;
     public gameEditing:boolean = true;
     public currentItem:lobby.interfaces.IRoomRessource = new lobby.interfaces.Room(null);
-    public chat = {};
     public displayUser:User.Services.IUser;
     public actionMessage:IActionMessage = new ActionMessage(null, null);
 
@@ -63,7 +60,7 @@ module lobby.controllers {
 
     // CRUD Operations with $resources
 
-    // CREATE => (GET /:id + POST /:id)
+    // CREATE
     public createRoom(room:lobby.interfaces.IRoomRessource):void {
       var self = this;
       var nextRoomId = this.getHighestValue<number>(this.lobbyData, "roomId", -1) + 1;
@@ -89,7 +86,7 @@ module lobby.controllers {
       this.toggleNewGame();
     }
 
-    // DELETE => (GET /:id + POST /id)
+    // DELETE
     public deleteRoom(room:lobby.interfaces.IRoomRessource):void {
       var self = this;
       var pos = this.getPositionOfElement(self.lobbyData, "roomId", room.roomId);
@@ -113,7 +110,7 @@ module lobby.controllers {
       });
     }
 
-    // GET => GET /
+    // GET
     private getRooms():void {
       var self = this;
       var res = this.lobbyStorage.LobbyRoom().query(function () { // success callback
@@ -128,7 +125,7 @@ module lobby.controllers {
       });
     }
 
-    // UPDATE => (POST /:id)
+    // UPDATE
     public updateRoom(newRoom:lobby.interfaces.IRoomRessource):void {
       var self = this;
       var pos = this.getPositionOfElement(self.lobbyData, "roomId", newRoom.roomId);

@@ -1,5 +1,5 @@
 ///<reference path='../../../typings/tsd.d.ts' />
-module ChatCtrl {
+module chat.controllers {
   'use strict';
 
   class ChatCtrl {
