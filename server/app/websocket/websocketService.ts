@@ -2,20 +2,22 @@
 import websocketInterfaces = require('../interfaces/websocketInterfaces');
 import WebSocket = require('ws');
 import security = require('../utils/security');
-var path = require("path");
-var WebSocketServer = WebSocket.Server;
 import express = require('express');
-var util = require('util');
-var helperFn = require(path.join(__dirname, '..', 'utils', 'helperFunctions'));
-var chatWebsocket = require(path.join(__dirname, 'chatWebsocketService.js'));
-//import gameWebsocket = require('./gameWebsocketService');
-
+import util = require('util');
+import  helperFn = require('../utils/helperFunctions');
+import  chatWebsocket = require('chatWebsocketService');
 import messageService = require('../services/messageService');
 
+var WebSocketServer = WebSocket.Server;
 var wsServer;
 var clients : Array<websocketInterfaces.IClient> = [];
 
 exports.clients = clients;
+
+export interface IMessage {
+    type: string;
+    data: any;
+}
 
 export function returnWsServer(){
     return wsServer;
@@ -33,40 +35,19 @@ export function setUpWebsocketService(server) {
         // Assign a username to the connection
         mapMetaDataToConn(conn);
 
-        // Sends the chat history to the newly connected client
-        if(chatWebsocket.retrieveChatHistory().length > 0){
-            conn.send(
-                JSON.stringify(chatWebsocket.returnChatHistoryWsObject())
-            );
-        }
-
         // Client is sending a message
-        conn.on('message', function (messageString) {
+        conn.on('message', function (messageString : string) {
 
             // Parse the incoming message
-            var messageObj = JSON.parse(messageString);
+            var messageObj : IMessage = JSON.parse(messageString);
 
-            // Processed message which will be sent back to the client
-            var processedMsgObj : websocketInterfaces.IMessage;
+            // Send the messageObj to the message service for further distribution
+            messageService.sendMessage(messageObj);
 
-            switch(messageObj.header.type){
-                case "chat":
-                    processedMsgObj = chatWebsocket.handleChatMessage(messageObj);
-                    break;
-                case "room":
-                    break;
-            }
-
-            if (processedMsgObj) {
-                wsServer.broadcast(processedMsgObj);
-            }
         });
 
         conn.on('close', runCleanUpTask(this));
     });
-
-    // Broadcast the delta to all the participants in the chat
-    wsServer.broadcast = broadcastData;
 
     return wsServer;
 }
@@ -110,12 +91,6 @@ function runCleanUpTask(self){
     }
 }
 
-export function broadcastData(data) {
-    console.log("Broadcasting to all clients:\n " + util.inspect(data, {showHidden: false, depth: 5}));
-    this.clients.forEach(function each(client) {
-        client.send(JSON.stringify(data));
-    });
-};
 
 /**
  * Sends message to clients for defined users. If message contains no userIds, the message is ignored.

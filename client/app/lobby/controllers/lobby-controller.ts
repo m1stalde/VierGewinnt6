@@ -65,7 +65,7 @@ module lobby.controllers {
       var self = this;
       var nextRoomId = this.getHighestValue<number>(this.lobbyData, "roomId", -1) + 1;
       var roomRes = this.lobbyStorage.LobbyRoom();
-      roomRes.get({id: nextRoomId}, function (newRoom:lobby.interfaces.IRoomRessource) { // success callback
+      roomRes.get({id: nextRoomId}, (newRoom:lobby.interfaces.IRoomRessource) => { // success callback
         newRoom.name = room.name;
         newRoom.$save(function (room) { // success callback
           self.lobbyData.push(room);
@@ -73,7 +73,7 @@ module lobby.controllers {
             isError: false,
             data: "The room has been created!"
           })
-        }, function (err) { // error callback
+        }, (err) => { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
             isError: true,
             status: err.status,
@@ -91,7 +91,7 @@ module lobby.controllers {
       var self = this;
       var pos = this.getPositionOfElement(self.lobbyData, "roomId", room.roomId);
       var roomRes = this.lobbyStorage.LobbyRoom();
-      roomRes.get({id: room.roomId}, function (room:lobby.interfaces.IRoomRessource) {
+      roomRes.get({id: room.roomId}, (room:lobby.interfaces.IRoomRessource) => {
         room.isDelete = true;
         room.$save(function (room) { // success callback
           self.lobbyData.splice(pos, 1);
@@ -99,7 +99,7 @@ module lobby.controllers {
             isError: false,
             data: "The room has been deleted!"
           })
-        }, function (err) { // error callback
+        }, (err) => { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
             isError: true,
             status: err.status,
@@ -130,7 +130,7 @@ module lobby.controllers {
       var self = this;
       var pos = this.getPositionOfElement(self.lobbyData, "roomId", newRoom.roomId);
       var roomRes = this.lobbyStorage.LobbyRoom();
-      roomRes.get({id: newRoom.roomId}, function (room:lobby.interfaces.IRoomRessource) {
+      roomRes.get({id: newRoom.roomId}, (room:lobby.interfaces.IRoomRessource) => {
         room.name = newRoom.name; // Update the name of the room
         room.isJoin = newRoom.isJoin || null;
         room.$save(function (room) { // success callback
@@ -139,7 +139,7 @@ module lobby.controllers {
             isError: false,
             data: "Your room has been updated!"
           })
-        }, function (err) { // error callback
+        }, (err) => { // error callback
           self.actionMessage = new lobby.controllers.ActionMessageError({
             isError: true,
             status: err.status,
