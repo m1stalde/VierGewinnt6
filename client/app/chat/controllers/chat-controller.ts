@@ -11,10 +11,12 @@ module chat.controllers {
     // it is better to have it close to the constructor, because the parameters must match in count and type.
     // See http://docs.angularjs.org/guide/di
     public static $inject = [
+      'UserService',
+      'MessageService'
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor() {
+    constructor(userService, messageService) {
       var vm = this;
       vm.ctrlName = 'ChatCtrl';
     }

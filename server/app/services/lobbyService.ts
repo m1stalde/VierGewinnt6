@@ -4,7 +4,7 @@ import express = require('express');
 import gameService = require('../services/gameService');
 import gameLogic = require('../logic/gameLogic');
 import utils = require("../utils/helperFunctions");
-import websocketService = require("../websocket/websocketService");
+import chatService = require("../services/chatService");
 
 var listOfRooms:Array<IRoom> = [
     {

@@ -1,18 +1,19 @@
 /// <reference path="../_all.ts"/>
-import websocketInterfaces = require('../interfaces/websocketInterfaces');
 import WebSocket = require('ws');
 import security = require('../utils/security');
 import express = require('express');
 import util = require('util');
-import  helperFn = require('../utils/helperFunctions');
-import  chatWebsocket = require('chatWebsocketService');
+import helperFn = require('../utils/helperFunctions');
+import chatService = require("../services/chatService");
 import messageService = require('../services/messageService');
 
 var WebSocketServer = WebSocket.Server;
 var wsServer;
-var clients : Array<websocketInterfaces.IClient> = [];
+var clients : Array<IClient> = [];
 
 exports.clients = clients;
+
+var regexChat = /^Chat[A-Z]/;
 
 export interface IMessage {
     type: string;
@@ -26,6 +27,8 @@ export function returnWsServer(){
 export function setUpWebsocketService(server) {
     // register for all message types to broadcast all server messages to all clients
     messageService.addMessageListener(messageService.WILDCARD_MESSAGE_TYPE, sendMessage);
+    //messageService.addMessageListener("LobbyChatMessage", null);
+    //messageService.addMessageListener("GameChatMessage", null);
 
     wsServer = new WebSocketServer({server: server});
 
@@ -39,7 +42,12 @@ export function setUpWebsocketService(server) {
         conn.on('message', function (messageString : string) {
 
             // Parse the incoming message
-            var messageObj : IMessage = JSON.parse(messageString);
+            var messageObj : messageService.IMessage = JSON.parse(messageString);
+
+            if(regexChat.test(messageObj.type)){
+                // Call the chatService to send the message
+                chatService.sendChatMessage(messageObj);
+            }
 
             // Send the messageObj to the message service for further distribution
             messageService.sendMessage(messageObj);
@@ -54,7 +62,7 @@ export function setUpWebsocketService(server) {
 
 function mapMetaDataToConn(conn: WebSocket){
     security.getServerSessionFromWebSocket(conn, function(err, serverSession) {
-        var userName = "User " + (clients.length + 1);
+        var userName = "User " + (helperFn.getHighestValue<number>(clients, "userName", 0) + 1);
         var playerId = serverSession.getPlayerId();
 
         console.info('player ' + playerId + ' connected');
@@ -65,18 +73,18 @@ function mapMetaDataToConn(conn: WebSocket){
             playerId: playerId
         });
 
-        conn.send(JSON.stringify({
-            header :  {
-                type : "chat",
-                subType : "sendMetaDataToUser"
-            },
-            body : {
-                userName: userName,
-                playerId: playerId
-            }
-        }));
+        var userData = new UserData({
+            userName : userName,
+            playerId : playerId
+        });
+
+        conn.send(JSON.stringify(new MetaDataMessage({
+            metaData : userData
+        })));
     });
 }
+
+
 
 function runCleanUpTask(self){
     return function(){
@@ -115,4 +123,34 @@ function sendMessage(message: messageService.IMessage) {
     });
 };
 
+export interface IClient {
+    playerId : string;
+    userName? : string;
+    clientObj : WebSocket;
+}
 
+export interface IUserData{
+    userName : string;
+    playerId : string;
+}
+
+export interface IMetaDataExchange{
+     metaData : IUserData;
+}
+
+export class UserData{
+    public userName;
+    public playerId;
+    constructor(data : IUserData){
+        this.userName = data.userName;
+        this.playerId = data.playerId;
+    }
+}
+
+export class MetaDataMessage extends messageService.ServerMessage<IMetaDataExchange> {
+    static NAME = "MetaDataMessage";
+
+    constructor (metaData: IMetaDataExchange) {
+        super(MetaDataMessage.NAME, metaData);
+    }
+}

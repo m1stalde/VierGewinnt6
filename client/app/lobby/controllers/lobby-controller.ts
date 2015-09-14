@@ -220,7 +220,6 @@ module lobby.controllers {
       gameCreation: boolean;
       gameEditing: boolean;
       currentItem: lobby.interfaces.IRoomRessource;
-      chat : any;
       displayUser: User.Services.IUser;
       actionMessage: IActionMessage;
   }

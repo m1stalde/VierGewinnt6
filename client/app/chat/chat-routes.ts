@@ -12,7 +12,12 @@ module chat {
       .when('/chat', {
         templateUrl: 'chat/views/chat.tpl.html',
         controller: 'ChatCtrl',
-        controllerAs: 'chat'
+        controllerAs: 'chat',
+        resolve: {
+          'LoadUserData': ['UserService', function (userService: User.Services.IUserService) {
+            return userService.loadUserData();
+          }]
+        }
       });
   }
 }
