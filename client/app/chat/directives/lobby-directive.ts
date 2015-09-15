@@ -3,26 +3,29 @@ module chat.directives {
   export class ChatWindow implements ng.IDirective {
     public restrict = 'E'
     public static DirectoryName = "chatWindow";
-    private messageService : Common.Services.IMessageService;
-
-    constructor(messageService : Common.Services.IMessageService){
-      this.messageService = messageService;
+    public scope =  {
+      chatModel : '=',
+      chatSection : '='
     }
 
-    public link = (scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+    constructor(){}
 
+    public link(scope : chat.controllers.IChatScope, element : ng.IAugmentedJQuery, attrs : ng.IAttributes) {
+
+      // Subscribe the chat for the particular section
+      scope.chatModel.subscribeToChatSection("Chat" + scope.chatSection)
     }
 
     public static factory():ng.IDirectiveFactory {
-      var directive = (messageService) => new ChatWindow(messageService);
-      directive.$inject = ['MessageService'];
+      var directive = () => new ChatWindow();
+      directive.$inject = [];
       return directive;
     }
   }
 }
 
 angular
-  .module('lobby')
+  .module('chat')
   .directive(chat.directives.ChatWindow.DirectoryName, chat.directives.ChatWindow.factory());
 
 

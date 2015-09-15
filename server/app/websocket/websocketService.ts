@@ -72,15 +72,6 @@ function mapMetaDataToConn(conn: WebSocket){
             clientObj : conn,
             playerId: playerId
         });
-
-        var userData = new UserData({
-            userName : userName,
-            playerId : playerId
-        });
-
-        conn.send(JSON.stringify(new MetaDataMessage({
-            metaData : userData
-        })));
     });
 }
 
@@ -127,30 +118,4 @@ export interface IClient {
     playerId : string;
     userName? : string;
     clientObj : WebSocket;
-}
-
-export interface IUserData{
-    userName : string;
-    playerId : string;
-}
-
-export interface IMetaDataExchange{
-     metaData : IUserData;
-}
-
-export class UserData{
-    public userName;
-    public playerId;
-    constructor(data : IUserData){
-        this.userName = data.userName;
-        this.playerId = data.playerId;
-    }
-}
-
-export class MetaDataMessage extends messageService.ServerMessage<IMetaDataExchange> {
-    static NAME = "MetaDataMessage";
-
-    constructor (metaData: IMetaDataExchange) {
-        super(MetaDataMessage.NAME, metaData);
-    }
 }
