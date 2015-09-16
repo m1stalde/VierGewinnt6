@@ -5,6 +5,7 @@ module chat.controllers {
   class ChatCtrl {
 
     public chatHistory : Array<Common.Services.IMessage> = [];
+    public chatSection : string;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -22,21 +23,44 @@ module chat.controllers {
         chatHistory: this.chatHistory,
         userService : this.userService,
         messageService: this.messageService,
-        subscribeToChatSection : this.subscribeToChatSection,
+        storeChatSectionInCtrl : this.storeChatSectionInCtrl,
+        subscribeToChatSectionEvents : this.subscribeToChatSectionEvents,
+        fetchChatHistory : this.fetchChatHistory
       }
     }
 
-    private subscribeToChatSection(section : string){
-      // Subscribe for the chat section
-      this.messageService.addMessageListener(section, this.messageServiceCb)
+    public storeChatSectionInCtrl(section){
+      // Store the section additionally to the directive in the controller
+      this.chatSection = section;
     }
 
-    private messageServiceCb(message : Common.Services.IMessage){
+    public subscribeToChatSectionEvents(nameOfEventListener : string){
+
+      // Subscribe for the chat section for incoming messages
+      this.messageService.addMessageListener(nameOfEventListener, this.messageServiceCb)
+
+      // Subscribe for incoming messages to load the chat history
+      var eventListener = this.chatSection + "ChatHistory";
+      this.messageService.addMessageListener(eventListener, this.messageServiceCb)
+    }
+
+    public messageServiceCb(message : Common.Services.IMessage){
       // Update a field => gets binded to the directory
+    }
+
+    public fetchChatHistory(){
+      var messageObj : ChatHistoryMessage = new ChatHistoryMessage({
+        chatSectionPrefix : this.chatSection,
+        chatHistory : null
+      })
+
+      // Send a request in order to retrieve the chat history of the given section
+      this.messageService.sendMessage(messageObj);
     }
   }
 
   export interface IChatScope extends ng.IScope {
+    getTemplateUrl : () => string;
     chatModel : IChatModel;
     chatSection : string;
   }
@@ -45,7 +69,30 @@ module chat.controllers {
     chatHistory :  Array<Common.Services.IMessage>;
     userService: User.Services.IUserService;
     messageService : Common.Services.IMessageService;
-    subscribeToChatSection(section : string) : void;
+    storeChatSectionInCtrl : (section : string) => void;
+    subscribeToChatSectionEvents: (nameOfEventListener : string) => void;
+    fetchChatHistory : () => void;
+  }
+
+  // Message
+  export interface IChatMessage {
+    message : string;
+    creationDate : string;
+    from : string;
+    to : string;
+  }
+
+  export class ChatHistoryMessage extends Common.Services.ClientMessage<IChatHistory> {
+    static NAME = "ChatHistory";
+
+    constructor (chatData: IChatHistory) {
+      super(chatData.chatSectionPrefix + ChatHistoryMessage.NAME, chatData);
+    }
+  }
+
+  export interface IChatHistory{
+    chatSectionPrefix : string;
+    chatHistory : Array<IChatMessage>;
   }
 
   /**

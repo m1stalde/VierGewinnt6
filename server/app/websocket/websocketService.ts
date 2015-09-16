@@ -13,7 +13,7 @@ var clients : Array<IClient> = [];
 
 exports.clients = clients;
 
-var regexChat = /^Chat[A-Z]/;
+var regexChat = /[A-Z]Chat[A-Z]/;
 
 export interface IMessage {
     type: string;

@@ -2,35 +2,53 @@
 
 import messageService = require('../services/messageService');
 
-var lobbyChatHistory: Array<messageService.IMessage> = [];
-var gameChatHistory: Array<messageService.IMessage> = [];
-
-var regexLobbyChat = /^Chat[A-Z]/;
-var regexGameChat = /^Chat[A-Z]/;
-
-export function retrieveLobbyChatHistory() : Array<messageService.IMessage>{
-    return lobbyChatHistory;
+var chatHistory = {
+    lobbyChatHistory : Array<messageService.IMessage>,
+    gameChatHistory : Array<messageService.IMessage>
 }
+
+// Array<messageService.IMessage>
+
+var regexChatHistory = /(?<=[\w+])ChatHistory$/;
+var regexSendMessage = /(?<=[\w+])ChatMessage$/;
 
 // Wrapper function for the generic messageService.sendMessage() method
 export function sendChatMessage(message : messageService.IMessage){
+
+    // Send the chat history
+    if(regexChatHistory.test(message.type)){
+        message.data.chatHistory = preprocessingChatHistory(message);
+
+    } else if(regexSendMessage.test(message.type)){ // Send a simple chat message
+        preprocessingChatMessage(message);
+    }
+
+    // Send the message object to the client(s)
+    messageService.sendMessage(message);
+}
+
+function preprocessingChatMessage(message : messageService.IMessage){
 
     // ChatMessage validation - Simple chat message validation (avoid XSS)
     message.data.message = message.data.message.replace(/[<>]/g,"");
     message.data.creationDate = new Date().toLocaleTimeString().toString();
 
     if(message.data !== null) {
-        // Further rooting regarding the particular chat section
-        if(regexLobbyChat.test(message.type)){
-            lobbyChatHistory.push(message);
+        var type = message.type.toLocaleLowerCase();
+        var chatHistory = chatHistory[type + "ChatHistory"];
+        chatHistory.push(message);
 
-        } else if(regexGameChat.test(message.type)){
-            gameChatHistory.push(message);
-        }
+        return true;
     }
 
-    messageService.sendMessage(message);
+     return false;
+}
 
+function preprocessingChatHistory(message : messageService.IMessage)
+{
+    var type = message.type.toLocaleLowerCase();
+    var chatHistory = chatHistory[type + "ChatHistory"];
+    return chatHistory;
 }
 
 // Message Service
@@ -58,6 +76,8 @@ export class ChatHistoryMessage extends messageService.ServerMessage<IChatHistor
     static NAME = "ChatHistory";
 
     constructor (chatData: IChatHistory) {
+        // Covers all the different chat areas => lobby, game, ..
+        ChatInputMessage.NAME = chatData.chatSectionPrefix +  ChatInputMessage.NAME;
         super(ChatHistoryMessage.NAME, chatData);
     }
 }

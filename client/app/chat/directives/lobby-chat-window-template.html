@@ -1,0 +1,17 @@
+<!-- Chat window-->
+<div class="col-xs-4 chat-window">
+  <aside>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <span class="glyphicon glyphicon-list-alt icon"></span>
+      </div>
+      <div class="chat-output">
+
+      </div>
+      <form action="">
+        <input id="msgInput" autocomplete="off" ng-model="lobby.chat.input"/>
+        <button ng-click="lobby.wsSendChatMessage(lobby.chat.input)" stop-event>Send</button>
+      </form>
+    </div>
+  </aside>
+</div>

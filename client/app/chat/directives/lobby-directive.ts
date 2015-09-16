@@ -3,17 +3,32 @@ module chat.directives {
   export class ChatWindow implements ng.IDirective {
     public restrict = 'E'
     public static DirectoryName = "chatWindow";
-    public scope =  {
-      chatModel : '=',
-      chatSection : '='
+    public scope = {
+      chatModel: '=',
+      chatSection: '@chatSection'
     }
 
-    constructor(){}
+    // template function => replaces the content of the directory with its return value => hack to enable dynamic template loading
+    // in response triggers the getTemplateUrl() function of the scope
+    public template(element : ng.IAugmentedJQuery, attrs : IChatWindowAtributes) {
+      return '<div ng-include="getTemplateUrl()"></div>';
+    }
 
-    public link(scope : chat.controllers.IChatScope, element : ng.IAugmentedJQuery, attrs : ng.IAttributes) {
+    constructor() {
+    }
+
+    public link(scope:chat.controllers.IChatScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) {
+
+      // Store the section in the controller
+      scope.chatModel.storeChatSectionInCtrl(scope.chatSection);
 
       // Subscribe the chat for the particular section
-      scope.chatModel.subscribeToChatSection("Chat" + scope.chatSection)
+      scope.chatModel.subscribeToChatSectionEvents("Chat" + scope.chatSection);
+
+      // retrieve the template for the chat
+      scope.getTemplateUrl = () => {
+        return "/chat/directives/" + scope.chatSection.toLowerCase() + "-chat-window-template.html";
+      };
     }
 
     public static factory():ng.IDirectiveFactory {
@@ -22,10 +37,14 @@ module chat.directives {
       return directive;
     }
   }
-}
 
-angular
-  .module('chat')
-  .directive(chat.directives.ChatWindow.DirectoryName, chat.directives.ChatWindow.factory());
+  interface IChatWindowAtributes extends ng.IAttributes {
+    chatSection : string;
+  }
+
+  angular
+    .module('chat')
+    .directive(chat.directives.ChatWindow.DirectoryName, chat.directives.ChatWindow.factory());
+}
 
 
