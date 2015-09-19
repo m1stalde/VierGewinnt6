@@ -3,9 +3,9 @@
 import messageService = require('../services/messageService');
 
 var chatHistory = {
-    lobbyChatHistory : Array<messageService.IMessage>,
-    gameChatHistory : Array<messageService.IMessage>
-}
+    lobbyChatHistory: new Array<messageService.IMessage>(),
+    gameChatHistory: new Array<messageService.IMessage>()
+};
 
 // Array<messageService.IMessage>
 
