@@ -60,9 +60,15 @@ export class Game {
      * @param col column to put tile into
      * @param callback with result or error
      */
-    doMove(playerId: string, col: number, callback: (err: Error, gameData: IGameData) => void): void {
+    public doMove(playerId: string, col: number, callback: (err: Error, gameData: IGameData) => void): void {
         if (!(playerId && col != undefined)) {
             callback(new Error('playerId and col required'), null);
+            return;
+        }
+
+        // check game state
+        if (this.gameData.state === GameState.Finished) {
+            callback(new Error("game is in state Finished"), null);
             return;
         }
 
@@ -86,18 +92,22 @@ export class Game {
             return;
         }
 
-        // do the move and switch color and user
+        // do the move
         this.gameData.cells[nextCell][col] = this.gameData.nextColor;
-        this.gameData.nextColor = this.gameData.nextColor === Color.Red ? Color.Yellow : Color.Red;
-        this.gameData.nextPlayerId = this.gameData.playerId1 === playerId ? this.gameData.playerId2 : this.gameData.playerId1;
 
-        // TODO implement finish check
-        this.gameData.state = GameState.Running;
+        // if current player wins, set game to finished, else switch to next player
+        if (this.isWinner(this.gameData.nextColor)) {
+            this.gameData.state = GameState.Finished;
+        } else {
+            this.gameData.state = GameState.Running;
+            this.gameData.nextColor = this.gameData.nextColor === Color.Red ? Color.Yellow : Color.Red;
+            this.gameData.nextPlayerId = this.gameData.playerId1 === playerId ? this.gameData.playerId2 : this.gameData.playerId1;
+        }
 
         callback(null, this.gameData);
     }
 
-    private getNextCell(col: number) : number {
+    private getNextCell(col: number): number {
         var rowCount = this.gameData.cells.length;
         var result = -1;
 
@@ -109,6 +119,70 @@ export class Game {
         }
 
         return result;
+    }
+
+    /**
+     * Returns true if given color has 4 tiles in a set.
+     * @param color color to check
+     * @returns {boolean}
+     */
+    public isWinner(color: Color): boolean {
+        var cells = this.gameData.cells;
+        var rowCount = this.gameData.cells.length;
+        var colCount = this.gameData.cells[0].length;
+        var winCount = 4;
+        var cellCount = 0;
+
+        var checkCellCount = function (row: number, col: number): boolean {
+            cellCount = (cells[row][col] === color) ? cellCount + 1 : 0;
+            return cellCount >= winCount;
+        }
+
+        // horizontal check
+        for (var row = 0; row < rowCount; row++) {
+            cellCount = 0;
+            for (var col = 0; col < colCount; col++) {
+                if (checkCellCount(row, col)) {
+                    return true;
+                }
+            }
+        }
+
+        // vertical check
+        for (var col = 0; col < colCount; col++) {
+            cellCount = 0;
+            for (var row = 0; row < rowCount; row++) {
+                if (checkCellCount(row, col)) {
+                    return true;
+                }
+            }
+        }
+
+        // diagonal checks
+        for (var col = 0; col < colCount; col++) {
+            for (var row = 0; row < rowCount; row++) {
+                cellCount = 0;
+                for (var off = 0; off < Math.min(colCount - col, rowCount - row); off++) {
+                    if (checkCellCount(row + off, col + off)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // invers diagonal checks
+        for (var col = colCount - 1; col >= 0; col--) {
+            for (var row = 0; row < rowCount; row++) {
+                cellCount = 0;
+                for (var off = 0; off < Math.min(col + 1, rowCount - row); off++) {
+                    if (checkCellCount(row + off, col - off)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
 

@@ -1,0 +1,126 @@
+{
+  "gameDataIsWinner": [
+    {
+      "cells": [
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [1,1,1,1,0,0,0]
+      ],
+      "nextColor": 1,
+      "nextPlayerId": "playerId1",
+      "playerId1": "playerId1",
+      "playerId2": "playerId2",
+      "state": 0
+    },
+    {
+      "cells": [
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1],
+        [0,0,0,0,0,0,1],
+        [0,0,0,0,0,0,1],
+        [0,0,0,0,0,0,1]
+      ],
+      "nextColor": 1,
+      "nextPlayerId": "playerId1",
+      "playerId1": "playerId1",
+      "playerId2": "playerId2",
+      "state": 0
+    },
+    {
+      "cells": [
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0],
+        [0,0,1,0,0,0,0],
+        [0,1,0,0,0,0,0],
+        [1,0,0,0,0,0,0]
+      ],
+      "nextColor": 1,
+      "nextPlayerId": "playerId1",
+      "playerId1": "playerId1",
+      "playerId2": "playerId2",
+      "state": 0
+    },
+    {
+      "cells": [
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0],
+        [0,0,0,0,1,0,0],
+        [0,0,0,0,0,1,0],
+        [0,0,0,0,0,0,1]
+      ],
+      "nextColor": 1,
+      "nextPlayerId": "playerId1",
+      "playerId1": "playerId1",
+      "playerId2": "playerId2",
+      "state": 0
+    }
+  ],
+  "gameDataIsNotWinner": [
+    {
+      "cells": [
+        [0,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0],
+        [2,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0]
+      ],
+      "nextColor": 1,
+      "nextPlayerId": "playerId1",
+      "playerId1": "playerId1",
+      "playerId2": "playerId2",
+      "state": 0
+    },
+    {
+      "cells": [
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [1,1,1,2,1,0,0]
+      ],
+      "nextColor": 1,
+      "nextPlayerId": "playerId1",
+      "playerId1": "playerId1",
+      "playerId2": "playerId2",
+      "state": 0
+    },
+    {
+      "cells": [
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,1,0,0],
+        [0,0,0,2,0,0,0],
+        [0,0,1,0,0,0,0],
+        [0,1,0,0,0,0,0],
+        [1,0,0,0,0,0,0]
+      ],
+      "nextColor": 1,
+      "nextPlayerId": "playerId1",
+      "playerId1": "playerId1",
+      "playerId2": "playerId2",
+      "state": 0
+    },
+    {
+      "cells": [
+        [0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0],
+        [0,0,0,2,0,0,0],
+        [0,0,0,0,1,0,0],
+        [0,0,0,0,0,1,0],
+        [0,0,0,0,0,0,1]
+      ],
+      "nextColor": 1,
+      "nextPlayerId": "playerId1",
+      "playerId1": "playerId1",
+      "playerId2": "playerId2",
+      "state": 0
+    }
+  ]
+}

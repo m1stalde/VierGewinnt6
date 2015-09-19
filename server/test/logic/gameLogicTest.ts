@@ -2,11 +2,14 @@
 'use strict';
 
 import chai = require('chai');
+import fs = require('fs');
 import gameLogic = require('../../app/logic/gameLogic');
 
 var should = chai.should();
 var game: gameLogic.Game = null;
 var gameData: gameLogic.IGameData = null;
+
+var testData: ITestData;
 
 const playerId1 = 'playerId1';
 const playerId2 = 'playerId2';
@@ -19,7 +22,7 @@ describe('Game Logic Tests:', () => {
             gameData = newGameData;
             done();
         });
-    })
+    });
 
     describe('new game', () => {
         it('a new game should start with color red', (done) => {
@@ -51,7 +54,7 @@ describe('Game Logic Tests:', () => {
                 gameData.cells.forEach(row => {
                     row.length.should.equal(7);
                     row.forEach(cell => {
-                        cell.should.be.equal(gameLogic.Color.None);
+                        (<number>cell).should.be.equal(gameLogic.Color.None);
                     });
                 });
                 done();
@@ -106,4 +109,35 @@ describe('Game Logic Tests:', () => {
             });
         });
     });
+
+    describe('is winner', () => {
+        beforeEach((done) => {
+            fs.readFile('./test/logic/gameLogicTestData.json', 'utf8', function (err, data) {
+                if (err) throw err;
+                testData = JSON.parse(data);
+                done();
+            });
+        });
+
+        it('four of same color should be a winner', (done) => {
+            testData.gameDataIsWinner.forEach(gameData => {
+                game = new gameLogic.Game(gameData);
+                game.isWinner(gameData.nextColor).should.be.true;
+            });
+            done();
+        });
+
+        it('three of same color should not be a winner', (done) => {
+            testData.gameDataIsNotWinner.forEach(gameData => {
+                game = new gameLogic.Game(gameData);
+                game.isWinner(gameData.nextColor).should.be.false;
+            });
+            done();
+        });
+    });
 });
+
+interface ITestData {
+    gameDataIsWinner: gameLogic.IGameData[];
+    gameDataIsNotWinner: gameLogic.IGameData[];
+}
