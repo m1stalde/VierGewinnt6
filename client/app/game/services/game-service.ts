@@ -11,6 +11,10 @@ module Game.Services {
   export interface IGame {
     cells: Color[][];
     nextColor: Color;
+    nextPlayerId: string;
+    playerId1: string;
+    playerId2: string;
+    state: GameState;
     _id: string;
   }
 
@@ -20,23 +24,26 @@ module Game.Services {
     Yellow = 2
   }
 
+  export enum GameState {
+    New = 0,
+    Running = 1,
+    Finished = 2
+  }
+
   class GameService implements IGameService {
 
     private game: IGame;
 
     public static $inject = [
-      '$http', '$q', '$log', 'MessageService', 'appConfig', '$location'
+      '$http', '$q', '$log', 'MessageService', 'appConfig'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig, private $location: ng.ILocationService) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
       var that = this;
 
       messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
         that.$log.info("message reveiced " + message);
         that.game = message.data;
-
-        // TODO check route change
-        that.$location.path('/game');
       });
     }
 

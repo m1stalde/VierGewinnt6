@@ -50,11 +50,12 @@ export function getServerSessionFromWebSocket(conn: WebSocket, callback: (err: E
 }
 
 export function login(req : express.Request, callback: (err: Error, session: sessionService.Session) => void) {
-    sessionService.authenticateUser(req.body.username, req.body.password, function(err, result, session, userId) {
+    var serverSession = getServerSession(req);
+    var playerId = serverSession.getPlayerId();
+
+    sessionService.authenticateUser(playerId, req.body.username, req.body.password, function(err, result, session, userId) {
         if (result) {
-            var serverSession = getServerSession(req);
             serverSession.setUserId(userId);
-            var playerId = serverSession.getPlayerId(); // init player id too
             console.log('login: sessionId=' + serverSession.getSessionId() + ', userId=' + userId + ', userName=' + req.body.username + ', playerId=' + playerId);
         }
 
@@ -87,7 +88,7 @@ export function logout(req : express.Request, callback: (err: Error, session: se
     var serverSession = getServerSession(req);
     serverSession.setUserId(null);
 
-    sessionService.getCurrentSession(serverSession.getUserId(), function(err, session) {
+    sessionService.getCurrentSession(serverSession.getPlayerId(), serverSession.getUserId(), function(err, session) {
         callback(err, session);
     });
 }

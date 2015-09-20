@@ -8,9 +8,11 @@ module Session.Services {
     isLoggedIn(): boolean;
     getCurrentSession(): ISession;
     loadCurrentSession(): ISession;
+    getPlayerId(): string;
   }
 
   export interface ISession {
+    playerId: string;
     username: string;
     loggedId: boolean;
   }
@@ -72,6 +74,10 @@ module Session.Services {
       }
 
       return deferred.promise;
+    }
+
+    getPlayerId(): string {
+      return this.currentSession.playerId;
     }
 
     get(): string {

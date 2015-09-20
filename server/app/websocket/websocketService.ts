@@ -104,13 +104,14 @@ function sendMessage(message: messageService.IMessage) {
     // send message to clients matching the messages userIds
     console.log("sending message to clients:\n " + util.inspect(message, {showHidden: false, depth: 1}));
     clients.forEach(client => {
-        if (client.playerId && message.playerIds.indexOf(client.playerId) != -1) {
+        //TODO client filter deactivated because playerIds in different websocket and http sessions doesn't match anymore
+        //if (client.playerId && message.playerIds.indexOf(client.playerId) != -1) {
             try {
                 client.clientObj.send(JSON.stringify(message));
             } catch (ex) {
                 console.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
             }
-        }
+        //}
     });
 };
 

@@ -5,7 +5,9 @@ import sessionService = require('../services/sessionService');
 import security = require('../utils/security');
 
 export function registerUser(req : express.Request, res : express.Response, next: Function) {
-    sessionService.registerUser(req.body.username, req.body.password, function(err, user) {
+    var playerId = security.getServerSession(req).getPlayerId();
+
+    sessionService.registerUser(playerId, req.body.username, req.body.password, function(err, user) {
         if (err) {
             next(err);
             return;
@@ -20,9 +22,11 @@ export function registerUser(req : express.Request, res : express.Response, next
 }
 
 export function getCurrentSession(req : express.Request, res : express.Response, next: Function) {
-    var userId = security.currentUserId(req);
+    var serverSession = security.getServerSession(req);
+    var playerId = serverSession.getPlayerId();
+    var userId = serverSession.getUserId();
 
-    sessionService.getCurrentSession(userId, function (err, user) {
+    sessionService.getCurrentSession(playerId, userId, function (err, user) {
         if (err) {
             next(err);
             return;

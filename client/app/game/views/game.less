@@ -44,3 +44,63 @@
 .game-field.yellow {
   background-color: yellow;
 }
+
+.game-move {
+  width: 100%;
+  padding: @border;
+  position: relative;
+}
+
+.game-play {
+}
+
+.move-play .game-field {
+  background-color: white;
+}
+
+.move-play .game-field.red {
+  background-color: red;
+}
+
+.move-play .game-field.yellow {
+  background-color: yellow;
+}
+
+.move-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1;
+  padding: @border;
+}
+
+.move-info.play {
+  display: none;
+}
+
+.move-info.wait {
+  color: red;
+}
+
+.move-info.won {
+  color: green;
+}
+
+.move-info.loose {
+  color: red;
+}
+
+.message-cell {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+
+.message-text  {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
