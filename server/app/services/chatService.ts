@@ -9,8 +9,8 @@ var chatHistory = {
 
 // Array<messageService.IMessage>
 
-var regexChatHistory = /(?<=[\w+])ChatHistory$/;
-var regexSendMessage = /(?<=[\w+])ChatMessage$/;
+var regexChatHistory = /[A-Z]\w+ChatHistory$/;
+var regexSendMessage = /[A-Z]\w+ChatHistory$/;
 
 // Wrapper function for the generic messageService.sendMessage() method
 export function sendChatMessage(message : messageService.IMessage){

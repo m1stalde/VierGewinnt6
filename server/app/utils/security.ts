@@ -56,6 +56,7 @@ export function login(req : express.Request, callback: (err: Error, session: ses
     sessionService.authenticateUser(playerId, req.body.username, req.body.password, function(err, result, session, userId) {
         if (result) {
             serverSession.setUserId(userId);
+            serverSession.setUserName(session.username);
             console.log('login: sessionId=' + serverSession.getSessionId() + ', userId=' + userId + ', userName=' + req.body.username + ', playerId=' + playerId);
         }
 
@@ -87,6 +88,7 @@ export function handleAuthenticate(req : express.Request, res : express.Response
 export function logout(req : express.Request, callback: (err: Error, session: sessionService.Session) => void) {
     var serverSession = getServerSession(req);
     serverSession.setUserId(null);
+    serverSession.setUserName(null);
 
     sessionService.getCurrentSession(serverSession.getPlayerId(), serverSession.getUserId(), function(err, session) {
         callback(err, session);
@@ -105,11 +107,15 @@ export interface IServerSession {
 
     getUserId(): string;
     setUserId(userId: string): void;
+
+    getUserName(): string;
+    setUserName(userName: string): void;
 }
 
 class ServerSession implements IServerSession {
 
     private static SESSION_USER_ID = 'userId';
+    private static SESSION_USER_NAME = 'userName';
     private static SESSION_PLAYER_ID = 'playerId';
 
     private session: Express.Session;
@@ -146,5 +152,13 @@ class ServerSession implements IServerSession {
 
     setUserId(userId: string): void {
         this.session[ServerSession.SESSION_USER_ID] = userId;
+    }
+
+    getUserName(): string {
+        return this.session[ServerSession.SESSION_USER_NAME];
+    }
+
+    setUserName(userName: string): void {
+        this.session[ServerSession.SESSION_USER_NAME] = userName;
     }
 }
