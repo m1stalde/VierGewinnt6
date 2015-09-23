@@ -1,4 +1,4 @@
-/// <reference path='../_lobby.ts' />
+/// <reference path='../_lobby.ts'/>
 
 module lobby.controllers {
   'use strict';

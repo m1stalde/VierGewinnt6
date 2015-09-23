@@ -1,4 +1,5 @@
 ///<reference path='../../../typings/tsd.d.ts' />
+
 module chat.controllers {
   'use strict';
 
@@ -6,6 +7,7 @@ module chat.controllers {
 
     public chatHistory : Array<Common.Services.IMessage> = [];
     public chatSection : string;
+    public currentMessage : string;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -34,28 +36,41 @@ module chat.controllers {
       this.chatSection = section;
     }
 
-    public subscribeToChatSectionEvents(nameOfEventListener : string){
+    public subscribeToChatSectionEvents(section : string){
+      var self = this;
 
       // Subscribe for the chat section for incoming messages
-      this.messageService.addMessageListener(nameOfEventListener, this.messageServiceCb)
+      this.messageService.addMessageListener(section + "ChatMessage", function(){
+
+      });
 
       // Subscribe for incoming messages to load the chat history
-      var eventListener = this.chatSection + "ChatHistory";
-      this.messageService.addMessageListener(eventListener, this.messageServiceCb)
+      this.messageService.addMessageListener(section + "ChatHistory", function(message : ChatHistoryMessage){
+        self.chatHistory = message.data.chatHistory;
+      });
     }
 
-    public messageServiceCb(message : Common.Services.IMessage){
-      // Update a field => gets binded to the directory
-    }
-
-    public fetchChatHistory(){
-      var messageObj : ChatHistoryMessage = new ChatHistoryMessage({
+    // Send a chat message to the server
+    public sendMessage(message : string){
+      var messageObj = new ChatInputMessage({
         chatSectionPrefix : this.chatSection,
-        chatHistory : null
-      })
+        chatMessageObj : new ChatMessage({
+          message : message
+        })
+      });
 
-      // Send a request in order to retrieve the chat history of the given section
       this.messageService.sendMessage(messageObj);
+    }
+
+    // Send a request for the chat history to the server
+    public fetchChatHistory(section : string){
+      var messageObj : ChatHistoryMessage = new ChatHistoryMessage({
+       chatSectionPrefix : section,
+       chatHistory : null
+       });
+
+       // Send a request in order to retrieve the chat history of the given section
+       this.messageService.sendMessage(messageObj);
     }
   }
 
@@ -71,17 +86,46 @@ module chat.controllers {
     messageService : Common.Services.IMessageService;
     storeChatSectionInCtrl : (section : string) => void;
     subscribeToChatSectionEvents: (nameOfEventListener : string) => void;
-    fetchChatHistory : () => void;
+    fetchChatHistory : (section: string) => void;
   }
 
   // Message
   export interface IChatMessage {
     message : string;
-    creationDate : string;
-    from : string;
-    to : string;
+    creationDate? : string;
+    from? : string;
+    to? : string;
   }
 
+  export class ChatMessage implements IChatMessage {
+    public message : string;
+    public creationDate : string;
+    public from : string;
+    public to : string;
+
+    constructor(message : IChatMessage){
+      this.message = message.message;
+      this.creationDate = message.creationDate;
+      this.from = message.from;
+      this.to = message.to;
+    }
+  };
+
+  // Message Service
+  export interface IChatData{
+    chatSectionPrefix : string;
+    chatMessageObj : IChatMessage;
+  }
+
+  export class ChatInputMessage extends Common.Services.ClientMessage<IChatData> {
+    static NAME = "ChatMessage";
+
+    constructor (chatData: IChatData) {
+      super(chatData.chatSectionPrefix + ChatInputMessage.NAME, chatData);
+    }
+  }
+
+  // Chat history
   export class ChatHistoryMessage extends Common.Services.ClientMessage<IChatHistory> {
     static NAME = "ChatHistory";
 

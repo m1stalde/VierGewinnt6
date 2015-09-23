@@ -48,11 +48,11 @@ module Common.Services {
       $log.debug('trying to reach server ' + this.appConfig.baseUrl + ' before connecting websocket');
       var self = this;
 
+      // Connect to the websocket server
+      self.connect(appConfig.baseWsUrl);
+
       // connect server through http first to initialize session and get session cookie
-      $http.get(this.appConfig.baseUrl + '/session')
-        .then(function (response) {
-          self.connect(appConfig.baseWsUrl);
-        });
+      $http.get(this.appConfig.baseUrl + '/session');
     }
 
     private connect(baseWsUrl:string) {
@@ -81,15 +81,7 @@ module Common.Services {
         throw new Error('Not connected');
       }
 
-      //var messageName = Object.getPrototypeOf(message).name;
-      var sendMessage = {
-        header: {
-          type: message.type
-        },
-        body: message.data
-      };
-
-      this.ws.send(JSON.stringify(sendMessage));
+      this.ws.send(JSON.stringify(message));
     }
 
     private onMessage(message:MessageEvent) {

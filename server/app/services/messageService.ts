@@ -46,6 +46,11 @@ export interface IMessage {
      * PlayerIds to broadcast message or undefined to avoid broadcast to clients.
      */
     playerIds: string[];
+
+    /**
+     * Connection object which is needed for the implementation of the chat
+     */
+    connObj?: any;
 }
 
 export class ServerMessage<T> implements IMessage {
@@ -53,6 +58,7 @@ export class ServerMessage<T> implements IMessage {
     type: string;
     data: T;
     playerIds: string[] = [];
+    connObj: any;
 
     constructor (type: string, data: T) {
         this.type = type;

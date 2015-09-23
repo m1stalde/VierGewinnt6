@@ -23,13 +23,17 @@ module chat.directives {
       scope.chatModel.storeChatSectionInCtrl(scope.chatSection);
 
       // Subscribe the chat for the particular section
-      scope.chatModel.subscribeToChatSectionEvents("Chat" + scope.chatSection);
+      scope.chatModel.subscribeToChatSectionEvents(scope.chatSection);
+
+      // Retrieve the chat history
+      scope.chatModel.fetchChatHistory(scope.chatSection);
 
       // retrieve the template for the chat
       scope.getTemplateUrl = () => {
-        return "/chat/directives/" + scope.chatSection.toLowerCase() + "-chat-window-template.html";
-      };
+        return "/chat/directives/" + scope.chatSection + "-chat-window-template.html";
+      }
     }
+
 
     public static factory():ng.IDirectiveFactory {
       var directive = () => new ChatWindow();

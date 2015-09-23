@@ -9,11 +9,12 @@ import messageService = require('../services/messageService');
 
 var WebSocketServer = WebSocket.Server;
 var wsServer;
+// Any pending websocket connection
 var clients : Array<IClient> = [];
 
-exports.clients = clients;
+var regexChat = /^[A-Z][a-z]+Chat[A-Z]+/;
 
-var regexChat = /[A-Z]Chat[A-Z]/;
+exports.clients = clients;
 
 export interface IMessage {
     type: string;
@@ -25,10 +26,12 @@ export function returnWsServer(){
 }
 
 export function setUpWebsocketService(server) {
+
     // register for all message types to broadcast all server messages to all clients
     messageService.addMessageListener(messageService.WILDCARD_MESSAGE_TYPE, sendMessage);
-    //messageService.addMessageListener("LobbyChatMessage", null);
-    //messageService.addMessageListener("GameChatMessage", null);
+
+    // Sets up all the the chat related event listeners
+    chatService.setUpChatEventListener();
 
     wsServer = new WebSocketServer({server: server});
 
@@ -44,14 +47,11 @@ export function setUpWebsocketService(server) {
             // Parse the incoming message
             var messageObj : messageService.IMessage = JSON.parse(messageString);
 
-            if(regexChat.test(messageObj.type)){
-                // Call the chatService to send the message
-                chatService.sendChatMessage(messageObj);
-            }
+            // Append the connection object to the message
+            messageObj.connObj = this;
 
-            // Send the messageObj to the message service for further distribution
+            // Hands the message object over to the messageService => gets further distributed by the service to its subscribers
             messageService.sendMessage(messageObj);
-
         });
 
         conn.on('close', runCleanUpTask(this));
@@ -89,7 +89,6 @@ function runCleanUpTask(self){
         console.log("User: " + userName + " has been disconnected");
     }
 }
-
 
 /**
  * Sends message to clients for defined users. If message contains no userIds, the message is ignored.

@@ -9,8 +9,8 @@
 
       </div>
       <form action="">
-        <input id="msgInput" autocomplete="off" ng-model="lobby.chat.input"/>
-        <button ng-click="lobby.wsSendChatMessage(lobby.chat.input)" stop-event>Send</button>
+        <input id="msgInput" autocomplete="off"/>
+        <button ng-click="chat.sendMessage('hi')" stop-event>Send</button>
       </form>
     </div>
   </aside>
