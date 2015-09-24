@@ -13,6 +13,7 @@ var wsServer;
 var clients : Array<IClient> = [];
 
 var regexChat = /^[A-Z][a-z]+Chat[A-Z]+/;
+var regexChatHistory = /^[a-z]+ChatHistory$/;
 
 exports.clients = clients;
 
@@ -46,12 +47,21 @@ export function setUpWebsocketService(server) {
 
             // Parse the incoming message
             var messageObj : messageService.IMessage = JSON.parse(messageString);
+            var conn = this;
 
-            // Append the connection object to the message
-            messageObj.connObj = this;
+            // Handles the meta data for the websocket object
+            serverSession : security.getServerSessionFromWebSocket(this, function(err, session : security.IServerSession){
+                if(!err){
+                    // Sets the meta data
+                    messageObj.metaData = {
+                        connObj : conn,
+                        serverSession : session
+                    }
 
-            // Hands the message object over to the messageService => gets further distributed by the service to its subscribers
-            messageService.sendMessage(messageObj);
+                    // Hands the message object over to the messageService => gets further distributed by the service to its subscribers
+                    messageService.sendMessage(messageObj);
+                }
+            });
         });
 
         conn.on('close', runCleanUpTask(this));

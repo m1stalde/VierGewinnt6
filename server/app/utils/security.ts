@@ -112,7 +112,7 @@ export interface IServerSession {
     setUserName(userName: string): void;
 }
 
-class ServerSession implements IServerSession {
+export class ServerSession implements IServerSession {
 
     private static SESSION_USER_ID = 'userId';
     private static SESSION_USER_NAME = 'userName';

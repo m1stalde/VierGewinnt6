@@ -1,5 +1,7 @@
 ///<reference path='../../../typings/tsd.d.ts' />
 
+
+
 module chat.controllers {
   'use strict';
 
@@ -27,7 +29,8 @@ module chat.controllers {
         messageService: this.messageService,
         storeChatSectionInCtrl : this.storeChatSectionInCtrl,
         subscribeToChatSectionEvents : this.subscribeToChatSectionEvents,
-        fetchChatHistory : this.fetchChatHistory
+        fetchChatHistory : this.fetchChatHistory,
+        sendMessage : this.sendMessage
       }
     }
 
@@ -40,8 +43,8 @@ module chat.controllers {
       var self = this;
 
       // Subscribe for the chat section for incoming messages
-      this.messageService.addMessageListener(section + "ChatMessage", function(){
-
+      this.messageService.addMessageListener(section + "ChatMessage", function(message : ChatInputMessage){
+        var k = 4;
       });
 
       // Subscribe for incoming messages to load the chat history
@@ -78,6 +81,7 @@ module chat.controllers {
     getTemplateUrl : () => string;
     chatModel : IChatModel;
     chatSection : string;
+    sendMessage : (message : string) => void;
   }
 
   export interface IChatModel {
@@ -87,6 +91,7 @@ module chat.controllers {
     storeChatSectionInCtrl : (section : string) => void;
     subscribeToChatSectionEvents: (nameOfEventListener : string) => void;
     fetchChatHistory : (section: string) => void;
+    sendMessage : (message : string) => void;
   }
 
   // Message

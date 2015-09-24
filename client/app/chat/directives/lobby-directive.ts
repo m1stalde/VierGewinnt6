@@ -8,6 +8,8 @@ module chat.directives {
       chatSection: '@chatSection'
     }
 
+    public message : string;
+
     // template function => replaces the content of the directory with its return value => hack to enable dynamic template loading
     // in response triggers the getTemplateUrl() function of the scope
     public template(element : ng.IAugmentedJQuery, attrs : IChatWindowAtributes) {
@@ -18,6 +20,10 @@ module chat.directives {
     }
 
     public link(scope:chat.controllers.IChatScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) {
+
+      scope.sendMessage = function(message){
+        scope.chatModel.sendMessage(message);
+      }
 
       // Store the section in the controller
       scope.chatModel.storeChatSectionInCtrl(scope.chatSection);

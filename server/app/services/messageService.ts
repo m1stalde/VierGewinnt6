@@ -1,4 +1,6 @@
 /// <reference path="../_all.ts"/>
+import security = require('../utils/security');
+
 'use strict';
 
 var eventEmitter: NodeJS.EventEmitter = new (require('events').EventEmitter)();
@@ -50,7 +52,7 @@ export interface IMessage {
     /**
      * Connection object which is needed for the implementation of the chat
      */
-    connObj?: any;
+    metaData?: IMessageMetaData;
 }
 
 export class ServerMessage<T> implements IMessage {
@@ -58,10 +60,15 @@ export class ServerMessage<T> implements IMessage {
     type: string;
     data: T;
     playerIds: string[] = [];
-    connObj: any;
+    metaData: IMessageMetaData;
 
     constructor (type: string, data: T) {
         this.type = type;
         this.data = data;
     }
+}
+
+export interface IMessageMetaData{
+    connObj : WebSocket;
+    serverSession : security.IServerSession;
 }
