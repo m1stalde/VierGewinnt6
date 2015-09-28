@@ -58,7 +58,7 @@ export function setUpWebsocketService(server) {
                         serverSession : session
                     }
 
-                    // Hands the message object over to the messageService => gets further distributed by the service to its subscribers
+                    // Hands the modified message object over to the messageService => gets further distributed by the service to its subscribers
                     messageService.sendMessage(messageObj);
                 }
             });

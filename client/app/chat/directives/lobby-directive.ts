@@ -38,6 +38,12 @@ module chat.directives {
       scope.getTemplateUrl = () => {
         return "/chat/directives/" + scope.chatSection + "-chat-window-template.html";
       }
+
+      // Gets triggered as soon as the directive gets destroyed
+      scope.$on('$destroy', function() {
+        // Subscribe the chat for the particular section
+        scope.chatModel.unsubscribeToChatSectionEvents(scope.chatSection);
+      });
     }
 
 

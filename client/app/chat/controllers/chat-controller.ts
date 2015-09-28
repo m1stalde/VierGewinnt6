@@ -1,7 +1,4 @@
 ///<reference path='../../../typings/tsd.d.ts' />
-
-
-
 module chat.controllers {
   'use strict';
 
@@ -29,8 +26,10 @@ module chat.controllers {
         messageService: this.messageService,
         storeChatSectionInCtrl : this.storeChatSectionInCtrl,
         subscribeToChatSectionEvents : this.subscribeToChatSectionEvents,
+        unsubscribeToChatSectionEvents: this.unsubscribeToChatSectionEvents,
         fetchChatHistory : this.fetchChatHistory,
-        sendMessage : this.sendMessage
+        sendMessage : this.sendMessage,
+        chatMessageListener : this.chatMessageListener
       }
     }
 
@@ -43,14 +42,26 @@ module chat.controllers {
       var self = this;
 
       // Subscribe for the chat section for incoming messages
-      this.messageService.addMessageListener(section + "ChatMessage", function(message : ChatInputMessage){
-        var k = 4;
-      });
+      this.messageService.addMessageListener(section + "ChatMessage", this.chatMessageListener);
 
       // Subscribe for incoming messages to load the chat history
       this.messageService.addMessageListener(section + "ChatHistory", function(message : ChatHistoryMessage){
         self.chatHistory = message.data.chatHistory;
       });
+    }
+
+    public chatMessageListener(message : ChatInputMessage){
+      var k = 4;
+    }
+
+    public unsubscribeToChatSectionEvents(section : string){
+      // Unsubscribe to the client side message service
+      this.messageService.removeMessageListener(section + "ChatMessage", this.chatMessageListener);
+      // Unsubscribe to the server side chat service
+      var messageObj = new UnsubscribeToChatSectionMessage({
+        chatSectionPrefix : section
+      });
+      this.messageService.sendMessage(messageObj);
     }
 
     // Send a chat message to the server
@@ -90,8 +101,10 @@ module chat.controllers {
     messageService : Common.Services.IMessageService;
     storeChatSectionInCtrl : (section : string) => void;
     subscribeToChatSectionEvents: (nameOfEventListener : string) => void;
+    unsubscribeToChatSectionEvents: (nameOfEventListener : string) => void;
     fetchChatHistory : (section: string) => void;
     sendMessage : (message : string) => void;
+    chatMessageListener : (message : ChatInputMessage) => void
   }
 
   // Message
@@ -116,13 +129,54 @@ module chat.controllers {
     }
   };
 
-  // Message Service
+  /**
+   * Message between services and server and clients.
+   */
+  export interface IMessage {
+
+    /**
+     * Type of the message.
+     */
+      type: string;
+
+    /**
+     * The message content.
+     */
+    data: any;
+  }
+
+  export class ClientMessage<T> implements IMessage {
+
+    type:string;
+    data:T;
+
+    constructor(type:string, data:T) {
+      this.type = type;
+      this.data = data;
+    }
+  }
+
+
+  // Unsubscribe to a chat section
+  export interface IChatUnsubscribe{
+    chatSectionPrefix : string;
+  }
+
+  export class UnsubscribeToChatSectionMessage extends ClientMessage<IChatData> {
+    static NAME = "ChatUnsubscribe";
+
+    constructor (data: IChatUnsubscribe) {
+      super(data.chatSectionPrefix + UnsubscribeToChatSectionMessage.NAME, data);
+    }
+  }
+
+  // Send Messages
   export interface IChatData{
     chatSectionPrefix : string;
     chatMessageObj : IChatMessage;
   }
 
-  export class ChatInputMessage extends Common.Services.ClientMessage<IChatData> {
+  export class ChatInputMessage extends ClientMessage<IChatData> {
     static NAME = "ChatMessage";
 
     constructor (chatData: IChatData) {
@@ -131,7 +185,12 @@ module chat.controllers {
   }
 
   // Chat history
-  export class ChatHistoryMessage extends Common.Services.ClientMessage<IChatHistory> {
+  export interface IChatHistory{
+    chatSectionPrefix : string;
+    chatHistory : Array<IChatMessage>;
+  }
+
+  export class ChatHistoryMessage extends ClientMessage<IChatHistory> {
     static NAME = "ChatHistory";
 
     constructor (chatData: IChatHistory) {
@@ -139,10 +198,7 @@ module chat.controllers {
     }
   }
 
-  export interface IChatHistory{
-    chatSectionPrefix : string;
-    chatHistory : Array<IChatMessage>;
-  }
+
 
   /**
   * @ngdoc object

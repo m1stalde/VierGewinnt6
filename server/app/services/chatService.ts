@@ -13,9 +13,11 @@ export function setUpChatEventListener() : void {
     chatSections.forEach(section => {
         // Chat history event handler
         messageService.addMessageListener(section + "ChatHistory", sendChatHistory);
-        // Chat history event handler
+        // Chat message event handler
         messageService.addMessageListener(section + "ChatMessage", sendChatMessage);
-    })
+        // Chat unsubscribe event handler
+        messageService.addMessageListener(section + "ChatUnsubscribe", unsubscribeUser);
+    });
 
     // Deposit a sendMessage function which is used to deliver messages to the client
     messageService.addMessageListener("SendChatMessage", sendChatMessage);
@@ -23,7 +25,8 @@ export function setUpChatEventListener() : void {
 
 
 export function sendChatHistory(message : ChatHistoryMessage){
-    var prefix = message.data.chatSectionPrefix;
+    var prefix : string = message.data.chatSectionPrefix;
+    var conn : WebSocket = message.metaData.connObj;
 
     // Dynamically creates the room for the specific section (in case it doesn't already exist)
     if(!chatParticipants[prefix + "ChatParticipants"]){
@@ -36,7 +39,17 @@ export function sendChatHistory(message : ChatHistoryMessage){
     }
 
     // Add the connection object to the chat room
-    chatParticipants[prefix + "ChatParticipants"].push(message.metaData.connObj);
+    var foundMatch : boolean = false
+    for(var i = 0; i <  chatParticipants[prefix + "ChatParticipants"].length; i++)
+    {
+        if(chatParticipants[prefix + "ChatParticipants"][i] == conn){
+            foundMatch = true;
+        }
+    }
+    if(!foundMatch){
+        chatParticipants[prefix + "ChatParticipants"].push(message.metaData.connObj);
+    }
+
 
     // Send chat history to the client1
     var msgObj = new ChatHistoryMessage({
@@ -57,6 +70,17 @@ export function sendChatMessage(message : ChatInputMessage){
 
     if(msgObj){
         broadcastChatMessage(msgObj);
+    }
+}
+
+export function unsubscribeUser(message : UnsubscribeToChatSectionMessage){
+    var section = message.data.chatSectionPrefix + "ChatParticipants";
+    for(var i = 0; i < chatParticipants[section].length; i++){
+        // Loop through the sent chat section and remove the connection in case of a match
+        if(chatParticipants[section][i] === message.metaData.connObj){
+            chatParticipants[section].splice(i, 1);
+            return;
+        }
     }
 }
 
@@ -108,6 +132,10 @@ export interface IChatHistory{
     chatHistory : Array<IChatMessage>;
 }
 
+export interface IChatUnsubscribe{
+    chatSectionPrefix : string;
+}
+
 export class ChatInputMessage extends messageService.ServerMessage<IChatData> {
     static NAME = "ChatMessage";
 
@@ -121,6 +149,14 @@ export class ChatHistoryMessage extends messageService.ServerMessage<IChatHistor
 
     constructor (chatData: IChatHistory) {
         super(chatData.chatSectionPrefix + ChatHistoryMessage.NAME, chatData);
+    }
+}
+
+export class UnsubscribeToChatSectionMessage extends messageService.ServerMessage<IChatUnsubscribe> {
+    static NAME = "ChatUnsubscribing";
+
+    constructor (data: IChatUnsubscribe) {
+        super(data.chatSectionPrefix + UnsubscribeToChatSectionMessage.NAME, data);
     }
 }
 
