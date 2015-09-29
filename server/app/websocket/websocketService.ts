@@ -72,8 +72,8 @@ export function setUpWebsocketService(server) {
 
 function mapMetaDataToConn(conn: WebSocket){
     security.getServerSessionFromWebSocket(conn, function(err, serverSession) {
-        var userName = "User " + (helperFn.getHighestValue<number>(clients, "userName", 0) + 1);
-        var playerId = serverSession.getPlayerId();
+        var userName = serverSession.getUserName(),
+            playerId = serverSession.getPlayerId();
 
         console.info('player ' + playerId + ' connected');
 

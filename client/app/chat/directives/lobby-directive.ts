@@ -8,7 +8,7 @@ module chat.directives {
       chatSection: '@chatSection'
     }
 
-    public message : string;
+    public currentMessage : chat.controllers.IChatMessage;
 
     // template function => replaces the content of the directory with its return value => hack to enable dynamic template loading
     // in response triggers the getTemplateUrl() function of the scope
@@ -16,14 +16,11 @@ module chat.directives {
       return '<div ng-include="getTemplateUrl()"></div>';
     }
 
-    constructor() {
-    }
-
     public link(scope:chat.controllers.IChatScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) {
 
       scope.sendMessage = function(message){
         scope.chatModel.sendMessage(message);
-      }
+      };
 
       // Store the section in the controller
       scope.chatModel.storeChatSectionInCtrl(scope.chatSection);
@@ -44,8 +41,30 @@ module chat.directives {
         // Subscribe the chat for the particular section
         scope.chatModel.unsubscribeToChatSectionEvents(scope.chatSection);
       });
-    }
 
+      scope.$watchCollection(
+        function(){
+          return scope.chatModel.chatHistory
+      },
+      function(newChatHistory :  Array<chat.controllers.IChatMessage>, oldChatHistory :  Array<chat.controllers.IChatMessage>){
+        // Delete existing records
+        var chatWindowDiv : JQuery = $('.chat-output');
+
+        if(newChatHistory !== oldChatHistory){
+          // Load the whole chat history
+          if(oldChatHistory.length === 0){
+            chatWindowDiv.empty();
+
+            for (var i = 0; i < newChatHistory.length; ++i) {
+              chatWindowDiv.append($('<span><strong>[' +  newChatHistory[i].creationDate + '&nbsp' + newChatHistory[i].from + ']</strong>&nbsp' +  newChatHistory[i].message + '<br></span>'));
+            }
+          } else { // Just add a single message to the chat history
+            var index = newChatHistory.length - 1;
+            chatWindowDiv.append($('<span><strong>[' +  newChatHistory[index].creationDate + '&nbsp' + newChatHistory[index].from + ']</strong>&nbsp' +  newChatHistory[index].message + '<br></span>'));
+          }
+        }
+      })
+    }
 
     public static factory():ng.IDirectiveFactory {
       var directive = () => new ChatWindow();

@@ -4,9 +4,8 @@ module chat.controllers {
 
   class ChatCtrl {
 
-    public chatHistory : Array<Common.Services.IMessage> = [];
+    public chatHistory : Array<IChatMessage> = [];
     public chatSection : string;
-    public currentMessage : string;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -20,16 +19,16 @@ module chat.controllers {
 
     // dependencies are injected via AngularJS $injector
     constructor(private $scope: IChatScope, private userService : User.Services.IUserService, private messageService : Common.Services.IMessageService) {
-      this.$scope.chatModel = {
+      this.$scope.chatModel = <IChatModel>{
         chatHistory: this.chatHistory,
-        userService : this.userService,
+        userService: this.userService,
         messageService: this.messageService,
-        storeChatSectionInCtrl : this.storeChatSectionInCtrl,
-        subscribeToChatSectionEvents : this.subscribeToChatSectionEvents,
+        storeChatSectionInCtrl: this.storeChatSectionInCtrl,
+        subscribeToChatSectionEvents: this.subscribeToChatSectionEvents,
         unsubscribeToChatSectionEvents: this.unsubscribeToChatSectionEvents,
-        fetchChatHistory : this.fetchChatHistory,
-        sendMessage : this.sendMessage,
-        chatMessageListener : this.chatMessageListener
+        fetchChatHistory: this.fetchChatHistory,
+        sendMessage: this.sendMessage,
+        chatMessageListener: this.chatMessageListener
       }
     }
 
@@ -42,7 +41,7 @@ module chat.controllers {
       var self = this;
 
       // Subscribe for the chat section for incoming messages
-      this.messageService.addMessageListener(section + "ChatMessage", this.chatMessageListener);
+      this.messageService.addMessageListener(section + "ChatMessage", this.chatMessageListener(self));
 
       // Subscribe for incoming messages to load the chat history
       this.messageService.addMessageListener(section + "ChatHistory", function(message : ChatHistoryMessage){
@@ -50,8 +49,10 @@ module chat.controllers {
       });
     }
 
-    public chatMessageListener(message : ChatInputMessage){
-      var k = 4;
+    public chatMessageListener(self){
+      return function(message : ChatInputMessage){
+        self.chatHistory.push(message.data.chatMessageObj);
+      }
     }
 
     public unsubscribeToChatSectionEvents(section : string){
@@ -65,12 +66,10 @@ module chat.controllers {
     }
 
     // Send a chat message to the server
-    public sendMessage(message : string){
+    public sendMessage(message : IChatMessage){
       var messageObj = new ChatInputMessage({
         chatSectionPrefix : this.chatSection,
-        chatMessageObj : new ChatMessage({
-          message : message
-        })
+        chatMessageObj : message
       });
 
       this.messageService.sendMessage(messageObj);
