@@ -72,6 +72,11 @@ export function setUpWebsocketService(server) {
 
 function mapMetaDataToConn(conn: WebSocket){
     security.getServerSessionFromWebSocket(conn, function(err, serverSession) {
+        if (err) {
+            console.error("get server session from web socket failed: " + err);
+            return;
+        }
+
         var userName = serverSession.getUserName(),
             playerId = serverSession.getPlayerId();
 

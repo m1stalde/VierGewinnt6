@@ -42,6 +42,7 @@ export function getServerSessionFromWebSocket(conn: WebSocket, callback: (err: E
 
             if (!session) {
                 callback(new Error('session missing'), null);
+                return;
             }
 
             callback(err, new ServerSession(session));
