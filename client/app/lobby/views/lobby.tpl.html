@@ -105,44 +105,44 @@
             <tr>
               <th>
                 RoomId
-                <a href="#">
+                <a href="#" ng-click="lobby.reorderList('roomId')" stop-event>
                   <span class="glyphicon glyphicon-chevron-down"></span>
                 </a>
               </th>
               <th>
                 Name
-                <a href="#">
+                <a href="#" ng-click="lobby.reorderList('name')" stop-event>
                   <span class="glyphicon glyphicon-chevron-down"></span>
                 </a>
               </th>
               <th>
                 Status
-                <a href="#">
+                <a href="#" ng-click="lobby.reorderList('status')" stop-event>
                   <span class="glyphicon glyphicon-chevron-down"></span>
                 </a>
               </th>
               <th>
                 Players
-                <a href="#">
+                <a href="#" stop-event>
                   <span class="glyphicon glyphicon-chevron-down"></span>
                 </a>
               </th>
               <th>
                 Creation
-                <a href="#">
+                <a href="#" ng-click="lobby.reorderList('creationTime')" stop-event>
                   <span class="glyphicon glyphicon-chevron-down"></span>
                 </a>
               </th>
               <th>
                 Actions
-                <a href="#">
+                <a href="#" stop-event>
                   <span class="glyphicon glyphicon-chevron-down"></span>
                 </a>
               </th>
             </tr>
             </thead>
             <tbody class="note-table-body">
-            <tr class="noteTableRow" ng-repeat="item in lobby.lobbyData">
+            <tr class="noteTableRow" ng-repeat="item in lobby.lobbyData | orderBy: lobby.orderBy : lobby.isDesc">
               <td>{{item.roomId}}</td>
               <td>{{item.name}}</td>
               <td>{{item.status}}</td>

@@ -12,6 +12,10 @@ module lobby.controllers {
     public displayUser:User.Services.IUser;
     public actionMessage:IActionMessage = new ActionMessage(null, null);
 
+    // Sorting the lobby list
+    public orderBy : string = "roomId";
+    public isDesc : boolean = false;
+
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
     // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -37,6 +41,8 @@ module lobby.controllers {
       this.getRooms();
     }
 
+    // Helper functions
+
     public toggleNewGame():void {
       this.gameEditing = true;
       this.gameCreation = this.gameCreation === false ? true : false;
@@ -58,6 +64,16 @@ module lobby.controllers {
       this.updateRoom(room);
     }
 
+    public reorderList(orderBy : string){
+      // Double clicking the arrow => swap from ASC to DESC
+      if(this.orderBy === orderBy){
+        this.isDesc = this.isDesc ? false : true;
+      } else { // order by a new column => swap back to ASC
+        this.orderBy = orderBy;
+        this.isDesc = false;
+      }
+    }
+
     // CRUD Operations with $resources
 
     // CREATE
@@ -65,7 +81,7 @@ module lobby.controllers {
       var self = this;
       var nextRoomId = this.getHighestValue<number>(this.lobbyData, "roomId", -1) + 1;
       var roomRes = this.lobbyStorage.LobbyRoom();
-      roomRes.get({id: nextRoomId}, (newRoom:lobby.interfaces.IRoomRessource) => { // success callback
+      roomRes.get({id: nextRoomId}, (newRoom:lobby.interfaces.IRoomRessource) => {
         newRoom.name = room.name;
         newRoom.$save(function (room) { // success callback
           self.lobbyData.push(room);
@@ -173,7 +189,7 @@ module lobby.controllers {
   // Action Message Interfaces
   export interface IActionMessage {
     isError : boolean;
-    data : string
+    data : string // Contains the server side generated error message which gets displayed to the user
   }
 
   export interface IActionMessageError extends IActionMessage {
