@@ -44,7 +44,7 @@ module lobby.directives {
     public restrict = 'E';
     public static DirectoryName = "actionMessageDisplay";
     public transclude = true;
-    public templateUrl = "/lobby/directives/action-message.html";
+    public templateUrl = "/lobby/views/action-message.html";
     private $timeout;
 
     constructor($timeout) {

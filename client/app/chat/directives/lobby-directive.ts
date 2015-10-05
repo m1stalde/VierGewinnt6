@@ -33,7 +33,7 @@ module chat.directives {
 
       // retrieve the template for the chat
       scope.getTemplateUrl = () => {
-        return "/chat/directives/" + scope.chatSection + "-chat-window-template.html";
+        return "/chat/views/" + scope.chatSection + "-chat-window-template.html";
       }
 
       // Gets triggered as soon as the directive gets destroyed

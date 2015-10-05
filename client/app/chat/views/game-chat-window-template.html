@@ -1,0 +1,15 @@
+<!-- Chat window-->
+<aside>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <span class="glyphicon glyphicon-list-alt icon"></span>
+    </div>
+    <div class="chat-output">
+
+    </div>
+    <form action="">
+      <input id="msgInput" autocomplete="off" ng-model="currentMessage.message"/>
+      <button ng-click="sendMessage(currentMessage)" stop-event>Send</button>
+    </form>
+  </div>
+</aside>
