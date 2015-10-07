@@ -40,6 +40,11 @@ export interface IMessage {
     type: string;
 
     /**
+     * Further granularity in a given "type"
+     */
+    id? : string;
+
+    /**
      * The message content.
      */
     data: any;
@@ -58,13 +63,15 @@ export interface IMessage {
 export class ServerMessage<T> implements IMessage {
 
     type: string;
+    id : string;
     data: T;
     playerIds: string[] = [];
     metaData: IMessageMetaData;
 
-    constructor (type: string, data: T) {
+    constructor (type: string, data: T, id : string) {
         this.type = type;
         this.data = data;
+        this.id = id;
     }
 }
 

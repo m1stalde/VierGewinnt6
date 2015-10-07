@@ -89,12 +89,14 @@ module Common.Services {
         return
       }
 
-      this.messageListeners.forEach(listener => {
-          if(listener[messageType] === messageType){
-            listener[messageType] = null;
-          }
+      // foreach type of message listener
+      for(var key in this.messageListeners) {
+        if(key == messageType){
+          // foreach function in this particular type
+          delete this.messageListeners[key];
+          return;
         }
-      );
+      }
     }
 
     public removeMessageListener(messageType:string, listener:(message:IMessage) => void){

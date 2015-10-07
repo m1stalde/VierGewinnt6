@@ -6,6 +6,7 @@ module chat.controllers {
 
     public chatHistory : Array<IChatMessage> = [];
     public chatSection : string;
+    public id : string; // Unique Identifier for a sub section in "chatSection" => e.g one chat for each pending game
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -19,11 +20,15 @@ module chat.controllers {
 
     // dependencies are injected via AngularJS $injector
     constructor(private $scope: IChatScope, private userService : User.Services.IUserService, private messageService : Common.Services.IMessageService) {
+      this.initChatModel();
+    }
+
+    public initChatModel() : void{
       this.$scope.chatModel = <IChatModel>{
         chatHistory: this.chatHistory,
         userService: this.userService,
         messageService: this.messageService,
-        storeChatSectionInCtrl: this.storeChatSectionInCtrl,
+        storeChatSectionDataInCtrl: this.storeChatSectionDataInCtrl,
         subscribeToChatSectionEvents: this.subscribeToChatSectionEvents,
         unsubscribeToChatSectionEvents: this.unsubscribeToChatSectionEvents,
         fetchChatHistory: this.fetchChatHistory,
@@ -32,9 +37,10 @@ module chat.controllers {
       }
     }
 
-    public storeChatSectionInCtrl(section){
+    public storeChatSectionDataInCtrl(section, id){
       // Store the section additionally to the directive in the controller
-      this.chatSection = section;
+      this.chatSection = section
+      this.id = id;
     }
 
     public subscribeToChatSectionEvents(section : string){
@@ -55,12 +61,15 @@ module chat.controllers {
       }
     }
 
-    public unsubscribeToChatSectionEvents(section : string){
+    public unsubscribeToChatSectionEvents(section : string, id : string){
       // Unsubscribe to the client side message service
-      this.messageService.removeMessageListener(section + "ChatMessage", this.chatMessageListener);
+      this.messageService.removeMessageListenerType(section + "ChatMessage");
+      this.messageService.removeMessageListenerType(section + "ChatHistory");
+
       // Unsubscribe to the server side chat service
       var messageObj = new UnsubscribeToChatSectionMessage({
-        chatSectionPrefix : section
+        chatSectionPrefix : section,
+        id : id
       });
       this.messageService.sendMessage(messageObj);
     }
@@ -69,17 +78,19 @@ module chat.controllers {
     public sendMessage(message : IChatMessage){
       var messageObj = new ChatInputMessage({
         chatSectionPrefix : this.chatSection,
-        chatMessageObj : message
+        chatMessageObj : message,
+        id : this.id
       });
 
       this.messageService.sendMessage(messageObj);
     }
 
     // Send a request for the chat history to the server
-    public fetchChatHistory(section : string){
+    public fetchChatHistory(section : string, id : string){
       var messageObj : ChatHistoryMessage = new ChatHistoryMessage({
-       chatSectionPrefix : section,
-       chatHistory : null
+        chatSectionPrefix : section,
+        id : id,
+        chatHistory : null
        });
 
        // Send a request in order to retrieve the chat history of the given section
@@ -91,18 +102,19 @@ module chat.controllers {
     getTemplateUrl : () => string;
     chatModel : IChatModel;
     chatSection : string;
-    sendMessage : (message : string) => void;
+    id : string;
+    sendMessage : (message : IChatMessage) => void;
   }
 
   export interface IChatModel {
     chatHistory :  Array<Common.Services.IMessage>;
     userService: User.Services.IUserService;
     messageService : Common.Services.IMessageService;
-    storeChatSectionInCtrl : (section : string) => void;
+    storeChatSectionDataInCtrl : (section : string, id : string) => void;
     subscribeToChatSectionEvents: (nameOfEventListener : string) => void;
-    unsubscribeToChatSectionEvents: (nameOfEventListener : string) => void;
-    fetchChatHistory : (section: string) => void;
-    sendMessage : (message : string) => void;
+    unsubscribeToChatSectionEvents: (nameOfEventListener : string, id : string) => void;
+    fetchChatHistory : (section : string, id : string) => void;
+    sendMessage : (message : IChatMessage) => void;
     chatMessageListener : (message : ChatInputMessage) => void
   }
 
@@ -139,6 +151,11 @@ module chat.controllers {
       type: string;
 
     /**
+    * Further granularity in a given "type"
+    */
+      id? : string;
+
+    /**
      * The message content.
      */
     data: any;
@@ -147,11 +164,13 @@ module chat.controllers {
   export class ClientMessage<T> implements IMessage {
 
     type:string;
+    id: string;
     data:T;
 
-    constructor(type:string, data:T) {
+    constructor(type:string, data:T, id? : string) {
       this.type = type;
       this.data = data;
+      this.id = id;
     }
   }
 
@@ -159,19 +178,21 @@ module chat.controllers {
   // Unsubscribe to a chat section
   export interface IChatUnsubscribe{
     chatSectionPrefix : string;
+    id : string;
   }
 
   export class UnsubscribeToChatSectionMessage extends ClientMessage<IChatData> {
     static NAME = "ChatUnsubscribe";
 
     constructor (data: IChatUnsubscribe) {
-      super(data.chatSectionPrefix + UnsubscribeToChatSectionMessage.NAME, data);
+      super(data.chatSectionPrefix + data.id + UnsubscribeToChatSectionMessage.NAME, data, data.id);
     }
   }
 
   // Send Messages
   export interface IChatData{
     chatSectionPrefix : string;
+    id? : string;
     chatMessageObj : IChatMessage;
   }
 
@@ -179,13 +200,14 @@ module chat.controllers {
     static NAME = "ChatMessage";
 
     constructor (chatData: IChatData) {
-      super(chatData.chatSectionPrefix + ChatInputMessage.NAME, chatData);
+      super(chatData.chatSectionPrefix + ChatInputMessage.NAME, chatData, chatData.id);
     }
   }
 
   // Chat history
   export interface IChatHistory{
     chatSectionPrefix : string;
+    id? : string;
     chatHistory : Array<IChatMessage>;
   }
 
@@ -193,7 +215,7 @@ module chat.controllers {
     static NAME = "ChatHistory";
 
     constructor (chatData: IChatHistory) {
-      super(chatData.chatSectionPrefix + ChatHistoryMessage.NAME, chatData);
+      super(chatData.chatSectionPrefix + ChatHistoryMessage.NAME, chatData, chatData.id);
     }
   }
 

@@ -5,7 +5,8 @@ module chat.directives {
     public static DirectoryName = "chatWindow";
     public scope = {
       chatModel: '=',
-      chatSection: '@chatSection'
+      chatSection: '@chatSection',
+      id: '='
     }
 
     public currentMessage : chat.controllers.IChatMessage;
@@ -18,18 +19,21 @@ module chat.directives {
 
     public link(scope:chat.controllers.IChatScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) {
 
-      scope.sendMessage = function(message){
+      scope.sendMessage = function(message : chat.controllers.IChatMessage){
         scope.chatModel.sendMessage(message);
       };
 
+      // For directive implementations which don't use an attribute of id
+      scope.id = angular.isUndefined(scope.id) ? "" : scope.id;
+
       // Store the section in the controller
-      scope.chatModel.storeChatSectionInCtrl(scope.chatSection);
+      scope.chatModel.storeChatSectionDataInCtrl(scope.chatSection, scope.id);
 
       // Subscribe the chat for the particular section
       scope.chatModel.subscribeToChatSectionEvents(scope.chatSection);
 
       // Retrieve the chat history
-      scope.chatModel.fetchChatHistory(scope.chatSection);
+      scope.chatModel.fetchChatHistory(scope.chatSection, scope.id);
 
       // retrieve the template for the chat
       scope.getTemplateUrl = () => {
@@ -39,7 +43,7 @@ module chat.directives {
       // Gets triggered as soon as the directive gets destroyed
       scope.$on('$destroy', function() {
         // Subscribe the chat for the particular section
-        scope.chatModel.unsubscribeToChatSectionEvents(scope.chatSection);
+        scope.chatModel.unsubscribeToChatSectionEvents(scope.chatSection, scope.id);
       });
 
       scope.$watchCollection(

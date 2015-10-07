@@ -26,35 +26,37 @@ export function setUpChatEventListener() : void {
 
 export function sendChatHistory(message : ChatHistoryMessage){
     var prefix : string = message.data.chatSectionPrefix;
+    var id : string = message.data.id;
     var conn : WebSocket = message.metaData.connObj;
 
     // Dynamically creates the room for the specific section (in case it doesn't already exist)
-    if(!chatParticipants[prefix + "ChatParticipants"]){
-        chatParticipants[prefix + "ChatParticipants"] = new Array<any>();
+    if(!chatParticipants[prefix + id + "ChatParticipants"]){
+        chatParticipants[prefix + id + "ChatParticipants"] = new Array<any>();
     }
 
     // Dynamically creates an empty chat history array (in case it doesn't already exist)
-    if(!chatHistory[prefix + "ChatHistory"]){
-        chatHistory[prefix + "ChatHistory"] = new Array<IChatMessage>();
+    if(!chatHistory[prefix + id + "ChatHistory"]){
+        chatHistory[prefix + id + "ChatHistory"] = new Array<IChatMessage>();
     }
 
     // Add the connection object to the chat room
     var foundMatch : boolean = false
-    for(var i = 0; i <  chatParticipants[prefix + "ChatParticipants"].length; i++)
+    for(var i = 0; i <  chatParticipants[prefix + id + "ChatParticipants"].length; i++)
     {
-        if(chatParticipants[prefix + "ChatParticipants"][i] == conn){
+        if(chatParticipants[prefix + id + "ChatParticipants"][i] == conn){
             foundMatch = true;
         }
     }
     if(!foundMatch){
-        chatParticipants[prefix + "ChatParticipants"].push(message.metaData.connObj);
+        chatParticipants[prefix + id + "ChatParticipants"].push(message.metaData.connObj);
     }
 
 
     // Send chat history to the client1
     var msgObj = new ChatHistoryMessage({
-        chatHistory : chatHistory[prefix + 'ChatHistory'],
-        chatSectionPrefix : prefix,
+        chatHistory : chatHistory[prefix + id + 'ChatHistory'],
+        chatSectionPrefix : prefix, // Client gets a generic message and just the "type" gets considered for the distribution => id gets with the current implementation ignored
+        id : id
     });
 
     var msgStr = JSON.stringify(msgObj);
@@ -87,7 +89,7 @@ export function unsubscribeUser(message : UnsubscribeToChatSectionMessage){
 function broadcastChatMessage(message : ChatInputMessage){
     var msgStr = JSON.stringify(message);
 
-    chatParticipants[message.data.chatSectionPrefix + "ChatParticipants"].forEach(participant => {
+    chatParticipants[message.data.chatSectionPrefix + message.data.id + "ChatParticipants"].forEach(participant => {
         try {
             participant.send(msgStr);
         } catch (ex) {
@@ -101,7 +103,8 @@ function preprocessingChatMessage(chatHistory){
      // Strips away the meta data which were appended at the beginning
      var responseMsg = new ChatInputMessage({
          chatSectionPrefix : message.data.chatSectionPrefix,
-         chatMessageObj : message.data.chatMessageObj
+         chatMessageObj : message.data.chatMessageObj,
+         id : message.data.id
      });
 
      // ChatMessage validation - Simple chat message validation (avoid XSS)
@@ -111,7 +114,8 @@ function preprocessingChatMessage(chatHistory){
 
     if(responseMsg.data.chatMessageObj !== null) {
         var prefix = responseMsg.data.chatSectionPrefix;
-        chatHistory[prefix + "ChatHistory"].push(responseMsg.data.chatMessageObj);
+        var id = responseMsg.data.id;
+        chatHistory[prefix + id + "ChatHistory"].push(responseMsg.data.chatMessageObj);
         return responseMsg;
     }
  }
@@ -123,24 +127,27 @@ function getChatSectionAsString(type : string){
 
 // Message Service
 export interface IChatData{
-    chatSectionPrefix : string;
+    chatSectionPrefix : string; // Chat Section
+    id? : string // Possible to create a subsection for a section (optional - used for the game)
     chatMessageObj : IChatMessage;
 }
 
 export interface IChatHistory{
-    chatSectionPrefix : string;
+    chatSectionPrefix : string; // Chat Section
+    id? : string // Possible to create a subsection for a section (optional - used for the game)
     chatHistory : Array<IChatMessage>;
 }
 
 export interface IChatUnsubscribe{
     chatSectionPrefix : string;
+    id? : string // Possible to create a subsection for a section (optional - used for the game)
 }
 
 export class ChatInputMessage extends messageService.ServerMessage<IChatData> {
     static NAME = "ChatMessage";
 
     constructor (chatData: IChatData) {
-        super(chatData.chatSectionPrefix + ChatInputMessage.NAME, chatData);
+        super(chatData.chatSectionPrefix + ChatInputMessage.NAME, chatData, chatData.id);
     }
 }
 
@@ -148,7 +155,7 @@ export class ChatHistoryMessage extends messageService.ServerMessage<IChatHistor
     static NAME = "ChatHistory";
 
     constructor (chatData: IChatHistory) {
-        super(chatData.chatSectionPrefix + ChatHistoryMessage.NAME, chatData);
+        super(chatData.chatSectionPrefix + ChatHistoryMessage.NAME, chatData, chatData.id);
     }
 }
 
@@ -156,7 +163,7 @@ export class UnsubscribeToChatSectionMessage extends messageService.ServerMessag
     static NAME = "ChatUnsubscribing";
 
     constructor (data: IChatUnsubscribe) {
-        super(data.chatSectionPrefix + UnsubscribeToChatSectionMessage.NAME, data);
+        super(data.chatSectionPrefix + UnsubscribeToChatSectionMessage.NAME, data, data.id);
     }
 }
 
