@@ -93,7 +93,7 @@ export class GameUpdateMessage extends messageService.ServerMessage<gameLogic.IG
     static NAME = "GameUpdateMessage";
 
     constructor (gameData: gameLogic.IGameData) {
-        super(GameUpdateMessage.NAME, gameData);
+        super(GameUpdateMessage.NAME, gameData, null);
         this.playerIds[0] = gameData.playerId1;
         this.playerIds[1] = gameData.playerId2;
     }
