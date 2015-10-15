@@ -21,21 +21,21 @@
 1. Engineering Grundlagen
 1. UX
     - 6+1 von 125 Designprinzipien:
-        - Affordanz
-          Masken und Beschriftungen so designed, damit keine Erklärungen und Hilfetexte nötig sind
+        - Affordanz  
+          Masken und Beschriftungen so designed, damit keine Erklärungen und Hilfetexte nötig sind  
           Leichte Bedienung durch Gast-Modus um sofort mit dem Spiel beginnen zu können
-        - Anordnung (Optische Ausrichtung)
+        - Anordnung (Optische Ausrichtung)  
           Zusammengehörende Elemente für Chat, Spiel, Lobby, etc. wurden aneinander ausgerichtet, um das Auge des Betrachters zu führen.
-        - Blank Slate
+        - Blank Slate  
           Grafik und Info, wenn noch keine Räume oder Chat-Nachrichten vorhanden sind
-        - Farbe
+        - Farbe  
           (Farbkreis und Farbharmonie)
-        - Fitt's Law
+        - Fitt's Law  
           Grösse von Schaltflächen für Touch-Bedienung optimiert
           Mauswege durch geschickte Anordnung der einzelnen Komponenten optimiert
-        - Horror Vacui
+        - Horror Vacui  
           Bewusst leere Bereiche auf den Screens freigehalten um Ansichten nicht zu überladen und die Wahrnehmung des Benutzers auf das Wesentliche zu lenken
-        - Progressive Disclosure
+        - Progressive Disclosure  
           (nicht jedem User die gesamte Funktionalität zeigen)
 
 1. Angular
