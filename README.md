@@ -37,7 +37,6 @@
           Bewusst leere Bereiche auf den Screens freigehalten um Ansichten nicht zu überladen und die Wahrnehmung des Benutzers auf das Wesentliche zu lenken
         - Progressive Disclosure  
           (nicht jedem User die gesamte Funktionalität zeigen)
-
 1. Angular
 
 
