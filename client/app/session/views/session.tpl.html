@@ -3,6 +3,7 @@
 <!-- user is currently logged out -->
 <div ng-hide="session.userLoggedIn">
   <p>Bitte melde dich an.</p>
+  <a href="{{session.everyAuthTwitterAuthUrl}}">Twitter</a>
   <form ng-submit="session.login()">
     <div class="form-group">
       <label for="inputName">Name</label>
