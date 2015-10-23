@@ -27,6 +27,7 @@ export function init(app : express.Application){
 
             return promise;
         })
+        // Find a better solution than this string literal => constants?
         .redirectPath('http://10.3.10.51:3000/#/lobby');
 
     everyauth.everymodule.handleLogout(function(req, res){
