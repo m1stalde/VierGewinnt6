@@ -3,7 +3,7 @@ import everyauth = require('everyauth');
 import security = require('../utils/security');
 import sessionService = require('../services/sessionService');
 
-// Should key & secret should never be stored in your application but is used for the sake of simplicity
+// Key & secret should never be stored in your application but is used for the sake of simplicity
 var twitter_key = "PXe9zaJA3qJhSSpQja8P4thp8";
 var twitter_secret = "uO5bDB9jD1GwTlrsv2P15SJh27adMpyEo5iPrqpP8KPqTVrAD8";
 
