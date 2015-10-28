@@ -40,3 +40,9 @@ export function init(app : express.Application){
     app.use(everyauth.middleware());
 }
 
+export interface EveryAuth {
+    twitter : {};
+    everymodule : () => any;
+    middleware : () => any;
+}
+
