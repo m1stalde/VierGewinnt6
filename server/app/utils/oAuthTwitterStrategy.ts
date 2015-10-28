@@ -42,7 +42,7 @@ export function init(app : express.Application){
 
 export interface EveryAuth {
     twitter : {};
-    everymodule : () => any;
+    everymodule : {};
     middleware : () => any;
 }
 
