@@ -72,6 +72,52 @@ export function doMove(req: GameControllerRequest, res: express.Response, next: 
     });
 }
 
+export function restartGame(req: GameControllerRequest, res: express.Response, next: Function) {
+    var playerId = security.getServerSession(req).getPlayerId();
+
+    var gameId = req.body.gameId;
+    if (!gameId) {
+        res.status(400).send('Bad Request: gameId missing');
+        return;
+    }
+
+    gameService.restartGame(gameId, playerId, function(err, gameData) {
+        if (err) {
+            next(err);
+            return;
+        }
+
+        res.format({
+            'application/json': function(){
+                res.json(gameData);
+            }
+        });
+    });
+}
+
+export function breakGame(req: GameControllerRequest, res: express.Response, next: Function) {
+    var playerId = security.getServerSession(req).getPlayerId();
+
+    var gameId = req.body.gameId;
+    if (!gameId) {
+        res.status(400).send('Bad Request: gameId missing');
+        return;
+    }
+
+    gameService.breakGame(gameId, playerId, function(err, gameData) {
+        if (err) {
+            next(err);
+            return;
+        }
+
+        res.format({
+            'application/json': function(){
+                res.json(gameData);
+            }
+        });
+    });
+}
+
 interface GameControllerRequest extends express.Request {
     gameId: string;
     col: number;

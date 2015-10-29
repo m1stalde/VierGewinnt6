@@ -79,7 +79,7 @@ describe('Game Logic Tests:', () => {
                 err.should.not.be.null;
 
                 game.doMove(playerId1, 1, (err, gameData) => {
-                    (<number>gameData.cells[0][0]).should.be.equal(gameLogic.Color.None);
+                    (<number>gameData.cells[5][0]).should.be.equal(gameLogic.Color.None);
                     done();
                 });
             });
@@ -133,6 +133,50 @@ describe('Game Logic Tests:', () => {
                 game.isWinner(gameData.nextColor).should.be.false;
             });
             done();
+        });
+    });
+
+    describe('restart game', () => {
+        it('restart game should clear game field and state', (done) => {
+            game.doMove(playerId1, 0, (err, gameData) => {
+                (<number>gameData.cells[5][0]).should.be.equal(gameLogic.Color.Red);
+                (<number>gameData.state).should.be.equal(gameLogic.GameState.Running);
+
+                game.restartGame(playerId2, (err, gameData) => {
+                    (<number>gameData.cells[5][0]).should.be.equal(gameLogic.Color.None);
+                    (<number>gameData.state).should.be.equal(gameLogic.GameState.New);
+                    done();
+                });
+            });
+        });
+
+        it('restart game should do nothing if player is not in the game', (done) => {
+            game.restartGame('playerId3', (err, gameData) => {
+                err.should.not.be.null;
+                done();
+            });
+        });
+    });
+
+    describe('break game', () => {
+        it('break game should set state to broken', (done) => {
+            game.doMove(playerId1, 0, (err, gameData) => {
+                (<number>gameData.cells[5][0]).should.be.equal(gameLogic.Color.Red);
+                (<number>gameData.state).should.be.equal(gameLogic.GameState.Running);
+
+                game.breakGame(playerId2, (err, gameData) => {
+                    (<number>gameData.cells[5][0]).should.be.equal(gameLogic.Color.Red);
+                    (<number>gameData.state).should.be.equal(gameLogic.GameState.Broken);
+                    done();
+                });
+            });
+        });
+
+        it('break game should do nothing if player is not in the game', (done) => {
+            game.restartGame('playerId3', (err, gameData) => {
+                err.should.not.be.null;
+                done();
+            });
         });
     });
 });

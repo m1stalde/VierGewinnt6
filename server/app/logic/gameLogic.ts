@@ -34,13 +34,7 @@ export class Game {
             nextColor = startColor;
         }
 
-        var cells: number[][] = new Array(rowCount);
-        for (var row: number = 0; row < rowCount; row++) {
-            cells[row] = new Array(colCount);
-            for (var col: number = 0; col < colCount; col++) {
-                cells[row][col] = Color.None;
-            }
-        }
+        var cells = this.initCells(rowCount, colCount);
 
         this.gameData = {
             cells: cells,
@@ -67,8 +61,8 @@ export class Game {
         }
 
         // check game state
-        if (this.gameData.state === GameState.Finished) {
-            callback(new Error("game is in state Finished"), null);
+        if (this.gameData.state === GameState.Finished || this.gameData.state === GameState.Broken) {
+            callback(new Error("game is in wrong state"), null);
             return;
         }
 
@@ -184,6 +178,79 @@ export class Game {
 
         return false;
     }
+
+    /**
+     * Restarts game.
+     * @param playerId player who put tile into
+     * @param callback with result or error
+     */
+    public restartGame(playerId: string, callback: (err: Error, gameData: IGameData) => void): void {
+        if (!playerId) {
+            callback(new Error('playerId required'), null);
+            return;
+        }
+
+        // check if given user is a player in the game
+        if (!this.isGamePlayer(playerId)) {
+            callback(new Error("player " + playerId + " isn't on the game"), null);
+            return;
+        }
+
+        // restart game
+        var rowCount = this.gameData.cells.length;
+        var colCount = this.gameData.cells[0].length;
+        this.gameData.cells = this.initCells(rowCount, colCount);
+        this.gameData.state = GameState.New;
+
+        callback(null, this.gameData);
+    }
+
+    /**
+     * Breaks game.
+     * @param playerId player who put tile into
+     * @param callback with result or error
+     */
+    public breakGame(playerId: string, callback: (err: Error, gameData: IGameData) => void): void {
+        if (!playerId) {
+            callback(new Error('playerId required'), null);
+            return;
+        }
+
+        // check if given user is a player in the game
+        if (!this.isGamePlayer(playerId)) {
+            callback(new Error("player " + playerId + " isn't on the game"), null);
+            return;
+        }
+
+        // set game state to broken
+        this.gameData.state = GameState.Broken;
+
+        callback(null, this.gameData);
+    }
+
+    /**
+     * Sets all cells with given dimensions to color none.
+     * @param rowCount vertical dimension
+     * @param colCount horizontal dimension
+     */
+    private initCells(rowCount: number, colCount: number): number[][] {
+        var cells: number[][] = new Array(rowCount);
+        for (var row: number = 0; row < rowCount; row++) {
+            cells[row] = new Array(colCount);
+            for (var col: number = 0; col < colCount; col++) {
+                cells[row][col] = Color.None;
+            }
+        }
+        return cells;
+    }
+
+    /**
+     * Returns true if given player is a player in the game, else false.
+     * @param playerId
+     */
+    private isGamePlayer(playerId: string): boolean {
+        return this.gameData.playerId1 === playerId || this.gameData.playerId2 === playerId;
+    }
 }
 
 export enum Color {
@@ -195,7 +262,8 @@ export enum Color {
 export enum GameState {
     New = 0,
     Running = 1,
-    Finished = 2
+    Finished = 2,
+    Broken = 3
 }
 
 export interface IGameData {

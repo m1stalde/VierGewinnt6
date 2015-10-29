@@ -10,5 +10,7 @@ var router: express.Router = express.Router();
 router.get('/getGame', controller.getGame);
 router.post('/newGame', controller.newGame);
 router.post('/doMove', controller.doMove);
+router.post('/restartGame', controller.restartGame);
+router.post('/breakGame', controller.breakGame);
 
 export = router;

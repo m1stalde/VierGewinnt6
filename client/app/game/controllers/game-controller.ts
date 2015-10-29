@@ -63,6 +63,10 @@ module Game.Controllers {
       return this.getCurrentGame().state === Game.Services.GameState.Finished;
     }
 
+    isGameBroken(): boolean {
+      return this.getCurrentGame().state === Game.Services.GameState.Broken;
+    }
+
     getGameState(): IGameState {
       var gameState: IGameState;
 
@@ -78,6 +82,11 @@ module Game.Controllers {
             message: "Spiel verloren!"
           };
         }
+      } else if (this.isGameBroken()) {
+        gameState = {
+          state: "broken",
+          message: "Spiel beendet!"
+        };
       } else {
         if (this.isCurrentUserOnMove()) {
           gameState = {
@@ -93,6 +102,16 @@ module Game.Controllers {
       }
 
       return gameState;
+    }
+
+    restartGame(): void {
+      this.$log.debug("restart game");
+      this.gameService.restartGame();
+    }
+
+    breakGame(): void {
+      this.$log.debug("break game");
+      this.gameService.breakGame();
     }
   }
 

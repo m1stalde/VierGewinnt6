@@ -85,6 +85,74 @@ export function doMove(gameId: string, playerId: string, col: number, callback: 
     });
 }
 
+/**
+ * Restarts and persists existing game.
+ * @param gameId game to restart
+ * @param playerId player who do next move
+ * @param callback called after execution
+ */
+export function restartGame(gameId: string, playerId: string, callback: (err: Error, gameData: gameLogic.IGameData) => void) {
+    if(!(gameId && playerId)) {
+        callback(new Error('gameId and playerId required'), null);
+        return;
+    }
+
+    getGame(gameId, function (err, gameData) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+
+        var game = new gameLogic.Game(gameData);
+
+        game.restartGame(playerId, function (err, gameData) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+
+            db.update({_id: gameId}, gameData, function(err) {
+                messageService.sendMessage(new GameUpdateMessage(gameData));
+                callback(err, gameData);
+            });
+        });
+    });
+}
+
+/**
+ * Breaks and persists existing game.
+ * @param gameId game to restart
+ * @param playerId player who do next move
+ * @param callback called after execution
+ */
+export function breakGame(gameId: string, playerId: string, callback: (err: Error, gameData: gameLogic.IGameData) => void) {
+    if(!(gameId && playerId)) {
+        callback(new Error('gameId and playerId required'), null);
+        return;
+    }
+
+    getGame(gameId, function (err, gameData) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+
+        var game = new gameLogic.Game(gameData);
+
+        game.breakGame(playerId, function (err, gameData) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+
+            db.update({_id: gameId}, gameData, function(err) {
+                messageService.sendMessage(new GameUpdateMessage(gameData));
+                callback(err, gameData);
+            });
+        });
+    });
+}
+
 interface IGameDataPersisted extends gameLogic.IGameData {
     _id : string;
 }

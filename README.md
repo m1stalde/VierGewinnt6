@@ -18,6 +18,8 @@
     - JavaScript am Ende der HTML-Seite eingebunden, damit der Browser bereits mit dem Rendering der Seite beginnen kann.
 1. NodeJS
 1. REST
+1. Express
+    - Front Controller Pattern mit Routes, Controllers und Services
 1. Engineering Grundlagen
 1. UX
     - 6+1 von 125 Designprinzipien:

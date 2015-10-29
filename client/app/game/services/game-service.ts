@@ -3,9 +3,11 @@ module Game.Services {
   'use strict';
 
   export interface IGameService {
-    getGame() : IGame;
-    newGame() : ng.IPromise<IGame>;
-    doMove(col : number) : void;
+    getGame(): IGame;
+    newGame(): ng.IPromise<IGame>;
+    doMove(col: number): void;
+    restartGame(): void;
+    breakGame(): void;
   }
 
   export interface IGame {
@@ -27,7 +29,8 @@ module Game.Services {
   export enum GameState {
     New = 0,
     Running = 1,
-    Finished = 2
+    Finished = 2,
+    Broken = 3
   }
 
   class GameService implements IGameService {
@@ -41,9 +44,12 @@ module Game.Services {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
       var that = this;
 
+      // register for game update messages concerns to current game
       messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
-        that.$log.info("message reveiced " + message);
-        that.game = message.data;
+        if (that.game && that.game._id === message.data._id) {
+          that.$log.info("message reveiced " + message);
+          that.game = message.data;
+        }
       });
     }
 
@@ -53,7 +59,7 @@ module Game.Services {
 
     newGame(): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
-      var that = this; // TODO check that
+      var that = this;
 
       if (!this.game) {
         this.$http.post<IGame>(this.appConfig.baseUrl + '/game/newGame', null).then((data) => {
@@ -68,22 +74,25 @@ module Game.Services {
     }
 
     doMove(col: number): void {
-      var that = this; // TODO check that
+      var gameId = this.game._id;
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: gameId, col: col });
+    }
 
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: that.game._id, col: col });
+    restartGame(): void {
+      var gameId = this.game._id;
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/restartGame', { gameId: gameId });
+    }
+
+    breakGame(): void {
+      var gameId = this.game._id;
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/breakGame', { gameId: gameId });
     }
   }
 
   class GameUpdateMessage implements Common.Services.IMessage {
     static NAME = "GameUpdateMessage";
     type: string = GameUpdateMessage.NAME;
-    data: any;
-
-    constructor (game: IGame) {
-      this.data = {
-        game: game
-      };
-    }
+    data: IGame;
   }
 
   /**
