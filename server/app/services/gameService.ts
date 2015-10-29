@@ -14,11 +14,29 @@ db.persistence.setAutocompactionInterval(60000);
 /**
  * Returns saved game data by given id.
  * @param gameId id to load game data
+ * @param playerId player who loads the game
  * @param callback called after execution
  */
-export function getGame(gameId: string, callback: (err: Error, gameData: gameLogic.IGameData) => void) {
-    db.findOne<gameLogic.IGameData>({_id: gameId}, function (err, doc) {
-        callback(err, doc);
+export function getGame(gameId: string, playerId: string, callback: (err: Error, gameData: gameLogic.IGameData) => void) {
+    if(!(gameId && playerId)) {
+        callback(new Error('gameId and playerId required'), null);
+        return;
+    }
+
+    db.findOne<gameLogic.IGameData>({_id: gameId}, function (err, gameData) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+
+        var game = new gameLogic.Game(gameData);
+
+        if (!game.isGamePlayer(playerId)) {
+            callback(new Error("player " + playerId + " isn't on the game"), null);
+            return;
+        }
+
+        callback(err, gameData);
     });
 }
 
@@ -63,7 +81,7 @@ export function doMove(gameId: string, playerId: string, col: number, callback: 
         return;
     }
 
-    getGame(gameId, function (err, gameData) {
+    getGame(gameId, playerId, function (err, gameData) {
         if (err) {
             callback(err, null);
             return;
@@ -97,7 +115,7 @@ export function restartGame(gameId: string, playerId: string, callback: (err: Er
         return;
     }
 
-    getGame(gameId, function (err, gameData) {
+    getGame(gameId, playerId, function (err, gameData) {
         if (err) {
             callback(err, null);
             return;
@@ -131,7 +149,7 @@ export function breakGame(gameId: string, playerId: string, callback: (err: Erro
         return;
     }
 
-    getGame(gameId, function (err, gameData) {
+    getGame(gameId, playerId, function (err, gameData) {
         if (err) {
             callback(err, null);
             return;

@@ -6,13 +6,15 @@ import gameLogic = require('../logic/gameLogic');
 import security = require('../utils/security');
 
 export function getGame(req: GameControllerRequest, res: express.Response, next: Function) {
-    var gameId = req.body.gameId;
+    var playerId = security.getServerSession(req).getPlayerId();
+
+    var gameId = req.query.gameId;
     if (!gameId) {
         res.status(400).send('Bad Request: gameId missing');
         return;
     }
 
-    gameService.getGame(gameId, function(err, gameData) {
+    gameService.getGame(gameId, playerId, function(err, gameData) {
         if (err) {
             next(err);
             return;

@@ -13,8 +13,18 @@ module game {
         controller: 'GameCtrl',
         controllerAs: 'game',
         resolve: {
-          'Something': ['GameService', function (gameService: Game.Services.IGameService) {
+          newGame: ['GameService', function (gameService: Game.Services.IGameService) {
             return gameService.newGame();
+          }]
+        }
+      })
+      .when('/game/:gameId', {
+        templateUrl: 'game/views/game.tpl.html',
+        controller: 'GameCtrl',
+        controllerAs: 'game',
+        resolve: {
+          loadGame: ['GameService', '$route', function (gameService: Game.Services.IGameService, $route) {
+            return gameService.loadGame($route.current.params.gameId);
           }]
         }
       });

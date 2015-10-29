@@ -5,9 +5,10 @@ module Game.Services {
   export interface IGameService {
     getGame(): IGame;
     newGame(): ng.IPromise<IGame>;
-    doMove(col: number): void;
-    restartGame(): void;
-    breakGame(): void;
+    loadGame(gameId: string): ng.IPromise<IGame>;
+    doMove(col: number): ng.IPromise<IGame>;
+    restartGame(): ng.IPromise<IGame>;
+    breakGame(): ng.IPromise<IGame>;
   }
 
   export interface IGame {
@@ -73,19 +74,59 @@ module Game.Services {
       return deferred.promise;
     }
 
-    doMove(col: number): void {
-      var gameId = this.game._id;
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: gameId, col: col });
+    loadGame(gameId: string): ng.IPromise<IGame> {
+      var deferred = this.$q.defer();
+      var that = this;
+
+      if (!this.game) {
+        this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }}).then((data) => {
+          that.game = data.data;
+          deferred.resolve(that.game);
+        });
+      } else {
+        deferred.resolve(that.game);
+      }
+
+      return deferred.promise;
     }
 
-    restartGame(): void {
+    doMove(col: number): ng.IPromise<IGame> {
+      var deferred = this.$q.defer();
+      var that = this;
       var gameId = this.game._id;
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/restartGame', { gameId: gameId });
+
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: gameId, col: col }).then((data) => {
+        that.game = data.data;
+        deferred.resolve(that.game);
+      });
+
+      return deferred.promise;
     }
 
-    breakGame(): void {
+    restartGame(): ng.IPromise<IGame> {
+      var deferred = this.$q.defer();
+      var that = this;
       var gameId = this.game._id;
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/breakGame', { gameId: gameId });
+
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/restartGame', {gameId: gameId}).then((data) => {
+        that.game = data.data;
+        deferred.resolve(that.game);
+      });
+
+      return deferred.promise;
+    }
+
+    breakGame(): ng.IPromise<IGame> {
+      var deferred = this.$q.defer();
+      var that = this;
+      var gameId = this.game._id;
+
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/breakGame', { gameId: gameId }).then((data) => {
+        that.game = data.data;
+        deferred.resolve(that.game);
+      });
+
+      return deferred.promise;
     }
   }
 
