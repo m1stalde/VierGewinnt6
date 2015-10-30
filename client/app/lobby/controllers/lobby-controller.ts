@@ -43,7 +43,6 @@ module lobby.controllers {
     private init() {
       this.lobbyData = [];
       this.getRooms();
-      this.subscribeToGameStartMessage();
     }
 
     // Helper functions
@@ -189,16 +188,7 @@ module lobby.controllers {
       });
     }
 
-    private subscribeToGameStartMessage() : void {
-      var self = this;
-      // Subscribe for incoming messages to load the chat history
-      this.messageService.addMessageListener("GameStartSignal", function(message : GameStartSignalMessage){
-        // redirect to game with gameId
-        // redirect to the game page
-        //self.$window.location.href = "/game";
-        // /#/game
-      });
-    }
+
 
 
   }

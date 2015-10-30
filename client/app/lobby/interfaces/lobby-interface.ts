@@ -13,6 +13,7 @@ module lobby.interfaces{
     players?: Array<IPlayer>;
     isDelete? : boolean;
     isJoin? : boolean;
+    gameId?: string;
   }
 
   export interface IPlayer {
@@ -28,6 +29,7 @@ module lobby.interfaces{
     public players: Array<IPlayer>;
     public isDelete : boolean;
     public isJoin : boolean;
+    public gameId: string;
 
       constructor(room : IRoomRessource){
         if(room !== null){
@@ -38,6 +40,7 @@ module lobby.interfaces{
           this.players= room.players;
           this.isDelete= room.isDelete;
           this.isJoin= room.isJoin;
+          this.gameId = room.gameId;
         }
       }
   }

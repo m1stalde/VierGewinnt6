@@ -6,7 +6,6 @@ import gameLogic = require('../logic/gameLogic');
 import utils = require("../utils/helperFunctions");
 import chatService = require("../services/chatService");
 import messageService = require('../services/messageService');
-import websocketService = require("../websocket/websocketService");
 
 var listOfRooms:Array<IRoom> = [
     {
@@ -90,9 +89,9 @@ export function saveRoom(roomObj, sessionData, isCreate, cb) {
                 room.gameId = gameId
 
                 // Send the Game data to the players
-                var message = new GameStartSignalMessage(gameData);
+                var message = new RoomUpdateMessage(room);
                 message.playerIds = [playerId1, playerId2];
-                websocketService.sendMessageToPlayers(message);
+                messageService.sendMessage(message);
 
                 cb(null, room);
             });
@@ -238,11 +237,11 @@ export class LobbySessionData{
 
 // Websocket related classes & interfaces
 
-export class GameStartSignalMessage extends messageService.ServerMessage<gameLogic.IGameData> {
-    static NAME = "GameStartSignal";
+export class RoomUpdateMessage extends messageService.ServerMessage<IRoom> {
+    static NAME = "RoomUpdateMessage";
 
-    constructor (data: gameLogic.IGameData) {
-        super(GameStartSignalMessage.NAME, data);
+    constructor (data: IRoom) {
+        super(RoomUpdateMessage.NAME, data);
     }
 }
 

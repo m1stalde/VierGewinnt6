@@ -248,7 +248,7 @@ export class Game {
      * Returns true if given player is a player in the game, else false.
      * @param playerId
      */
-    private isGamePlayer(playerId: string): boolean {
+    public isGamePlayer(playerId: string): boolean {
         return this.gameData.playerId1 === playerId || this.gameData.playerId2 === playerId;
     }
 }
