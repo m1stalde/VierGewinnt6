@@ -151,7 +151,7 @@ module chat.controllers {
       type: string;
 
     /**
-    * Further granularity in a given "type"
+    * Further granularity for a given "type"
     */
       id? : string;
 

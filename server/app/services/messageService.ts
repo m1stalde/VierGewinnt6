@@ -68,7 +68,7 @@ export class ServerMessage<T> implements IMessage {
     playerIds: string[] = [];
     metaData: IMessageMetaData;
 
-    constructor (type: string, data: T, id : string) {
+    constructor (type: string, data: T, id? : string) {
         this.type = type;
         this.data = data;
         this.id = id;

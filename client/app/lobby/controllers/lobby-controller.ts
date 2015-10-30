@@ -23,14 +23,18 @@ module lobby.controllers {
     public static $inject = [
       '$scope',
       '$log',
+      '$window',
       '$rootScope',
       'lobbyStorage',
-      'UserService'
+      'UserService',
+      'MessageService',
+      'GameService',
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor(private $scope, private $log:ng.ILogService, private $rootScope:ng.IScope,
-                private lobbyStorage, private userService:User.Services.IUserService) {
+    constructor(private $scope, private $log:ng.ILogService, private $window : ng.IWindowService, private $rootScope:ng.IScope,
+                private lobbyStorage, private userService:User.Services.IUserService,  private messageService : Common.Services.IMessageService,
+                private gameService: Game.Services.IGameService) {
       this.displayUser = userService.getCurrentUser();
       this.init();
     }
@@ -39,6 +43,7 @@ module lobby.controllers {
     private init() {
       this.lobbyData = [];
       this.getRooms();
+      this.subscribeToGameStartMessage();
     }
 
     // Helper functions
@@ -62,6 +67,24 @@ module lobby.controllers {
     public joinRoom(room:lobby.interfaces.IRoomRessource) {
       room.isJoin = true;
       this.updateRoom(room);
+    }
+
+    private getPositionOfElement(array:Array<any>, element, value) {
+      var pos:number = -1;
+      for (var i = 0, len = array.length; i < len; i++) {
+        if (array[i][element] == value) pos = i;
+      }
+      return pos;
+    }
+
+    private getHighestValue<T>(array:Array<any>, element:string, seed:T):T {
+      var value:T = seed;
+      for (var i = 0, len = array.length; i < len; i++) {
+        if (array[i][element] > value) {
+          value = array[i][element];
+        }
+      }
+      return value;
     }
 
     public reorderList(orderBy : string){
@@ -166,24 +189,18 @@ module lobby.controllers {
       });
     }
 
-
-    private getPositionOfElement(array:Array<any>, element, value) {
-      var pos:number = -1;
-      for (var i = 0, len = array.length; i < len; i++) {
-        if (array[i][element] == value) pos = i;
-      }
-      return pos;
+    private subscribeToGameStartMessage() : void {
+      var self = this;
+      // Subscribe for incoming messages to load the chat history
+      this.messageService.addMessageListener("GameStartSignal", function(message : GameStartSignalMessage){
+        // redirect to game with gameId
+        // redirect to the game page
+        //self.$window.location.href = "/game";
+        // /#/game
+      });
     }
 
-    private getHighestValue<T>(array:Array<any>, element:string, seed:T):T {
-      var value:T = seed;
-      for (var i = 0, len = array.length; i < len; i++) {
-        if (array[i][element] > value) {
-          value = array[i][element];
-        }
-      }
-      return value;
-    }
+
   }
 
   // Action Message Interfaces
@@ -239,6 +256,49 @@ module lobby.controllers {
       displayUser: User.Services.IUser;
       actionMessage: IActionMessage;
   }
+
+  // Websocket Message classes & interfaces
+
+  // Receive the start signal from the server
+  export interface IMessage {
+
+    /**
+     * Type of the message.
+     */
+      type: string;
+
+    /**
+     * Further granularity for a given "type"
+     */
+    id? : string;
+
+    /**
+     * The message content.
+     */
+    data: any;
+  }
+
+  export class ClientMessage<T> implements IMessage {
+
+    type:string;
+    id: string;
+    data:T;
+
+    constructor(type:string, data:T, id? : string) {
+      this.type = type;
+      this.data = data;
+      this.id = id;
+    }
+  }
+
+  export class GameStartSignalMessage extends ClientMessage<Game.Services.IGame> {
+    static NAME = "GameStartSignal";
+
+    constructor (data: Game.Services.IGame) {
+      super(GameStartSignalMessage.NAME, data);
+    }
+  }
+
 
   /**
    * @ngdoc object

@@ -10,6 +10,7 @@
 /// <reference path='models/lobby-game.ts' />
 
 /// <reference path='services/lobby-storage.ts' />
+/// <reference path='../game/services/game-service.ts' />
 
 /// <reference path='constants/lobby-constants.ts' />
 

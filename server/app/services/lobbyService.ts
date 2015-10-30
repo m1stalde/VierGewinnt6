@@ -5,6 +5,8 @@ import gameService = require('../services/gameService');
 import gameLogic = require('../logic/gameLogic');
 import utils = require("../utils/helperFunctions");
 import chatService = require("../services/chatService");
+import messageService = require('../services/messageService');
+import websocketService = require("../websocket/websocketService");
 
 var listOfRooms:Array<IRoom> = [
     {
@@ -73,7 +75,7 @@ export function saveRoom(roomObj, sessionData, isCreate, cb) {
             var playerId1 = <string>room.players[0].playerId;
             var playerId2 = sessionData.playerId;
 
-            gameService.newGame(playerId1, playerId2, gameLogic.Color.Yellow, function (err, gameData, gameId) {
+            gameService.newGame(playerId1, playerId2, gameLogic.Color.Yellow, function (err, gameData : gameLogic.IGameData, gameId) {
                 if (err) {
                     cb(err, null);
                     return;
@@ -85,13 +87,17 @@ export function saveRoom(roomObj, sessionData, isCreate, cb) {
                     userName: sessionData.userName
                 }));
 
-                room.gameId = gameId;
+                room.gameId = gameId
+
+                // Send the Game data to the players
+                var message = new GameStartSignalMessage(gameData);
+                message.playerIds = [playerId1, playerId2];
+                websocketService.sendMessageToPlayers(message);
 
                 cb(null, room);
             });
 
         } else { // Update & Delete
-
             // Only the creator of the room can trigger update & delete actions
             // Compares the storage with the user who tries to do a modification
             if (room.players[0].userName !== sessionData.userName) {
@@ -227,6 +233,16 @@ export class LobbySessionData{
     constructor(sessionData : ILobbySessionData){
         this.userName = sessionData.userName;
         this.playerId = sessionData.playerId;
+    }
+}
+
+// Websocket related classes & interfaces
+
+export class GameStartSignalMessage extends messageService.ServerMessage<gameLogic.IGameData> {
+    static NAME = "GameStartSignal";
+
+    constructor (data: gameLogic.IGameData) {
+        super(GameStartSignalMessage.NAME, data);
     }
 }
 

@@ -82,11 +82,22 @@ function mapMetaDataToConn(conn: WebSocket){
 
         console.info('player ' + playerId + ' connected');
 
-        clients.push({
-            userName: userName,
-            clientObj : conn,
-            playerId: playerId
-        });
+        var foundMatch = false;
+        for (var i = 0; i < clients.length; ++i) {
+            if(clients[i].userName === userName){
+                clients[i].clientObj = conn;
+                clients[i].playerId = playerId;
+                foundMatch = true;
+            }
+        }
+
+        if(!foundMatch) {
+            clients.push({
+                userName: userName,
+                clientObj: conn,
+                playerId: playerId
+            });
+        }
     });
 }
 
@@ -126,6 +137,27 @@ function sendMessage(message: messageService.IMessage) {
                 console.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
             }
         //}
+    });
+}
+
+
+export function sendMessageToPlayers(message: messageService.IMessage) {
+    // check for userIds to broadcast to
+    if (!message.playerIds || message.playerIds.length === 0) {
+        return;
+    }
+
+    // send message to clients matching the messages userIds
+    console.log("sending message to clients:\n " + util.inspect(message, {showHidden: false, depth: 1}));
+    clients.forEach(client => {
+        //TODO client filter deactivated because playerIds in different websocket and http sessions doesn't match anymore
+        if (client.playerId && message.playerIds.indexOf(client.playerId) != -1) {
+        try {
+            client.clientObj.send(JSON.stringify(message));
+        } catch (ex) {
+            console.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
+        }
+        }
     });
 };
 
