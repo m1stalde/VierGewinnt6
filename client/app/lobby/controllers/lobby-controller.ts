@@ -187,10 +187,6 @@ module lobby.controllers {
         });
       });
     }
-
-
-
-
   }
 
   // Action Message Interfaces

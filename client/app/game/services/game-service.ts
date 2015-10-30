@@ -9,6 +9,7 @@ module Game.Services {
     doMove(col: number): ng.IPromise<IGame>;
     restartGame(): ng.IPromise<IGame>;
     breakGame(): ng.IPromise<IGame>;
+
   }
 
   export interface IGame {
