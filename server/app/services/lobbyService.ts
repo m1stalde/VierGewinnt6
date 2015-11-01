@@ -87,6 +87,7 @@ export function saveRoom(roomObj, sessionData, isCreate, cb) {
                 }));
 
                 room.gameId = gameId
+                room.status = "Game is in progress";
 
                 // Send the Game data to the players
                 var message = new RoomUpdateMessage(room);

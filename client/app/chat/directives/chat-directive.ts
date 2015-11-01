@@ -21,6 +21,7 @@ module chat.directives {
 
       scope.sendMessage = function(message : chat.controllers.IChatMessage){
         scope.chatModel.sendMessage(message);
+        this.currentMessage = "";
       };
 
       // For directive implementations which don't use an attribute of id
