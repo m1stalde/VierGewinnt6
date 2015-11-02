@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 security.init(app);
 app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/../../client/build/app'));
+app.use(express.static(__dirname + '/../../../client/build/app'));
 
 
 
