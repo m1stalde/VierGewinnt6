@@ -4,8 +4,6 @@ module Home.Controllers {
 
   class HomeCtrl {
 
-    ctrlName: string;
-
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
     // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -15,7 +13,6 @@ module Home.Controllers {
 
     // dependencies are injected via AngularJS $injector
     constructor() {
-      this.ctrlName = 'HomeCtrl';
     }
   }
 

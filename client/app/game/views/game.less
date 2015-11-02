@@ -10,22 +10,22 @@
   font-size: 0;
   width: 100%;
   padding-left: @border;
-}
 
-.game-row:first-child {
-  padding-top: @border;
+  &:first-child {
+    padding-top: @border;
+  }
 }
 
 .game-box {
   display: inline-block;
   position: relative;
   width: 100% / 7;
-}
 
-.game-box:before {
-  content: "";
-  display: block;
-  padding-top: 100%;
+  &:before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
 }
 
 .game-field {
@@ -35,14 +35,14 @@
   bottom: @border;
   right: @border;
   background-color: rgba(255, 255, 255, 0.5);
-}
 
-.game-field.red {
-  background-color: red;
-}
+  &.red {
+    background-color: red;
+  }
 
-.game-field.yellow {
-  background-color: yellow;
+  &.yellow {
+    background-color: yellow;
+  }
 }
 
 .game-move {
@@ -55,16 +55,17 @@
 }
 
 .move-play {
+
   .game-field {
     background-color: rgba(255, 255, 255, 0.2);
-  }
 
-  .game-field.red {
-    background-color: red;
-  }
+    &.red {
+      background-color: red;
+    }
 
-  .game-field.yellow {
-    background-color: yellow;
+    &.yellow {
+      background-color: yellow;
+    }
   }
 }
 
@@ -77,22 +78,22 @@
   background-color: rgba(255, 255, 255, 1.0);
   z-index: 1;
   padding: @border;
-}
 
-.move-info.play {
-  display: none;
-}
+  &.play {
+    display: none;
+  }
 
-.move-info.wait {
-  color: red;
-}
+  &.wait {
+    color: red;
+  }
 
-.move-info.won {
-  color: green;
-}
+  &.won {
+    color: green;
+  }
 
-.move-info.loose {
-  color: red;
+  &.loose {
+    color: red;
+  }
 }
 
 .message-cell {
