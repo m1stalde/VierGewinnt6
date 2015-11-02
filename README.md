@@ -1,5 +1,8 @@
 # Vier Gewinnt der Gruppe 6
 
+## Programm ausführen
+1. run.bat ausführen
+
 ## Funktionen
 - Spiel remote oder lokal
 - Chat öffentlich und privat
