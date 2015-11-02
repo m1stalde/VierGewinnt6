@@ -50,18 +50,6 @@ export function authenticateUser(playerId: string, username: string, password: s
     });
 }
 
-export function authenticateTwitterUser(playerId: string, username: string, twitterAccountNr: string, callback: (err: Error, result: boolean, session: Session, userId: string) => void) {
-    userService.authenticateTwitterUser(username, twitterAccountNr, function (err, result, user, userId) {
-        if (err || !result) {
-            callback(err, result, null, null);
-            return;
-        }
-
-        var session = new Session(playerId, user.name, result, true);
-        callback(err, result, session, userId);
-    });
-}
-
 export class Session {
     playerId: string;
     username: string;

@@ -80,55 +80,6 @@ export function authenticateUser(name, password, callback: (err: Error, success:
         callback(err, success, doc, doc._id);
     });
 }
-//////////////////////////////////
-// OAuth specific methods
-//////////////////////////////////
-
-export function authenticateTwitterUser(name : string, twitterAccNumber : string, callback : (err: Error, success: boolean, user: IUser, userId: string) => void){
-    if(!(name && twitterAccNumber)) {
-        callback(new Error('Data missing'), false, null, null);
-        return;
-    }
-    db.findOne<User>({ name: name, twitterAccNr : twitterAccNumber}, function (err, doc) {
-        if (err) {
-            callback(err, false, null, null);
-            return;
-        }
-
-        // register new user if user not found
-        if(!doc){
-            registerTwitterUser(name, twitterAccNumber, function (err, user, userId) {
-                if (err) {
-                    callback(err, false, null, null);
-                    return;
-                }
-
-                callback(err, true, user, userId);
-            });
-            return;
-        }
-        var success = doc.twitterAccNr === twitterAccNumber;
-        callback(err, success, doc, doc._id);
-    });
-}
-
-function registerTwitterUser(name, twitterAccNumber, callback: (err: Error, user: IUser, userId: string) => void) {
-    if(!(name && twitterAccNumber)) {
-        callback(new Error('username and password required'), null, null);
-        return;
-    }
-
-    var user = new User(name, null, twitterAccNumber);
-
-    db.insert(user, function(err, doc) {
-        if (err) {
-            callback(err, null, null);
-            return;
-        }
-
-        callback(err, createReturn(doc), doc._id);
-    });
-}
 
 function createReturn(user: User): IUser {
     return {
@@ -145,11 +96,9 @@ class User implements IUser {
     _id : string;
     name: string;
     password: string;
-    twitterAccNr : string;
 
-    constructor(name: string, password?: string, twitterAccNr? : string) {
+    constructor(name: string, password?: string) {
         this.name = name;
         this.password = password;
-        this.twitterAccNr = twitterAccNr;
     }
 }
