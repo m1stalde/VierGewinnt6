@@ -1,6 +1,7 @@
 /// <reference path="../_all.ts"/>
 import util = require('util');
 import messageService = require('../services/messageService');
+import logger = require('../utils/logger');
 
 // Each new chat section needs to be added to this array
 var chatSections = new Array<string>('lobby', 'game');
@@ -93,7 +94,7 @@ function broadcastChatMessage(message : ChatInputMessage){
         try {
             participant.send(msgStr);
         } catch (ex) {
-            console.error('send message to client failed: ' + util.inspect(participant, {showHidden: false, depth: 1}));
+            logger.error('send message to client failed: ' + util.inspect(participant, {showHidden: false, depth: 1}));
         }
     });
 }

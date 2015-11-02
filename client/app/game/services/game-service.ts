@@ -79,14 +79,10 @@ module Game.Services {
       var deferred = this.$q.defer();
       var that = this;
 
-      if (!this.game) {
-        this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }}).then((data) => {
-          that.game = data.data;
-          deferred.resolve(that.game);
-        });
-      } else {
+      this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }}).then((data) => {
+        that.game = data.data;
         deferred.resolve(that.game);
-      }
+      });
 
       return deferred.promise;
     }
