@@ -24,7 +24,7 @@ module chat.controllers {
     }
 
     public initChatModel() : void{
-      this.$scope.chatModel = <IChatModel>{
+      this.$scope.chatModel = {
         chatHistory: this.chatHistory,
         userService: this.userService,
         messageService: this.messageService,
@@ -107,7 +107,7 @@ module chat.controllers {
   }
 
   export interface IChatModel {
-    chatHistory :  Array<Common.Services.IMessage>;
+    chatHistory :  Array<IChatMessage>;
     userService: User.Services.IUserService;
     messageService : Common.Services.IMessageService;
     storeChatSectionDataInCtrl : (section : string, id : string) => void;

@@ -277,14 +277,6 @@ module lobby.controllers {
     }
   }
 
-  export class GameStartSignalMessage extends ClientMessage<Game.Services.IGame> {
-    static NAME = "GameStartSignal";
-
-    constructor (data: Game.Services.IGame) {
-      super(GameStartSignalMessage.NAME, data);
-    }
-  }
-
 
   /**
    * @ngdoc object
