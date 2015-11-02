@@ -8,7 +8,6 @@ module Session.Controllers {
     password: string;
     currentSession: Session.Services.ISession;
     userLoggedIn: boolean;
-    everyAuthTwitterAuthUrl : string;
 
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -23,7 +22,6 @@ module Session.Controllers {
     constructor(private sessionService : Session.Services.ISessionService, private appConfig: vierGewinnt6.IAppConfig) {
       this.currentSession = sessionService.getCurrentSession();
       this.userLoggedIn = this.currentSession.loggedId;
-      this.everyAuthTwitterAuthUrl = this.appConfig.baseUrl + "/auth/twitter";
     }
 
     login() {

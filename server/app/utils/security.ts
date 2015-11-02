@@ -7,7 +7,6 @@ import cookie = require('cookie-parser');
 import WebSocket = require('ws');
 import sessionService = require('../services/sessionService');
 import utils = require('../utils/helperFunctions');
-import oAuthTwitter = require('../utils/oAuthTwitterStrategy');
 
 
 const COOKIE_NAME = 'game.sid';
@@ -26,8 +25,6 @@ export function init(app: express.Application): void {
     sessionStore = new session.MemoryStore();
     var sessionHandler: express.RequestHandler = session({ name: COOKIE_NAME, store: sessionStore, secret: COOKIE_SECRET, resave: false, saveUninitialized: true});
     app.use(sessionHandler);
-
-    oAuthTwitter.init(app);
 }
 
 export function getServerSession(req: Express.Request): IServerSession {
