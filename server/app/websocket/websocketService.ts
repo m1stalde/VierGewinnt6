@@ -6,6 +6,7 @@ import util = require('util');
 import helperFn = require('../utils/helperFunctions');
 import chatService = require("../services/chatService");
 import messageService = require('../services/messageService');
+import logger = require('../utils/logger');
 
 var WebSocketServer = WebSocket.Server;
 var wsServer;
@@ -73,14 +74,14 @@ export function setUpWebsocketService(server) {
 function mapMetaDataToConn(conn: WebSocket){
     security.getServerSessionFromWebSocket(conn, function(err, serverSession) {
         if (err) {
-            console.error("get server session from web socket failed: " + err);
+            logger.error("get server session from web socket failed: " + err);
             return;
         }
 
         var userName = serverSession.getUserName(),
             playerId = serverSession.getPlayerId();
 
-        console.info('player ' + playerId + ' connected');
+        logger.info('player ' + playerId + ' connected');
 
         var foundMatch = false;
         for (var i = 0; i < clients.length; ++i) {
@@ -112,7 +113,7 @@ function runCleanUpTask(self){
                 self.clients.splice(i, 1);
             }
         }
-        console.log("User: " + userName + " has been disconnected");
+        logger.info("User: " + userName + " has been disconnected");
     }
 }
 
@@ -127,14 +128,14 @@ function sendMessage(message: messageService.IMessage) {
     }
 
     // send message to clients matching the messages userIds
-    console.log("sending message to clients:\n " + util.inspect(message, {showHidden: false, depth: 1}));
+    logger.debug("sending message to clients:\n " + util.inspect(message, {showHidden: false, depth: 1}));
     clients.forEach(client => {
         //TODO client filter deactivated because playerIds in different websocket and http sessions doesn't match anymore
         //if (client.playerId && message.playerIds.indexOf(client.playerId) != -1) {
             try {
                 client.clientObj.send(JSON.stringify(message));
             } catch (ex) {
-                console.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
+                logger.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
             }
         //}
     });
@@ -148,15 +149,15 @@ export function sendMessageToPlayers(message: messageService.IMessage) {
     }
 
     // send message to clients matching the messages userIds
-    console.log("sending message to clients:\n " + util.inspect(message, {showHidden: false, depth: 1}));
+    logger.debug("sending message to clients:\n " + util.inspect(message, {showHidden: false, depth: 1}));
     clients.forEach(client => {
         //TODO client filter deactivated because playerIds in different websocket and http sessions doesn't match anymore
         if (client.playerId && message.playerIds.indexOf(client.playerId) != -1) {
-        try {
-            client.clientObj.send(JSON.stringify(message));
-        } catch (ex) {
-            console.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
-        }
+            try {
+                client.clientObj.send(JSON.stringify(message));
+            } catch (ex) {
+                logger.error('send message to client failed: ' + util.inspect(client, {showHidden: false, depth: 1}));
+            }
         }
     });
 };

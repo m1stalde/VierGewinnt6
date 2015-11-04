@@ -1,6 +1,7 @@
 /// <reference path="../_all.ts"/>
 import util = require('util');
 import messageService = require('../services/messageService');
+import logger = require('../utils/logger');
 
 // Each new chat section needs to be added to this array
 var chatSections = new Array<string>('lobby', 'game');
@@ -76,8 +77,8 @@ export function sendChatMessage(message : ChatInputMessage){
 }
 
 export function unsubscribeUser(message : UnsubscribeToChatSectionMessage){
+    var section = message.data.chatSectionPrefix + "ChatParticipants";
     if(chatParticipants[section]) {
-        var section = message.data.chatSectionPrefix + "ChatParticipants";
         for (var i = 0; i < chatParticipants[section].length; i++) {
             // Loop through the sent chat section and remove the connection in case of a match
             if (chatParticipants[section][i] === message.metaData.connObj) {
@@ -95,7 +96,7 @@ function broadcastChatMessage(message : ChatInputMessage){
         try {
             participant.send(msgStr);
         } catch (ex) {
-            console.error('send message to client failed: ' + util.inspect(participant, {showHidden: false, depth: 1}));
+            logger.error('send message to client failed: ' + util.inspect(participant, {showHidden: false, depth: 1}));
         }
     });
 }

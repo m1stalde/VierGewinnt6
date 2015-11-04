@@ -4,6 +4,7 @@
 import Datastore = require('nedb');
 import gameLogic = require('../logic/gameLogic');
 import messageService = require('../services/messageService');
+import logger = require('../utils/logger');
 
 var db = new Datastore({ filename: './data/game.db', autoload: true });
 
@@ -54,6 +55,7 @@ export function newGame(playerId1: string, playerId2: string, startColor: gameLo
     }
 
     var game = new gameLogic.Game(null);
+    logger.info('new game: playerId1=' + playerId1 + ', playerId2=' + playerId2);
 
     game.newGame(playerId1, playerId2, startColor, function (err, gameData) {
         if (err) {
