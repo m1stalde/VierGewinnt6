@@ -8,7 +8,5 @@ module chat {
   *
   */
   angular
-    .module('chat', [
-      'ngRoute'
-    ]);
+    .module('chat');
 }
