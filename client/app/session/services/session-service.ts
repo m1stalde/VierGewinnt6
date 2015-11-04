@@ -22,10 +22,10 @@ module Session.Services {
     private currentSession : ISession;
 
     public static $inject = [
-      '$http', '$q', 'appConfig', '$log'
+      '$http', '$q', 'appConfig', 'LoggerService'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private appConfig: vierGewinnt6.IAppConfig, private $log: ng.ILogService) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private appConfig: vierGewinnt6.IAppConfig, private log: Common.Services.ILoggerService) {
     }
 
     login(username: string, password: string) : ng.IPromise<ISession> {
@@ -68,6 +68,8 @@ module Session.Services {
         this.$http.get<ISession>(this.appConfig.baseUrl + '/session/').then((data) => {
           that.setCurrentSession(data.data);
           deferred.resolve(that.currentSession);
+        }).catch(reason => {
+          that.log.error('load current session failed', reason);
         });
       } else {
         deferred.resolve(that.currentSession);
@@ -86,7 +88,7 @@ module Session.Services {
 
     private setCurrentSession(session: ISession): void {
       this.currentSession = session;
-      this.$log.info('current session set to playerId ' + this.currentSession.playerId + ' and ' + this.currentSession.username);
+      this.log.debug('current session set to playerId ' + this.currentSession.playerId + ' and ' + this.currentSession.username);
     }
   }
 
