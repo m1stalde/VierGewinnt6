@@ -8,3 +8,4 @@
 /// <reference path="karma-jasmine/karma-jasmine.d.ts" />
 /// <reference path="lodash/lodash.d.ts" />
 /// <reference path="sinon/sinon.d.ts" />
+/// <reference path="toastr/toastr.d.ts" />
