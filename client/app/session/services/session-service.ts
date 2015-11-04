@@ -7,7 +7,7 @@ module Session.Services {
     logout(): ng.IPromise<ISession>;
     isLoggedIn(): boolean;
     getCurrentSession(): ISession;
-    loadCurrentSession(): ISession;
+    loadCurrentSession(): ng.IPromise<ISession>;
     getPlayerId(): string;
   }
 
