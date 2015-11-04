@@ -5,7 +5,8 @@ module lobby.controllers {
 
   class LobbyCtrl implements ILobbyScope {
 
-    public lobbyData:Array<lobby.interfaces.IRoomRessource>;
+    private lobbyInterval : ng.IIntervalService
+    public lobbyData : Array<lobby.interfaces.IRoomRessource> = [];
     public gameCreation:boolean = true;
     public gameEditing:boolean = true;
     public currentItem:lobby.interfaces.IRoomRessource = new lobby.interfaces.Room(null);
@@ -27,22 +28,20 @@ module lobby.controllers {
       '$rootScope',
       'lobbyStorage',
       'UserService',
-      'MessageService',
-      'GameService',
+      '$interval'
     ];
 
     // dependencies are injected via AngularJS $injector
     constructor(private $scope, private $log:ng.ILogService, private $window : ng.IWindowService, private $rootScope:ng.IScope,
-                private lobbyStorage, private userService:User.Services.IUserService,  private messageService : Common.Services.IMessageService,
-                private gameService: Game.Services.IGameService) {
+                private lobbyStorage, private userService:User.Services.IUserService, private $interval) {
+      var self = this;
       this.displayUser = userService.getCurrentUser();
-      this.init();
-    }
+      this.getRooms(this)();
+      this.lobbyInterval = $interval(this.getRooms(this), 3000);
 
-    // Initializer function
-    private init() {
-      this.lobbyData = [];
-      this.getRooms();
+      $scope.$on('$destroy', () => {
+        self.stopInterval(self)();
+      });
     }
 
     // Helper functions
@@ -93,6 +92,15 @@ module lobby.controllers {
       } else { // order by a new column => swap back to ASC
         this.orderBy = orderBy;
         this.isDesc = false;
+      }
+    }
+
+    private stopInterval(self) {
+      return function () {
+        if (angular.isDefined(self.lobbyInterval)) {
+          self.$interval.cancel(self.lobbyInterval);
+          self.lobbyInterval = undefined;
+        }
       }
     }
 
@@ -149,18 +157,19 @@ module lobby.controllers {
     }
 
     // GET
-    private getRooms():void {
-      var self = this;
-      var res = this.lobbyStorage.LobbyRoom().query(function () { // success callback
-        self.lobbyData = res;
-      }, function (err) { // error callback
-        self.actionMessage = new lobby.controllers.ActionMessageError({
-          isError: true,
-          status: err.status,
-          statusText: err.statusText,
-          data: err.data
+    private getRooms(self) {
+      return function() {
+        var res = self.lobbyStorage.LobbyRoom().query(function () { // success callback
+          self.lobbyData = res;
+        }, function (err) { // error callback
+          //   self.actionMessage = new lobby.controllers.ActionMessageError({
+          //  isError: true,
+          //  status: err.status,
+          //  statusText: err.statusText,
+          //  data: err.data
+          //});
         });
-      });
+      }
     }
 
     // UPDATE
@@ -267,10 +276,10 @@ module lobby.controllers {
   export class ClientMessage<T> implements IMessage {
 
     type:string;
-    id: string;
+    id:string;
     data:T;
 
-    constructor(type:string, data:T, id? : string) {
+    constructor(type:string, data:T, id?:string) {
       this.type = type;
       this.data = data;
       this.id = id;

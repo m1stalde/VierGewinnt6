@@ -4,7 +4,6 @@
 import express = require('express');
 import bodyParser = require('body-parser');
 import security = require('./utils/security');
-import logger = require('./utils/logger');
 
 var http = require('http').Server(express);
 var websocketService = require('./websocket/websocketService.js');
@@ -17,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 security.init(app);
 app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/../../../client/build/app'));
+app.use(express.static(__dirname + '/../../client/build/app'));
 
 
 
@@ -49,14 +48,14 @@ app.use("/game", require('./routes/gameRoutes'));
 
 // generic error handler after routes
 app.use(function(err: any, req: express.Request, res: express.Response, next: Function): any {
-    logger.error(err.stack);
+    console.error(err.stack);
     res.status(500).send('Request failed: ' + err.message);
 });
 
 var port: number = process.env.PORT || 2999;
 
 var server = app.listen(port, '127.0.0.1', function() {
-    logger.info('Express server listening on port ' + port);
+    console.log('Express server listening on port ' + port);
 });
 
 

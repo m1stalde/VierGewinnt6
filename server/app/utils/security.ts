@@ -7,7 +7,7 @@ import cookie = require('cookie-parser');
 import WebSocket = require('ws');
 import sessionService = require('../services/sessionService');
 import utils = require('../utils/helperFunctions');
-import logger = require('../utils/logger');
+
 
 const COOKIE_NAME = 'game.sid';
 const COOKIE_SECRET = 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda';
@@ -60,7 +60,7 @@ export function login(req : express.Request, callback: (err: Error, session: ses
         if (result) {
             serverSession.setUserId(userId);
             serverSession.setUserName(session.username);
-            logger.info('login: sessionId=' + serverSession.getSessionId() + ', userId=' + userId + ', userName=' + req.body.username + ', playerId=' + playerId);
+            console.log('login: sessionId=' + serverSession.getSessionId() + ', userId=' + userId + ', userName=' + req.body.username + ', playerId=' + playerId);
         }
 
         if (callback) callback(err, session);
@@ -140,7 +140,7 @@ export class ServerSession implements IServerSession {
         if (!playerId) {
             playerId = utils.createGuid();
             this.setPlayerId(playerId);
-            logger.info('playerId ' + playerId + ' generated for session ' + this.getSessionId());
+            console.log('playerId ' + playerId + ' generated for session ' + this.getSessionId());
         }
         return playerId;
     }

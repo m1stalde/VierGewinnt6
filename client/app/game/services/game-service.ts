@@ -4,6 +4,7 @@ module Game.Services {
 
   export interface IGameService {
     getGame(): IGame;
+    setGameId(gameId: string) : void;
     newGame(): ng.IPromise<IGame>;
     loadGame(gameId: string): ng.IPromise<IGame>;
     doMove(col: number): ng.IPromise<IGame>;
@@ -59,6 +60,12 @@ module Game.Services {
       return this.game;
     }
 
+    // Used to set the gameId from the lobbyService to override the existing default gameId and as result allow both players to chat with each other
+    // Deprecated => used a better workaround in loadGame()
+    setGameId(id : string){
+      this.game._id = id;
+    }
+
     newGame(): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
       var that = this;
@@ -78,11 +85,17 @@ module Game.Services {
     loadGame(gameId: string): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
       var that = this;
+      // Need to be set at this point due to the redirect from the lobby when a game starts => this allows the chat directive to get loaded with the proper gameId
+      this.game._id = gameId;
 
-      this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }}).then((data) => {
-        that.game = data.data;
+      if (!this.game) {
+        this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }}).then((data) => {
+          that.game = data.data;
+          deferred.resolve(that.game);
+        });
+      } else {
         deferred.resolve(that.game);
-      });
+      }
 
       return deferred.promise;
     }

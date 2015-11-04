@@ -9,14 +9,16 @@ module lobby.services {
       '$resource',
       'appConfig',
       'MessageService',
-      '$location'
+      '$location',
+      'GameService'
     ];
 
     constructor(private $http: ng.IHttpService, private $resource : ng.resource.IResourceService, private appConfig: vierGewinnt6.IAppConfig, private messageService: Common.Services.IMessageService,
-                private $location: ng.ILocationService) {
+                private $location: ng.ILocationService, private gameService : Game.Services.IGameService) {
 
       // register for game update messages concerns to current game
       messageService.addMessageListener(RoomUpdateMessage.NAME, function (message: RoomUpdateMessage) {
+        //gameService.setGameId(message.data.gameId);
         $location.path('/game/' + message.data.gameId);
       });
     }
