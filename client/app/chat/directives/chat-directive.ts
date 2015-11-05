@@ -78,13 +78,13 @@ module chat.directives {
     }
   }
 
-  interface IChatWindowAtributes extends ng.IAttributes {
-    chatSection : string;
-  }
-
   angular
     .module('chat')
     .directive(chat.directives.ChatWindow.DirectoryName, chat.directives.ChatWindow.factory());
+}
+
+interface IChatWindowAtributes extends ng.IAttributes {
+  chatSection : string;
 }
 
 

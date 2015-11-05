@@ -9,7 +9,7 @@ module lobby.controllers {
     public lobbyData : Array<lobby.interfaces.IRoomRessource> = [];
     public gameCreation:boolean = true;
     public gameEditing:boolean = true;
-    public currentItem:lobby.interfaces.IRoomRessource = new lobby.interfaces.Room(null);
+    public currentItem: any = new lobby.interfaces.Room(null);
     public displayUser:User.Services.IUser;
     public actionMessage:IActionMessage = new ActionMessage(null, null);
 

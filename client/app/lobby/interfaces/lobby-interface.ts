@@ -21,7 +21,7 @@ module lobby.interfaces{
     playerId : string;
   }
 
-  export class Room implements IRoomRessource {
+  export class Room {
     public roomId : string;
     public name: string;
     public status: string;

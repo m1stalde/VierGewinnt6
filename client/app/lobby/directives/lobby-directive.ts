@@ -21,7 +21,7 @@ module lobby.directives {
     public require = 'ngModel';
     public static DirectoryName = "room";
 
-    public link = (scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
+    public link = (scope:ng.IScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:any) => {
       ctrl.$validators.room = function (modelValue, viewValue) {
         var ROOM_REGEXP = /^\w+$/;
 
@@ -51,7 +51,7 @@ module lobby.directives {
       this.$timeout = $timeout;
     }
 
-    public link = ($scope:lobby.controllers.ILobby, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:IRoomValidation) => {
+    public link = ($scope:lobby.controllers.ILobby, element:ng.IAugmentedJQuery, attrs:ng.IAttributes, ctrl:any) => {
       $scope.$watch(() => {
         return $scope.lobby.actionMessage;
       }, (newValue:lobby.controllers.IActionMessage, oldValue:lobby.controllers.IActionMessage) => {
