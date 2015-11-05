@@ -7,34 +7,7 @@ import utils = require("../utils/helperFunctions");
 import chatService = require("../services/chatService");
 import messageService = require('../services/messageService');
 
-var listOfRooms:Array<IRoom> = [
-    {
-        roomId: 1,
-        name: "Title1",
-        status: "Waiting for Opponent",
-        creationTime: "17:01:34",
-        players: [
-            {userName: "Hans", playerId: "1223"}]
-    },
-    {
-        roomId: 2,
-        name: "Title2",
-        status: "Game is in progress",
-        creationTime: "17:01:34",
-        players: [
-            {userName: "Hans", playerId: "1223"},
-            {userName: "Moritz", playerId: "1225"}]
-    },
-    {
-        roomId: 3,
-        name: "Title3",
-        status: "Game is in progress",
-        creationTime: "12:01:34",
-        players: [
-            {userName: "Hans", playerId: "1223"},
-            {userName: "Hugo", playerId: "1224"}]
-    }
-];
+var listOfRooms:Array<IRoom> = [];
 
 export function saveRoom(roomObj, sessionData, isCreate, cb) {
     var room:IRoom;

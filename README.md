@@ -61,10 +61,10 @@
 
 ## Todo
 1. Prio 1
-- [ ] Chat-Meldung im Spiel verwirft Spiel und wechselt auf #/home, während Local- und Remote-Spiel
-- [ ] Lobby automatisch aktualisieren wenn neue Räume erstellt oder aktualisiert werden
-- [ ] Raum aktualisieren wenn Spiel startet oder beendet wird
-- [ ] Testdaten aus lobbyService.ts entfernen
+- [x] Chat-Meldung im Spiel verwirft Spiel und wechselt auf #/home, während Local- und Remote-Spiel
+- [x] Lobby automatisch aktualisieren wenn neue Räume erstellt oder aktualisiert werden
+- [x] Raum aktualisieren wenn Spiel startet oder beendet wird
+- [x] Testdaten aus lobbyService.ts entfernen
 - [ ] GameUpdateMessage bzw. IGameData um GameId erweitern -> Marcel
 - [ ] Warnung beim Server-Start beheben: body-parser deprecated undefined extended: provide extended option at index.js:12:20 -> Marcel
 - [ ] Wenn Browser direkt auf #/game geöffnet wird, so erscheint "Zug abwarten" weil nach der Websocket-Connection nochmals eine neue PlayerId vergeben wird -> Marcel
