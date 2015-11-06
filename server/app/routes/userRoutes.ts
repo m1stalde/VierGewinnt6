@@ -8,7 +8,7 @@ var router: express.Router = express.Router();
 
 router.all('/*', security.handleAuthenticate);
 router.get('/', controller.getCurrentUser);
-router.put(',', controller.updateCurrentUser);
+router.post('/', controller.updateCurrentUser);
 
 export = router;
 
