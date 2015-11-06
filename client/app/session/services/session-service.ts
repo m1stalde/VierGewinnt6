@@ -32,10 +32,14 @@ module Session.Services {
       var deferred = this.$q.defer();
       var that = this;
 
-      this.$http.post<ISession>(this.appConfig.baseUrl + '/session/login', { "username":username, "password":password}).then((data) => {
-        that.setCurrentSession(data.data);
-        deferred.resolve(that.currentSession);
-      });
+      this.$http.post<ISession>(this.appConfig.baseUrl + '/session/login', { "username":username, "password":password})
+        .then(data => {
+          that.setCurrentSession(data.data);
+          deferred.resolve(that.currentSession);
+        })
+        .catch(err => {
+          that.log.error('Verbindungsfehler', err);
+        });
 
       return deferred.promise;
     }
@@ -44,10 +48,14 @@ module Session.Services {
       var deferred = this.$q.defer();
       var that = this;
 
-      this.$http.post<ISession>(this.appConfig.baseUrl + '/session/logout', {}).then((data) => {
-        that.setCurrentSession(data.data);
-        deferred.resolve(that.currentSession);
-      });
+      this.$http.post<ISession>(this.appConfig.baseUrl + '/session/logout', {})
+        .then(data => {
+          that.setCurrentSession(data.data);
+          deferred.resolve(that.currentSession);
+        })
+        .catch(err => {
+          that.log.error('Verbindungsfehler', err);
+        });
 
       return deferred.promise;
     }
@@ -65,12 +73,14 @@ module Session.Services {
       var that = this;
 
       if (!that.currentSession) {
-        this.$http.get<ISession>(this.appConfig.baseUrl + '/session/').then((data) => {
-          that.setCurrentSession(data.data);
-          deferred.resolve(that.currentSession);
-        }).catch(reason => {
-          that.log.error('load current session failed', reason);
-        });
+        this.$http.get<ISession>(this.appConfig.baseUrl + '/session/')
+          .then(data => {
+            that.setCurrentSession(data.data);
+            deferred.resolve(that.currentSession);
+          })
+          .catch(reason => {
+            that.log.error('load current session failed', reason);
+          });
       } else {
         deferred.resolve(that.currentSession);
       }

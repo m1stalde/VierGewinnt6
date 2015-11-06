@@ -11,11 +11,11 @@ module Game.Controllers {
     // it is better to have it close to the constructor, because the parameters must match in count and type.
     // See http://docs.angularjs.org/guide/di
     public static $inject = [
-      '$log', 'GameService', '$scope', 'SessionService', '$location'
+      'LoggerService', 'GameService', '$scope', 'SessionService', '$location'
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor(private $log: ng.ILogService, private gameService: Game.Services.IGameService,
+    constructor(private log: Common.Services.ILoggerService, private gameService: Game.Services.IGameService,
                 private $scope: ng.IScope, private sessionService: Session.Services.ISessionService,
                 private $location: ng.ILocationService) {
       var that = this;
@@ -35,7 +35,7 @@ module Game.Controllers {
     doMove(evt: JQueryEventObject): void {
       var col = $(evt.target).data('x');
       if (col != undefined) {
-        this.$log.debug("do move " + col);
+        this.log.debug("do move " + col);
         this.gameService.doMove(col);
       }
     }
@@ -107,12 +107,12 @@ module Game.Controllers {
     }
 
     restartGame(): void {
-      this.$log.debug("restart game");
+      this.log.debug("restart game");
       this.gameService.restartGame();
     }
 
     breakGame(): void {
-      this.$log.debug("break game");
+      this.log.debug("break game");
       this.gameService.breakGame().then(() => {
         this.$location.path('/lobby');
       });

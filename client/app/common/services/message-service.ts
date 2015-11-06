@@ -45,22 +45,19 @@ module Common.Services {
     private timerId = 0;
 
     public static $inject = [
-      '$log', '$rootScope', 'appConfig', '$http'
+      'LoggerService', '$rootScope', 'appConfig', '$http'
     ];
 
-    constructor(private $log:ng.ILogService, private $rootScope:ng.IScope, private appConfig:vierGewinnt6.IAppConfig, private $http:ng.IHttpService) {
-      $log.debug('trying to reach server ' + this.appConfig.baseUrl + ' before connecting websocket');
+    constructor(private log: Common.Services.ILoggerService, private $rootScope: ng.IScope, private appConfig: vierGewinnt6.IAppConfig, private $http: ng.IHttpService) {
+      log.debug('trying to reach server ' + this.appConfig.baseUrl + ' before connecting websocket');
       var self = this;
 
       // Connect to the websocket server
       self.connect(appConfig.baseWsUrl);
-
-      // connect server through http first to initialize session and get session cookie
-      $http.get(this.appConfig.baseUrl + '/session');
     }
 
     private connect(baseWsUrl:string) {
-      this.$log.debug('connecting websocket to ' + baseWsUrl);
+      this.log.debug('connecting websocket to ' + baseWsUrl);
       var self = this;
 
       this.ws = new WebSocket(baseWsUrl);
@@ -72,7 +69,7 @@ module Common.Services {
     }
 
     public addMessageListener(messageType:string, listener:(message:IMessage) => void) {
-      this.$log.debug("adding message listener " + listener + " for message type " + messageType);
+      this.log.debug("adding message listener " + listener + " for message type " + messageType);
 
       if (!this.messageListeners.hasOwnProperty(messageType)) {
         this.messageListeners[messageType] = new Array();
@@ -83,7 +80,7 @@ module Common.Services {
 
     // Erases the whole type from the message listener object
     public removeMessageListenerType(messageType:string) {
-      this.$log.debug("removing message listener type from message listener object" + messageType);
+      this.log.debug("removing message listener type from message listener object" + messageType);
 
       if (!this.messageListeners.hasOwnProperty(messageType)) {
         return
@@ -100,7 +97,7 @@ module Common.Services {
     }
 
     public removeMessageListener(messageType:string, listener:(message:IMessage) => void){
-      this.$log.debug("removing message listener " + listener + " for message type " + messageType);
+      this.log.debug("removing message listener " + listener + " for message type " + messageType);
 
       if (!this.messageListeners.hasOwnProperty(messageType)) {
         return
@@ -151,7 +148,7 @@ module Common.Services {
     };
 
     private onMessage(message:MessageEvent) {
-      this.$log.info("message received: " + message);
+      this.log.debug("message received: " + message);
 
       var recvMessage = JSON.parse(message.data);
       var messageType = recvMessage.type;
@@ -170,16 +167,16 @@ module Common.Services {
       this.$rootScope.$digest();
     }
 
-    private onOpen(message:Event) {
-      this.$log.info("WebSocket Open: " + message);
+    private onOpen(message: Event) {
+      this.log.debug("WebSocket Open: " + message);
     }
 
-    private onError(error:ErrorEvent) {
-      this.$log.info("WebSocket Error: " + error);
+    private onError(error: ErrorEvent) {
+      this.log.error("WebSocket Error: " + error);
     }
 
-    private onClose(event:Event) {
-      this.$log.info("Websocket connection has been closed: " + event);
+    private onClose(event: Event) {
+      this.log.debug("Websocket connection has been closed: " + event);
     }
   }
 

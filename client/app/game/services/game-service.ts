@@ -41,16 +41,16 @@ module Game.Services {
     private game: IGame;
 
     public static $inject = [
-      '$http', '$q', '$log', 'MessageService', 'appConfig'
+      '$http', '$q', 'LoggerService', 'MessageService', 'appConfig'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private log: Common.Services.ILoggerService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
       var that = this;
 
       // register for game update messages concerns to current game
       messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
         if (that.game && that.game._id === message.data._id) {
-          that.$log.info("message reveiced " + message);
+          that.log.debug("message reveiced " + message);
           that.game = message.data;
         }
       });
@@ -89,10 +89,14 @@ module Game.Services {
       this.game._id = gameId;
 
       if (!this.game) {
-        this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }}).then((data) => {
-          that.game = data.data;
-          deferred.resolve(that.game);
-        });
+        this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }})
+          .then(data => {
+            that.game = data.data;
+            deferred.resolve(that.game);
+          })
+          .catch(err => {
+            that.log.error('Verbindungsfehler', err);
+          });
       } else {
         deferred.resolve(that.game);
       }
@@ -105,10 +109,14 @@ module Game.Services {
       var that = this;
       var gameId = this.game._id;
 
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: gameId, col: col }).then((data) => {
-        that.game = data.data;
-        deferred.resolve(that.game);
-      });
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: gameId, col: col })
+        .then(data => {
+          that.game = data.data;
+          deferred.resolve(that.game);
+        })
+        .catch(err => {
+          that.log.error('Verbindungsfehler', err);
+        });
 
       return deferred.promise;
     }
@@ -118,10 +126,14 @@ module Game.Services {
       var that = this;
       var gameId = this.game._id;
 
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/restartGame', {gameId: gameId}).then((data) => {
-        that.game = data.data;
-        deferred.resolve(that.game);
-      });
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/restartGame', {gameId: gameId})
+        .then(data => {
+          that.game = data.data;
+          deferred.resolve(that.game);
+        })
+        .catch(err => {
+          that.log.error('Verbindungsfehler', err);
+        });
 
       return deferred.promise;
     }
@@ -131,10 +143,14 @@ module Game.Services {
       var that = this;
       var gameId = this.game._id;
 
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/breakGame', { gameId: gameId }).then((data) => {
-        that.game = data.data;
-        deferred.resolve(that.game);
-      });
+      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/breakGame', { gameId: gameId })
+        .then(data => {
+          that.game = data.data;
+          deferred.resolve(that.game);
+        })
+        .catch(err => {
+          that.log.error('Verbindungsfehler', err);
+        });
 
       return deferred.promise;
     }

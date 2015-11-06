@@ -21,10 +21,11 @@ module User.Services {
     private userResource : ng.resource.IResourceClass<ng.resource.IResource<IUser>>;
 
     public static $inject = [
-      '$resource', '$q', 'appConfig'
+      '$resource', '$q', 'appConfig', 'LoggerService'
     ];
 
-    constructor(private $resource: angular.resource.IResourceService, private $q: ng.IQService, private appConfig: vierGewinnt6.IAppConfig) {
+    constructor(private $resource: angular.resource.IResourceService, private $q: ng.IQService, private appConfig: vierGewinnt6.IAppConfig,
+      private log: Common.Services.ILoggerService) {
       this.userResource = $resource(appConfig.baseUrl + '/users');
     }
 
@@ -33,10 +34,14 @@ module User.Services {
       var that = this;
 
       if (!this.userData) {
-        that.userResource.get().$promise.then((user) => {
-          that.userData = user;
-          deferred.resolve(that.userData);
-        });
+        that.userResource.get().$promise
+          .then(user => {
+            that.userData = user;
+            deferred.resolve(that.userData);
+          })
+          .catch(err => {
+            that.log.error('Verbindungsfehler', err);
+          });
       } else {
         deferred.resolve(that.userData);
       }
@@ -49,7 +54,15 @@ module User.Services {
     }
 
     saveUser(user: IUser) {
-      this.userResource.save(user);
+      var that = this;
+
+      this.userResource.save(user).$promise
+        .then(res => {
+          that.log.info('Daten gespeichert');
+        })
+        .catch(err => {
+          that.log.error('Verbindungsfehler', err);
+        });
     }
   }
 
