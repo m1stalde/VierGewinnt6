@@ -13,8 +13,10 @@ module game {
         controller: 'GameCtrl',
         controllerAs: 'game',
         resolve: {
-          newGame: ['GameService', function (gameService: Game.Services.IGameService) {
-            return gameService.newGame();
+          newGame: ['GameService', 'SessionService', function (gameService: Game.Services.IGameService, sessionService: Session.Services.ISessionService) {
+            return sessionService.loadCurrentSession().then(result => {
+              return gameService.newGame()
+            });
           }]
         }
       })

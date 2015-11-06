@@ -67,7 +67,7 @@
 - [x] Testdaten aus lobbyService.ts entfernen
 - [x] GameUpdateMessage bzw. IGameData um GameId erweitern -> Marcel
 - [x] Warnung beim Server-Start beheben: body-parser deprecated undefined extended: provide extended option at index.js:12:20 -> Marcel
-- [ ] Wenn Browser direkt auf #/game geöffnet wird, so erscheint "Zug abwarten" weil nach der Websocket-Connection nochmals eine neue PlayerId vergeben wird -> Marcel
+- [x] Wenn Browser direkt auf #/game geöffnet wird, so erscheint "Zug abwarten" weil nach der Websocket-Connection nochmals eine neue PlayerId vergeben wird -> Marcel
 - [ ] Einstellungen nur beim Login zeigen oder bei Klick auf Login weiterleiten -> Marcel
 - [x] Error-Handling im Client mittels Logger und Toastr -> Marcel
 - [x] Logger statt console.log auf Server verwenden
