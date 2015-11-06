@@ -6,8 +6,12 @@ import gameLogic = require('../logic/gameLogic');
 import utils = require("../utils/helperFunctions");
 import chatService = require("../services/chatService");
 import messageService = require('../services/messageService');
+import logger = require('../utils/logger');
 
 var listOfRooms:Array<IRoom> = [];
+
+// register for game update messages to update game state in room
+messageService.addMessageListener(gameService.GameUpdateMessage.NAME, gameUpdated);
 
 export function saveRoom(roomObj, sessionData, isCreate, cb) {
     var room:IRoom;
@@ -142,6 +146,37 @@ export function checkForRoom(room:IRoom) {
     }
     ;
     return false;
+}
+
+/**
+ * Updates room state based on game state.
+ * @param message
+ */
+function gameUpdated(message: gameService.GameUpdateMessage) {
+    var game = message.data;
+
+    // get and check room based on game id
+    var pos = utils.getPositionOfElement(listOfRooms, "gameId", game._id);
+    if (pos < 0) {
+        return;
+    }
+
+    // get room
+    var room = listOfRooms[pos];
+
+    // set room status
+    switch (game.state) {
+        case gameLogic.GameState.New:
+        case gameLogic.GameState.Running:
+            room.status = "Game is in progress";
+            break;
+        case gameLogic.GameState.Finished:
+        case gameLogic.GameState.Broken:
+            room.status = "Game finished";
+            break;
+    }
+
+    logger.info('room ' + room.roomId + ' set to status ' + room.status);
 }
 
 export interface IPlayer {

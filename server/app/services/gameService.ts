@@ -64,7 +64,7 @@ export function newGame(playerId1: string, playerId2: string, startColor: gameLo
         }
 
         db.insert(gameData, function (err, newDoc: IGameDataPersisted) {
-            messageService.sendMessage(new GameUpdateMessage(newDoc));
+            sendGameUpdateMessage(newDoc._id, newDoc);
             callback(err, gameData, newDoc._id);
         });
     });
@@ -98,7 +98,7 @@ export function doMove(gameId: string, playerId: string, col: number, callback: 
             }
 
             db.update({_id: gameId}, gameData, function(err) {
-                messageService.sendMessage(new GameUpdateMessage(gameData));
+                sendGameUpdateMessage(gameId, gameData);
                 callback(err, gameData);
             });
         });
@@ -132,7 +132,7 @@ export function restartGame(gameId: string, playerId: string, callback: (err: Er
             }
 
             db.update({_id: gameId}, gameData, function(err) {
-                messageService.sendMessage(new GameUpdateMessage(gameData));
+                sendGameUpdateMessage(gameId, gameData);
                 callback(err, gameData);
             });
         });
@@ -166,21 +166,27 @@ export function breakGame(gameId: string, playerId: string, callback: (err: Erro
             }
 
             db.update({_id: gameId}, gameData, function(err) {
-                messageService.sendMessage(new GameUpdateMessage(gameData));
+                sendGameUpdateMessage(gameId, gameData);
                 callback(err, gameData);
             });
         });
     });
 }
 
+function sendGameUpdateMessage(gameId: string, gameData: gameLogic.IGameData): void {
+    var gameDataPersisted: IGameDataPersisted = <IGameDataPersisted>gameData;
+    gameDataPersisted._id = gameId;
+    messageService.sendMessage(new GameUpdateMessage(gameDataPersisted));
+}
+
 interface IGameDataPersisted extends gameLogic.IGameData {
     _id : string;
 }
 
-export class GameUpdateMessage extends messageService.ServerMessage<gameLogic.IGameData> {
+export class GameUpdateMessage extends messageService.ServerMessage<IGameDataPersisted> {
     static NAME = "GameUpdateMessage";
 
-    constructor (gameData: gameLogic.IGameData) {
+    constructor (gameData: IGameDataPersisted) {
         super(GameUpdateMessage.NAME, gameData, null);
         this.playerIds[0] = gameData.playerId1;
         this.playerIds[1] = gameData.playerId2;

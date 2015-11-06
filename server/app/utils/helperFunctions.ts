@@ -23,8 +23,8 @@ export function propertyValidator(obj){
     return isValid;
 }
 
-export function getPositionOfElement(array, element, value){
-    var pos : number = -1;
+export function getPositionOfElement(array, element, value): number {
+    var pos = -1;
     for (var i = 0, len = array.length; i < len; i++) {
         if (array[i][element] == value) pos = i;
     }
