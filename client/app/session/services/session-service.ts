@@ -38,7 +38,8 @@ module Session.Services {
           deferred.resolve(that.currentSession);
         })
         .catch(err => {
-          that.log.error('Verbindungsfehler', err);
+          that.log.debug('login failed', err);
+          deferred.reject(err);
         });
 
       return deferred.promise;
@@ -54,7 +55,8 @@ module Session.Services {
           deferred.resolve(that.currentSession);
         })
         .catch(err => {
-          that.log.error('Verbindungsfehler', err);
+          that.log.debug('logout failed', err);
+          deferred.reject(err);
         });
 
       return deferred.promise;
@@ -78,8 +80,9 @@ module Session.Services {
             that.setCurrentSession(data.data);
             deferred.resolve(that.currentSession);
           })
-          .catch(reason => {
-            that.log.error('load current session failed', reason);
+          .catch(err => {
+            that.log.debug('load current session failed', err);
+            deferred.reject(err);
           });
       } else {
         deferred.resolve(that.currentSession);

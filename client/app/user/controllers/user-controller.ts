@@ -14,18 +14,25 @@ module User.Controllers {
     // it is better to have it close to the constructor, because the parameters must match in count and type.
     // See http://docs.angularjs.org/guide/di
     public static $inject = [
-      'UserService'
+      'UserService', 'LoggerService'
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor(private userService : User.Services.IUserService) {
-      this.ctrlName = 'UserCtrl';
+    constructor(private userService: User.Services.IUserService, private log: Common.Services.ILoggerService) {
       this.displayUser = userService.getCurrentUser();
     }
 
     saveUser() {
       this.displayUser.password = this.password;
-      this.userService.saveUser(this.displayUser);
+      var that = this;
+
+      this.userService.saveUser(this.displayUser)
+        .then(result => {
+          that.log.info('Daten gespeichert', result);
+        })
+        .catch(err => {
+          that.log.error('Speichern fehlgeschlagen', err);
+        });
     }
   }
 

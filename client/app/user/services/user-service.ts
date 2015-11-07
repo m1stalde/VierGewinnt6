@@ -6,7 +6,7 @@ module User.Services {
   export interface IUserService {
     loadUserData(): ng.IPromise<IUser>;
     getCurrentUser(): IUser;
-    saveUser(user: IUser);
+    saveUser(user: IUser): ng.IPromise<IUser>;
   }
 
   export interface IUser {
@@ -40,7 +40,7 @@ module User.Services {
             deferred.resolve(that.userData);
           })
           .catch(err => {
-            that.log.error('Verbindungsfehler', err);
+            deferred.reject(err);
           });
       } else {
         deferred.resolve(that.userData);
@@ -53,16 +53,9 @@ module User.Services {
       return this.userData;
     }
 
-    saveUser(user: IUser) {
-      var that = this;
-
-      this.userResource.save(user).$promise
-        .then(res => {
-          that.log.info('Daten gespeichert');
-        })
-        .catch(err => {
-          that.log.error('Verbindungsfehler', err);
-        });
+    saveUser(user: IUser): ng.IPromise<IUser> {
+      this.userData = user;
+      return this.userResource.save(user).$promise;
     }
   }
 

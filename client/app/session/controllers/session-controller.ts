@@ -15,29 +15,38 @@ module Session.Controllers {
     // See http://docs.angularjs.org/guide/di
     public static $inject = [
       'SessionService',
-      'appConfig'
+      'appConfig',
+      'LoggerService'
     ];
 
     // dependencies are injected via AngularJS $injector
-    constructor(private sessionService : Session.Services.ISessionService, private appConfig: vierGewinnt6.IAppConfig) {
+    constructor(private sessionService : Session.Services.ISessionService, private appConfig: vierGewinnt6.IAppConfig, private log: Common.Services.ILoggerService) {
       this.currentSession = sessionService.getCurrentSession();
       this.userLoggedIn = this.currentSession.loggedId;
     }
 
     login() {
       var vm = this;
-      this.sessionService.login(this.username, this.password).then((session) => {
-        vm.currentSession = session;
-        vm.userLoggedIn = session.loggedId;
-      });
+      this.sessionService.login(this.username, this.password)
+        .then(session => {
+          vm.currentSession = session;
+          vm.userLoggedIn = session.loggedId;
+        })
+        .catch(err => {
+          vm.log.error('Login fehlgeschlagen');
+        });
     }
 
     logout() {
       var vm = this;
-      this.sessionService.logout().then((session) => {
-        vm.currentSession = session;
-        vm.userLoggedIn = session.loggedId;
-      });
+      this.sessionService.logout()
+        .then(session => {
+          vm.currentSession = session;
+          vm.userLoggedIn = session.loggedId;
+        })
+        .catch(err => {
+          vm.log.error('Logout fehlgeschlagen');
+        });
     }
   }
 

@@ -50,7 +50,7 @@ module Game.Services {
       // register for game update messages concerns to current game
       messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
         if (that.gameId === message.data._id) {
-          that.log.debug("message reveiced " + message);
+          that.log.debug('message reveiced ' + message);
           that.setGame(message.data);
         }
       });
@@ -69,10 +69,15 @@ module Game.Services {
       var that = this;
 
       if (!this.game) {
-        this.$http.post<IGame>(this.appConfig.baseUrl + '/game/newGame', null).then((data) => {
-          that.setGame(data.data);
-          deferred.resolve(that.game);
-        });
+        this.$http.post<IGame>(this.appConfig.baseUrl + '/game/newGame', null)
+          .then(data => {
+            that.setGame(data.data);
+            deferred.resolve(that.game);
+          })
+        .catch(err => {
+            that.log.debug('new game failed', err);
+            deferred.reject(err);
+          });
       } else {
         deferred.resolve(that.game);
       }
@@ -92,7 +97,8 @@ module Game.Services {
             deferred.resolve(that.game);
           })
           .catch(err => {
-            that.log.error('Verbindungsfehler', err);
+            that.log.debug('load game failed', err);
+            deferred.reject(err);
           });
       } else {
         deferred.resolve(that.game);
@@ -111,7 +117,8 @@ module Game.Services {
           deferred.resolve(that.game);
         })
         .catch(err => {
-          that.log.error('Verbindungsfehler', err);
+          that.log.debug('do move failed', err);
+          deferred.reject(err);
         });
 
       return deferred.promise;
@@ -127,7 +134,8 @@ module Game.Services {
           deferred.resolve(that.game);
         })
         .catch(err => {
-          that.log.error('Verbindungsfehler', err);
+          that.log.debug('restart game failed', err);
+          deferred.reject(err);
         });
 
       return deferred.promise;
@@ -143,7 +151,8 @@ module Game.Services {
           deferred.resolve(that.game);
         })
         .catch(err => {
-          that.log.error('Verbindungsfehler', err);
+          that.log.debug('break game failed', err);
+          deferred.reject(err);
         });
 
       return deferred.promise;
