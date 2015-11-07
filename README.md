@@ -83,5 +83,10 @@
 - [x] Typescript-Errors in app\lobby\interfaces\lobby-interface.ts beheben
 - [ ] Gast-Accounts mit Nummer durchzählen (Gast 1, Gast 2, etc.)
 
+- [ ] HTML-Code aus chat-directive.ts entfernen
+- [ ] Generierte Test-Klassen im Client ergänzen oder löschen
+- [ ] Label-Texte aus game-controller.ts in game-move-directive.tpl.html verschieben
+- [ ] nicht verwendete lobby-constants.ts löschen
+
 1. Prio3
 - [ ] Mehrsprachigkeit über ngTranlsate realisieren
