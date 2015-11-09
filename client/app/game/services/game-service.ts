@@ -88,9 +88,9 @@ module Game.Services {
     loadGame(gameId: string): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
       var that = this;
-      that.gameId = gameId;
 
-      if (!this.game) {
+      // load game if game id changed only
+      if (that.gameId !== gameId) {
         this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }})
           .then(data => {
             that.setGame(data.data);
@@ -104,6 +104,7 @@ module Game.Services {
         deferred.resolve(that.game);
       }
 
+      that.gameId = gameId;
       return deferred.promise;
     }
 
