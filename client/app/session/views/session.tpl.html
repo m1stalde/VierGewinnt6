@@ -1,13 +1,13 @@
 <div class="container-fluid">
 
   <div class="row">
-    <div class="col-xs-12 col-sm-12">
+    <header class="col-xs-12 col-sm-12">
       <h2>Login</h2>
-    </div>
+    </header>
   </div>
 
   <div class="row">
-    <div class="col-xs-6 col-sm-6">
+    <section class="col-xs-6 col-sm-6">
 
       <!-- user is currently logged out -->
       <div ng-hide="session.userLoggedIn">
@@ -30,6 +30,6 @@
         <p>Hallo {{session.currentSession.username}}!</p>
         <button ng-click="session.logout()" class="btn btn-default">Logout</button>
       </div>
-    </div>
+    </section>
   </div>
 </div>

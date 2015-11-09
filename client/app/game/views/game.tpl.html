@@ -1,21 +1,21 @@
 <div class="container-fluid">
 
   <div class="row">
-    <div class="col-xs-12 col-sm-12">
+    <header class="col-xs-12 col-sm-12">
       <h2>Spiel</h2>
       <p>Auf Spalte klicken um Stein zu legen</p>
-    </div>
+    </header>
   </div>
 
   <div class="row">
-    <div class="col-xs-12 col-sm-6">
+    <section class="col-xs-12 col-sm-6">
       <game-move></game-move>
-    </div>
+    </section>
   </div>
 
   <div class="row">
 
-    <div class="col-xs-12 col-sm-6">
+    <section class="col-xs-12 col-sm-6">
 
       <div class="game-container" ng-click="game.doMove($event)" ng-mouseover="game.mouseOver($event)">
           <div class="game-row" ng-repeat="gameFieldRow in game.getCurrentGame().cells track by $index">
@@ -35,14 +35,14 @@
           </button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="col-xs-6 col-md-6">
+    <aside class="col-xs-6 col-md-6">
       <!-- Chat Module -->
       <div ng-controller="ChatCtrl">
         <chat-window chat-model="chatModel" chat-section='game' id="(game.getCurrentGame())._id"></chat-window>
       </div>
-    </div>
+    </aside>
 
   </div>
 

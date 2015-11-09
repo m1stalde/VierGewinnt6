@@ -1,14 +1,14 @@
 <div class="container-fluid">
 
   <div class="row">
-    <div class="col-xs-12 col-md-12">
+    <header class="col-xs-12 col-md-12">
       <h2>Lobby</h2>
       <p>Chatte und starte ein Spiel</p>
-    </div>
+    </header>
   </div>
 
   <div class="row">
-    <div class="col-xs-12 col-md-12">
+    <section class="col-xs-12 col-md-12">
 
       <!-- Static navbar -->
       <nav class="navbar navbar-default">
@@ -22,11 +22,11 @@
         </div>
       </nav>
 
-    </div>
+    </section>
   </div>
 
   <div class="row">
-    <div class="col-xs-12 col-md-8">
+    <section class="col-xs-12 col-md-8">
 
       <!--Panel Heading - Create New Game -->
       <div class="panel panel-default" ng-hide="lobby.gameCreation">
@@ -175,15 +175,15 @@
         </div>
       </div>
 
-    </div>
-    <div class="col-xs-12 col-md-4">
+    </section>
+    <aside class="col-xs-12 col-md-4">
 
       <!-- Import the chat controller -->
       <div ng-controller="ChatCtrl">
         <chat-window chat-model="chatModel" chat-section='lobby'></chat-window>
       </div>
 
-     </div>
+     </aside>
    </div>
 </div>
 
