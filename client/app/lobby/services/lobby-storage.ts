@@ -1,5 +1,6 @@
 /// <reference path='../_lobby.ts' />
 
+
 module lobby.services {
   "use strict";
   export class LobbyStorage {
@@ -9,16 +10,14 @@ module lobby.services {
       '$resource',
       'appConfig',
       'MessageService',
-      '$location',
-      'GameService'
+      '$location'
     ];
 
     constructor(private $http: ng.IHttpService, private $resource : ng.resource.IResourceService, private appConfig: vierGewinnt6.IAppConfig, private messageService: Common.Services.IMessageService,
-                private $location: ng.ILocationService, private gameService : Game.Services.IGameService) {
+                private $location: ng.ILocationService) {
 
       // register for game update messages concerns to current game
       messageService.addMessageListener(RoomUpdateMessage.NAME, function (message: RoomUpdateMessage) {
-        //gameService.setGameId(message.data.gameId);
         $location.path('/game/' + message.data.gameId);
       });
     }
@@ -26,6 +25,8 @@ module lobby.services {
     public LobbyRoom() : ng.resource.IResourceClass<ng.resource.IResource<any>> {
       return this.$resource(this.appConfig.baseUrl + '/lobby/:id', {id: '@id' });
     }
+
+
   }
 
   class RoomUpdateMessage implements Common.Services.IMessage {

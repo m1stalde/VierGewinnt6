@@ -130,10 +130,8 @@ export function getRoom(roomId, cb) {
 }
 
 export function getAllRooms(callback) {
-    if (callback && listOfRooms.length > 0) {
-        callback(undefined, listOfRooms);
-    } else {
-        callback("There are no rooms at the current time");
+    if (callback) {
+        callback(null, listOfRooms);
     }
 }
 

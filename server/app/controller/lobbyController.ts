@@ -51,7 +51,7 @@ export function saveRoom(req:express.Request, res:express.Response) {
     // Map the room object
     var roomObj : lobbyService.IRoom = new lobbyService.Room(
         {
-            roomId: req.body.roomId || null,
+            roomId: req.body.roomId,
             players: players,
             name: req.body.name,
             creationTime : req.body.creationTime || null,
