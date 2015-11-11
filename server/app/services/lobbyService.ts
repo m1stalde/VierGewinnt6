@@ -19,7 +19,7 @@ export function saveRoom(roomObj, sessionData, isCreate, cb) {
 
     // Update & Delete an existing room
     // isCreate avoids malicious requests => DELETE => {roomId = 3, players[]}
-    if (!isCreate && roomObj.roomId && (pos > -1)) { // -1 indicates that a new room should be created
+    if (!isCreate && roomObj.roomId >= 0 && (pos > -1)) { // -1 indicates that a new room should be created
 
         if(roomObj.isDelete & roomObj.isJoin)
         {
