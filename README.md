@@ -90,3 +90,7 @@
 
 1. Prio3
 - [ ] Mehrsprachigkeit über ngTranlsate realisieren
+- [ ] Chat-Nachricht über Enter abschicken
+- [ ] Chat-Darstellung in Breite optimieren
+- [ ] Meldung wenn keine Chat-Nachrichten vorhanden sind darstellen
+
