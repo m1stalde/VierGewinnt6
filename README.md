@@ -131,6 +131,7 @@ Alternative mit run.bat
 - [ ] Chat-Nachricht über Enter abschicken
 - [ ] Chat-Darstellung in Breite optimieren
 - [ ] Meldung wenn keine Chat-Nachrichten vorhanden sind darstellen
+- [x] favicon hinzugefügt
 
 ## Update
 
