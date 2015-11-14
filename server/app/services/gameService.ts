@@ -65,7 +65,7 @@ export function newGame(playerId1: string, playerId2: string, startColor: gameLo
 
         db.insert(gameData, function (err, newDoc: IGameDataPersisted) {
             sendGameUpdateMessage(newDoc._id, newDoc);
-            callback(err, gameData, newDoc._id);
+            callback(err, newDoc, newDoc._id);
         });
     });
 }
