@@ -5,6 +5,7 @@ import express = require('express');
 import bodyParser = require('body-parser');
 import security = require('./utils/security');
 import logger = require('./utils/logger');
+import errors = require('./utils/errors');
 
 var http = require('http').Server(express);
 var websocketService = require('./websocket/websocketService.js');
@@ -45,8 +46,13 @@ app.use(express.static(__dirname + '/../../../client/build/app'));
 
 // generic error handler after routes
 app.use(function(err: any, req: express.Request, res: express.Response, next: Function): any {
-    logger.error(err.stack);
-    res.status(500).send('Request failed: ' + err.message);
+    if (err instanceof errors.NotFoundError) {
+        logger.info(err);
+        res.status(404).send(err.message);
+    } else {
+        logger.error(err.stack);
+        res.status(500).send('Request failed: ' + err.message);
+    }
 });
 
 var port: number = process.env.PORT || 2999;

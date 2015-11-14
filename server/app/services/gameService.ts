@@ -5,6 +5,7 @@ import Datastore = require('nedb');
 import gameLogic = require('../logic/gameLogic');
 import messageService = require('../services/messageService');
 import logger = require('../utils/logger');
+import errors = require('../utils/errors');
 
 var db = new Datastore({ filename: './data/game.db', autoload: true });
 
@@ -27,6 +28,10 @@ export function getGame(gameId: string, playerId: string, callback: (err: Error,
     db.findOne<gameLogic.IGameData>({_id: gameId}, function (err, gameData) {
         if (err) {
             callback(err, null);
+            return;
+        }
+        else if (!gameData) {
+            callback(new errors.NotFoundError('game ' + gameId + ' not found'), null);
             return;
         }
 

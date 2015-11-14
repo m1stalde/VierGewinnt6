@@ -132,6 +132,7 @@ Alternative mit run.bat
 - [ ] Chat-Darstellung in Breite optimieren
 - [ ] Meldung wenn keine Chat-Nachrichten vorhanden sind darstellen
 - [x] favicon hinzugefügt
+- [x] Server beendet sich wenn Game nicht gefunden wird
 
 ## Update
 
