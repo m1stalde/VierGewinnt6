@@ -35,17 +35,35 @@ module Game.Services {
     Broken = 3
   }
 
+  interface IGameResource extends ng.resource.IResourceClass<ng.resource.IResource<IGame>> {
+    create(): ng.resource.IResource<IGame>;
+    move(any, IGame): ng.resource.IResource<IGame>;
+    restart(IGame): ng.resource.IResource<IGame>;
+    break(IGame): ng.resource.IResource<IGame>;
+  }
+
   class GameService implements IGameService {
 
     private game: IGame;
     private gameId: string;
 
+    private gameResource: IGameResource;
+
     public static $inject = [
-      '$http', '$q', 'LoggerService', 'MessageService', 'appConfig'
+      '$resource', '$q', 'LoggerService', 'MessageService', 'appConfig'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private log: Common.Services.ILoggerService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
+    constructor(private $resource: angular.resource.IResourceService, private $q: ng.IQService, private log: Common.Services.ILoggerService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
       var that = this;
+      var gameUrl = appConfig.baseUrl + '/game/:gameId';
+
+      that.gameResource = <IGameResource>$resource(gameUrl,
+        { gameId: '@_id' }, {
+          create: { method: 'POST' },
+          move: { method: 'POST', url: gameUrl + '/move/:col' },
+          restart: { method: 'POST', url: gameUrl + '/restart' },
+          break: { method: 'POST', url: gameUrl + '/break' }
+        });
 
       // register for game update messages concerns to current game
       messageService.addMessageListener(GameUpdateMessage.NAME, function (message: GameUpdateMessage) {
@@ -69,9 +87,9 @@ module Game.Services {
       var that = this;
 
       if (!this.game) {
-        this.$http.post<IGame>(this.appConfig.baseUrl + '/game/newGame', null)
+        this.gameResource.create().$promise
           .then(data => {
-            that.setGame(data.data);
+            that.setGame(data);
             deferred.resolve(that.game);
           })
         .catch(err => {
@@ -91,9 +109,9 @@ module Game.Services {
 
       // load game if game id changed only
       if (that.gameId !== gameId) {
-        this.$http.get<IGame>(this.appConfig.baseUrl + '/game/getGame', { params: { gameId: gameId }})
+        this.gameResource.get({gameId:gameId}).$promise
           .then(data => {
-            that.setGame(data.data);
+            that.setGame(data);
             deferred.resolve(that.game);
           })
           .catch(err => {
@@ -112,9 +130,9 @@ module Game.Services {
       var deferred = this.$q.defer();
       var that = this;
 
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/doMove', { gameId: that.gameId, col: col })
+      this.gameResource.move({col:col}, this.game).$promise
         .then(data => {
-          that.setGame(data.data);
+          that.setGame(data);
           deferred.resolve(that.game);
         })
         .catch(err => {
@@ -129,9 +147,9 @@ module Game.Services {
       var deferred = this.$q.defer();
       var that = this;
 
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/restartGame', {gameId: that.gameId})
+      this.gameResource.restart(this.game).$promise
         .then(data => {
-          that.setGame(data.data);
+          that.setGame(data);
           deferred.resolve(that.game);
         })
         .catch(err => {
@@ -146,9 +164,9 @@ module Game.Services {
       var deferred = this.$q.defer();
       var that = this;
 
-      this.$http.post<IGame>(this.appConfig.baseUrl + '/game/breakGame', { gameId: that.gameId })
+      this.gameResource.break(this.game).$promise
         .then(data => {
-          that.setGame(data.data);
+          that.setGame(data);
           deferred.resolve(that.game);
         })
         .catch(err => {

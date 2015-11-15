@@ -8,7 +8,7 @@ import security = require('../utils/security');
 export function getGame(req: GameControllerRequest, res: express.Response, next: Function) {
     var playerId = security.getServerSession(req).getPlayerId();
 
-    var gameId = req.query.gameId;
+    var gameId = req.params.id;
     if (!gameId) {
         res.status(400).send('Bad Request: gameId missing');
         return;
@@ -48,13 +48,13 @@ export function newGame(req: GameControllerRequest, res: express.Response, next:
 export function doMove(req: GameControllerRequest, res: express.Response, next: Function) {
     var playerId = security.getServerSession(req).getPlayerId();
 
-    var gameId = req.body.gameId;
+    var gameId = req.params.id;
     if (!gameId) {
         res.status(400).send('Bad Request: gameId missing');
         return;
     }
 
-    var col = req.body.col;
+    var col = req.params.col;
     if (col == undefined) {
         res.status(400).send('Bad Request: col missing');
         return;
@@ -77,7 +77,7 @@ export function doMove(req: GameControllerRequest, res: express.Response, next: 
 export function restartGame(req: GameControllerRequest, res: express.Response, next: Function) {
     var playerId = security.getServerSession(req).getPlayerId();
 
-    var gameId = req.body.gameId;
+    var gameId = req.params.id;
     if (!gameId) {
         res.status(400).send('Bad Request: gameId missing');
         return;
@@ -100,7 +100,7 @@ export function restartGame(req: GameControllerRequest, res: express.Response, n
 export function breakGame(req: GameControllerRequest, res: express.Response, next: Function) {
     var playerId = security.getServerSession(req).getPlayerId();
 
-    var gameId = req.body.gameId;
+    var gameId = req.params.id;
     if (!gameId) {
         res.status(400).send('Bad Request: gameId missing');
         return;
