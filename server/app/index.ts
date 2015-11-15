@@ -20,7 +20,7 @@ security.init(app);
 
 
 app.get('/', (req, res) => {
-    res.send('Hello TypeScript')
+    res.redirect('/index.html');
 });
 
 app.all('*', function(req, res, next) {
