@@ -1,4 +1,6 @@
 /// <reference path="../_all.ts"/>
+'use strict';
+
 import util = require('util');
 import messageService = require('../services/messageService');
 import logger = require('../utils/logger');

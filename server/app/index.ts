@@ -1,4 +1,5 @@
 /// <reference path="_all.ts"/>
+'use strict';
 
 // set up ==========================================
 import express = require('express');

@@ -1,7 +1,7 @@
 /// <reference path="../_all.ts"/>
-import security = require('../utils/security');
-
 'use strict';
+
+import security = require('../utils/security');
 
 var eventEmitter: NodeJS.EventEmitter = new (require('events').EventEmitter)();
 

@@ -1,4 +1,5 @@
 /// <reference path="../_all.ts"/>
+'use strict';
 
 import express = require('express');
 import gameService = require('../services/gameService');

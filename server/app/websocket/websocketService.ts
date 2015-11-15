@@ -1,4 +1,6 @@
 /// <reference path="../_all.ts"/>
+'use strict';
+
 import WebSocket = require('ws');
 import security = require('../utils/security');
 import express = require('express');

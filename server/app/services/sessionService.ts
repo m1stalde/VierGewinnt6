@@ -1,4 +1,5 @@
 /// <reference path="../_all.ts"/>
+'use strict';
 
 import userService = require('../services/userService');
 
