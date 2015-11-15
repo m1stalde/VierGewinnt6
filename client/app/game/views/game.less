@@ -1,9 +1,14 @@
+@import "../../../bower_components/bootstrap/less/variables.less";
+
 @border: 3px;
 
 .game-container {
+  .disable-select();
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: @panel-default-heading-bg;
   padding: @border;
+  border: solid @panel-inner-border thin;
+  border-radius: @panel-border-radius;
 }
 
 .game-row {
@@ -34,7 +39,7 @@
   left: 0;
   bottom: @border;
   right: @border;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: @panel-bg;
 
   &.red {
     background-color: red;
@@ -110,4 +115,11 @@
 
 .game-control {
   padding: @border 0 1.2em 0;
+}
+
+.disable-select() {
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */
 }
