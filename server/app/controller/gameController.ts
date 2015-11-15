@@ -54,7 +54,7 @@ export function doMove(req: GameControllerRequest, res: express.Response, next: 
         return;
     }
 
-    var col = req.params.col;
+    var col = req.query.col;
     if (col == undefined) {
         res.status(400).send('Bad Request: col missing');
         return;

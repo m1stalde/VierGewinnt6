@@ -37,7 +37,7 @@ module Game.Services {
 
   interface IGameResource extends ng.resource.IResourceClass<ng.resource.IResource<IGame>> {
     create(): ng.resource.IResource<IGame>;
-    move(any, IGame): ng.resource.IResource<IGame>;
+    move(col: any, IGame): ng.resource.IResource<IGame>;
     restart(IGame): ng.resource.IResource<IGame>;
     break(IGame): ng.resource.IResource<IGame>;
   }
@@ -60,7 +60,7 @@ module Game.Services {
       that.gameResource = <IGameResource>$resource(gameUrl,
         { gameId: '@_id' }, {
           create: { method: 'POST' },
-          move: { method: 'POST', url: gameUrl + '/move/:col' },
+          move: { method: 'POST', url: gameUrl + '/move' },
           restart: { method: 'POST', url: gameUrl + '/restart' },
           break: { method: 'POST', url: gameUrl + '/break' }
         });
