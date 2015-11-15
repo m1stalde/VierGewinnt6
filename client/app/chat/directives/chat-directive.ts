@@ -24,6 +24,14 @@ module chat.directives {
         this.currentMessage = "";
       };
 
+      // Send the text when enter is pressed
+      $('#msgInput').keypress( function( e ) {
+        if( e.keyCode == 13 ) // Enter
+        {
+          this.sendMessage(this.currentMessage)
+        }
+      });
+
       // For directive implementations which don't use an attribute of id
       scope.id = angular.isUndefined(scope.id) ? "" : scope.id;
 
