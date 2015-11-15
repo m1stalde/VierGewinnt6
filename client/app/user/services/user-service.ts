@@ -31,19 +31,18 @@ module User.Services {
 
     loadUserData(): ng.IPromise<IUser> {
       var deferred = this.$q.defer();
-      var that = this;
 
       if (!this.userData) {
-        that.userResource.get().$promise
+        this.userResource.get().$promise
           .then(user => {
-            that.userData = user;
-            deferred.resolve(that.userData);
+            this.userData = user;
+            deferred.resolve(this.userData);
           })
           .catch(err => {
             deferred.reject(err);
           });
       } else {
-        deferred.resolve(that.userData);
+        deferred.resolve(this.userData);
       }
 
       return deferred.promise;

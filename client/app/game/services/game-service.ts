@@ -84,20 +84,19 @@ module Game.Services {
 
     newGame(): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
-      var that = this;
 
       if (!this.game) {
         this.gameResource.create().$promise
           .then(data => {
-            that.setGame(data);
-            deferred.resolve(that.game);
+            this.setGame(data);
+            deferred.resolve(this.game);
           })
         .catch(err => {
-            that.log.debug('new game failed', err);
+            this.log.debug('new game failed', err);
             deferred.reject(err);
           });
       } else {
-        deferred.resolve(that.game);
+        deferred.resolve(this.game);
       }
 
       return deferred.promise;
@@ -105,38 +104,36 @@ module Game.Services {
 
     loadGame(gameId: string): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
-      var that = this;
 
       // load game if game id changed only
-      if (that.gameId !== gameId) {
+      if (this.gameId !== gameId) {
         this.gameResource.get({gameId:gameId}).$promise
           .then(data => {
-            that.setGame(data);
-            deferred.resolve(that.game);
+            this.setGame(data);
+            deferred.resolve(this.game);
           })
           .catch(err => {
-            that.log.debug('load game failed', err);
+            this.log.debug('load game failed', err);
             deferred.reject(err);
           });
       } else {
-        deferred.resolve(that.game);
+        deferred.resolve(this.game);
       }
 
-      that.gameId = gameId;
+      this.gameId = gameId;
       return deferred.promise;
     }
 
     doMove(col: number): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
-      var that = this;
 
       this.gameResource.move({col:col}, this.game).$promise
         .then(data => {
-          that.setGame(data);
-          deferred.resolve(that.game);
+          this.setGame(data);
+          deferred.resolve(this.game);
         })
         .catch(err => {
-          that.log.debug('do move failed', err);
+          this.log.debug('do move failed', err);
           deferred.reject(err);
         });
 
@@ -145,15 +142,14 @@ module Game.Services {
 
     restartGame(): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
-      var that = this;
 
       this.gameResource.restart(this.game).$promise
         .then(data => {
-          that.setGame(data);
-          deferred.resolve(that.game);
+          this.setGame(data);
+          deferred.resolve(this.game);
         })
         .catch(err => {
-          that.log.debug('restart game failed', err);
+          this.log.debug('restart game failed', err);
           deferred.reject(err);
         });
 
@@ -162,15 +158,14 @@ module Game.Services {
 
     breakGame(): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
-      var that = this;
 
       this.gameResource.break(this.game).$promise
         .then(data => {
-          that.setGame(data);
-          deferred.resolve(that.game);
+          this.setGame(data);
+          deferred.resolve(this.game);
         })
         .catch(err => {
-          that.log.debug('break game failed', err);
+          this.log.debug('break game failed', err);
           deferred.reject(err);
         });
 

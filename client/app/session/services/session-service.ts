@@ -30,15 +30,14 @@ module Session.Services {
 
     login(username: string, password: string) : ng.IPromise<ISession> {
       var deferred = this.$q.defer();
-      var that = this;
 
       this.$http.post<ISession>(this.appConfig.baseUrl + '/session/login', { "username":username, "password":password})
         .then(data => {
-          that.setCurrentSession(data.data);
-          deferred.resolve(that.currentSession);
+          this.setCurrentSession(data.data);
+          deferred.resolve(this.currentSession);
         })
         .catch(err => {
-          that.log.debug('login failed', err);
+          this.log.debug('login failed', err);
           deferred.reject(err);
         });
 
@@ -47,15 +46,14 @@ module Session.Services {
 
     logout(): ng.IPromise<ISession> {
       var deferred = this.$q.defer();
-      var that = this;
 
       this.$http.post<ISession>(this.appConfig.baseUrl + '/session/logout', {})
         .then(data => {
-          that.setCurrentSession(data.data);
-          deferred.resolve(that.currentSession);
+          this.setCurrentSession(data.data);
+          deferred.resolve(this.currentSession);
         })
         .catch(err => {
-          that.log.debug('logout failed', err);
+          this.log.debug('logout failed', err);
           deferred.reject(err);
         });
 
@@ -72,20 +70,19 @@ module Session.Services {
 
     loadCurrentSession(): ng.IPromise<ISession> {
       var deferred = this.$q.defer();
-      var that = this;
 
-      if (!that.currentSession) {
+      if (!this.currentSession) {
         this.$http.get<ISession>(this.appConfig.baseUrl + '/session/')
           .then(data => {
-            that.setCurrentSession(data.data);
-            deferred.resolve(that.currentSession);
+            this.setCurrentSession(data.data);
+            deferred.resolve(this.currentSession);
           })
           .catch(err => {
-            that.log.debug('load current session failed', err);
+            this.log.debug('load current session failed', err);
             deferred.reject(err);
           });
       } else {
-        deferred.resolve(that.currentSession);
+        deferred.resolve(this.currentSession);
       }
 
       return deferred.promise;
