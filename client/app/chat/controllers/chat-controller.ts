@@ -52,13 +52,10 @@ module chat.controllers {
       // Subscribe for incoming messages to load the chat history
       this.messageService.addMessageListener(section + "ChatHistory", function(message : ChatHistoryMessage){
         if(message.data.chatHistory.length > 0){
+          $('#chatHistoryPlaceholder').hide();
           self.chatHistory = message.data.chatHistory;
-        } else {
-          self.chatHistory.push(new ChatMessage(
-            {
-              message : "Press enter to send a text message",
-              creationDate : ""
-            }));
+        } else{
+          $('#chatHistoryPlaceholder').show();
         }
       });
     }
