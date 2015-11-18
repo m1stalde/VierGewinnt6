@@ -39,6 +39,13 @@ module lobby.controllers {
       this.getRooms(this)();
       this.lobbyInterval = $interval(this.getRooms(this), 3000);
 
+
+      // Set up the tooltip plugin
+      var htmlBody : any = $("body");
+      $(document).ready(function() {
+        htmlBody.tooltip({ selector: '[data-toggle=tooltip]' });
+      });
+
       $scope.$on('$destroy', () => {
         self.stopInterval(self)();
       });
