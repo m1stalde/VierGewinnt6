@@ -1,7 +1,6 @@
 ///<reference path='../../typings/tsd.d.ts' />
 
 /// <reference path='controllers/lobby-controller.ts' />
-/// <reference path='controllers/lobby-controller_test.ts' />
 
 /// <reference path='directives/lobby-directive.ts' />
 
