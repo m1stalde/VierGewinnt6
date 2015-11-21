@@ -133,6 +133,7 @@ Alternative mit run.bat
 - [ ] Meldung wenn keine Chat-Nachrichten vorhanden sind darstellen
 - [x] favicon hinzugefügt
 - [x] Server beendet sich wenn Game nicht gefunden wird
+- [x] Navigation passt sich dem Login/Logout-Status an
 
 ## Update
 
