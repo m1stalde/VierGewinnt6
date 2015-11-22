@@ -2,7 +2,6 @@
 'use strict';
 
 function GamePage() {
-  this.text = element(by.tagName('p'));
   this.heading = element(by.tagName('h2'));
 }
 

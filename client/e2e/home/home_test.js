@@ -11,8 +11,7 @@ describe('Home page', function () {
     browser.get('/#/home');
   });
 
-  it('should say HomeCtrl', function () {
-    expect(homePage.heading.getText()).toEqual('home');
-    expect(homePage.text.getText()).toEqual('HomeCtrl');
+  it('should say welcome', function () {
+    expect(homePage.heading.getText()).toEqual('Willkommen beim Vier Gewinnt der Gruppe 6');
   });
 });

@@ -11,8 +11,7 @@ describe('Game page', function () {
     browser.get('/#/game');
   });
 
-  it('should say GameCtrl', function () {
-    expect(gamePage.heading.getText()).toEqual('game');
-    expect(gamePage.text.getText()).toEqual('GameCtrl');
+  it('should say game', function () {
+    expect(gamePage.heading.getText()).toEqual('Spiel');
   });
 });
