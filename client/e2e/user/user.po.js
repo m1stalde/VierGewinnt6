@@ -1,12 +1,12 @@
 /*global element, by*/
 'use strict';
 
-function HomePage() {
+function UserPage() {
   this.heading = element(by.tagName('h2'));
 
   this.open = function () {
-    browser.get('/#/home');
+    browser.get('/#/user');
   }
 }
 
-module.exports = HomePage;
+module.exports = UserPage;

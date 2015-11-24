@@ -8,7 +8,7 @@ describe('Home page', function () {
 
   beforeEach(function () {
     homePage = new HomePagePo();
-    browser.get('/#/home');
+    homePage.open();
   });
 
   it('should say welcome', function () {

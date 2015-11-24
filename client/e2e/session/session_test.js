@@ -8,17 +8,17 @@ describe('Session page', function () {
 
   beforeEach(function () {
     sessionPage = new SessionPagePo();
-    //sessionPage.open();
-    browser.get('/#/session');
+    sessionPage.open();
   });
 
   it('should say login', function () {
     expect(sessionPage.heading.getText()).toEqual('Login');
   });
 
-  /*it('should say login', function () {
+  it('should say welcome', function () {
     sessionPage.fill('bla', 'fasel');
     sessionPage.submit();
     expect(sessionPage.heading.getText()).toEqual('Login');
-  });*/
+    expect(sessionPage.loginMessage.getText()).toEqual('Hallo bla!');
+  });
 });
