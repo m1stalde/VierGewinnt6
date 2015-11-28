@@ -9,20 +9,26 @@
 
   <div class="row">
     <section class="col-xs-6 col-sm-6">
-      <form ng-submit="user.saveUser()">
-        <div class="form-group">
-          <label for="inputName">Name</label>
-          <input ng-model="user.displayUser.name" type="text" class="form-control" id="inputName" placeholder="Name">
+      <form name="userForm" ng-submit="user.saveUser()">
+        <div class="form-group has-feedback" ng-class="{'has-success': userForm.name.$valid, 'has-error': userForm.name.$invalid }">
+          <label for="name">Name</label>
+          <input ng-model="user.displayUser.name" type="text" class="form-control" name="name" id="name" placeholder="Name" required ng-minlength="3">
+          <span class="glyphicon form-control-feedback" ng-class="{'glyphicon-ok': userForm.name.$valid, 'glyphicon-remove': userForm.name.$invalid}" aria-hidden="true"></span>
+          <span class="help-block">Mindestens drei Zeichen erforderlich.</span>
         </div>
-        <div class="form-group">
-          <label for="inputPassword">Passwort</label>
-          <input ng-model="user.password" type="password" class="form-control" id="inputPassword" placeholder="Password">
+        <div class="form-group has-feedback" ng-class="{'has-success': userForm.password.$valid, 'has-error': userForm.password.$invalid }">
+          <label for="password">Passwort</label>
+          <input ng-model="user.password" type="password" class="form-control has-error" name="password" id="password" placeholder="Password" required ng-minlength="3">
+          <span class="glyphicon form-control-feedback" ng-class="{'glyphicon-ok': userForm.password.$valid, 'glyphicon-remove': userForm.password.$invalid}" aria-hidden="true"></span>
+          <span class="help-block">Mindestens drei Zeichen erforderlich.</span>
         </div>
-        <div class="form-group">
-          <label for="inputPasswordCheck">Passwort wiederholen</label>
-          <input ng-model="user.passwordCheck" type="password" class="form-control" id="inputPasswordCheck" placeholder="Password">
+        <div class="form-group has-feedback" ng-class="{'has-success': userForm.passwordCheck.$valid, 'has-error': userForm.passwordCheck.$invalid }">
+          <label for="passwordCheck">Passwort wiederholen</label>
+          <input ng-model="user.passwordCheck" type="password" class="form-control" name="passwordCheck" id="passwordCheck" placeholder="Password" required ng-minlength="3">
+          <span class="glyphicon form-control-feedback" ng-class="{'glyphicon-ok': userForm.passwordCheck.$valid, 'glyphicon-remove': userForm.passwordCheck.$invalid}" aria-hidden="true"></span>
+          <span class="help-block">Mindestens drei Zeichen erforderlich.</span>
         </div>
-        <button type="submit" class="btn btn-default">Speichern</button>
+        <button type="submit" class="btn btn-default" ng-disabled="userForm.$invalid">Speichern</button>
       </form>
     </section>
   </div>

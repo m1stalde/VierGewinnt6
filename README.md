@@ -115,7 +115,7 @@ Server:
 1. Prio2
 - [ ] Layout Lobby für schmale Displays anpassen
 - [x] neuer Raum startet mit bestehenden Spiel statt mit neuem Spiel
-- [ ] favicon.ico erstellen um Fehlermeldung im Browser-Console zu vermeiden
+- [x] favicon.ico erstellen um Fehlermeldung im Browser-Console zu vermeiden
 - [ ] Lobby für Gast zugänglich machen
 - [x] Typescript-Errors in app\chat\controllers\chat-controller.ts beheben
 - [x] Typescript-Errors in app\lobby\controllers\lobby-controller.ts beheben
