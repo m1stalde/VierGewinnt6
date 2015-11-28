@@ -89,9 +89,11 @@ export class Game {
         // do the move
         this.gameData.cells[nextCell][col] = this.gameData.nextColor;
 
-        // if current player wins, set game to finished, else switch to next player
+        // if current player wins set game to finished, if game field is full set game to broken, else switch to next player
         if (this.isWinner(this.gameData.nextColor)) {
             this.gameData.state = GameState.Finished;
+        } else if (this.isFull()) {
+            this.gameData.state = GameState.Broken;
         } else {
             this.gameData.state = GameState.Running;
             this.gameData.nextColor = this.gameData.nextColor === Color.Red ? Color.Yellow : Color.Red;
@@ -177,6 +179,26 @@ export class Game {
         }
 
         return false;
+    }
+
+    /**
+     * Returns true if game field is full of tiles.
+     * @returns {boolean}
+     */
+    public isFull(): boolean {
+        var cells = this.gameData.cells;
+        var rowCount = this.gameData.cells.length;
+        var colCount = this.gameData.cells[0].length;
+
+        for (var col = colCount - 1; col >= 0; col--) {
+            for (var row = 0; row < rowCount; row++) {
+                if (cells[row][col] === Color.None) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

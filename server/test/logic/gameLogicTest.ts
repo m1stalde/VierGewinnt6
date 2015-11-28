@@ -136,6 +136,37 @@ describe('Game Logic Tests:', () => {
         });
     });
 
+    describe('finish game', () => {
+        it('fill up all game fields should set state to finished', (done) => {
+            var playerId = playerId1;
+
+            // fill up game field with two tiles of each color
+            for (var col = 0; col < 7; col++) {
+                var cnt = 6 - (col % 2);
+                for (var row = 0; row < cnt; row++) {
+                    game.doMove(playerId, col, (err, gameData) => {
+                        (<number>gameData.state).should.be.equal(gameLogic.GameState.Running);
+                        playerId = playerId === playerId2 ? playerId1 : playerId2;
+                    });
+                }
+            }
+
+            // set col 1 and 3 in top row
+            for (var col = 1; col < 4; col+=2) {
+                game.doMove(playerId, col, (err, gameData) => {
+                    (<number>gameData.state).should.be.equal(gameLogic.GameState.Running);
+                    playerId = playerId === playerId2 ? playerId1 : playerId2;
+                });
+            }
+
+            // set last col 5 in top row
+            game.doMove(playerId, 5, (err, gameData) => {
+                (<number>gameData.state).should.be.equal(gameLogic.GameState.Broken);
+                done();
+            });
+        });
+    });
+
     describe('restart game', () => {
         it('restart game should clear game field and state', (done) => {
             game.doMove(playerId1, 0, (err, gameData) => {
