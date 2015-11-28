@@ -20,7 +20,8 @@ Client bauen
   (Warnungen beim ersten Aufruf bezüglich node-gyp.js, Python oder C++-Compiler ignorieren)
 - tsd install
 - bower install
-- gulp build
+- gulp build (Version dev)
+  gulp build --stage prod (Version prod)
   
 Server bauen
 
@@ -65,38 +66,8 @@ E2E-Tests ausführen:
 - Benutzerbereich zum Editieren des eigenen Profils
 
 ## Angewandte Themen
-1. HTML
-1. CSS
-1. DOM
-    - Event Bubbling
-      Ein Event-Listener auf dem Spielfeld um Click-Events aller Felder zu verarbeiten
-1. JavaScript
-    - JavaScript am Ende der HTML-Seite eingebunden, damit der Browser bereits mit dem Rendering der Seite beginnen kann.
-1. NodeJS
-1. REST
-1. Express
-    - Front Controller Pattern mit Routes, Controllers und Services
-1. Engineering Grundlagen
-1. UX
-    - 6+1 von 125 Designprinzipien:
-        - Affordanz  
-          Masken und Beschriftungen so designed, damit keine Erklärungen und Hilfetexte nötig sind  
-          Leichte Bedienung durch Gast-Modus um sofort mit dem Spiel beginnen zu können
-        - Anordnung (Optische Ausrichtung)  
-          Zusammengehörende Elemente für Chat, Spiel, Lobby, etc. wurden aneinander ausgerichtet, um das Auge des Betrachters zu führen.
-        - Blank Slate  
-          Grafik und Info, wenn noch keine Räume oder Chat-Nachrichten vorhanden sind
-        - Farbe  
-          (Farbkreis und Farbharmonie)
-        - Fitt's Law  
-          Grösse von Schaltflächen für Touch-Bedienung optimiert
-          Mauswege durch geschickte Anordnung der einzelnen Komponenten optimiert
-        - Horror Vacui  
-          Bewusst leere Bereiche auf den Screens freigehalten um Ansichten nicht zu überladen und die Wahrnehmung des Benutzers auf das Wesentliche zu lenken
-        - Progressive Disclosure  
-          (nicht jedem User die gesamte Funktionalität zeigen)
-1. Angular
 
+siehe [Angewandte Themen](_doc/AngewandteThemen.md)
 
 ## Eingesetzte Technologien
 - TypeScript auf Client und Server
@@ -112,6 +83,21 @@ E2E-Tests ausführen:
 - Chai
 - jQuery
 - Toastr
+- Autoprefixer
+
+
+## Herausforderungen
+
+Client:
+
+- quadratisch frei skalierbare Spielfelder als reine CSS-Lösung
+- Agular-Direktive mit eigenem Controller mit controllerAs-Syntax und TypeScript
+
+Server:
+
+- Session-Information aus Websocket-Request auslesen
+- Server-Code inkl. Unit-Tests in TypeScript mit Type-Definitions für Node-Module
+
 
 ## Todo
 1. Prio 1
