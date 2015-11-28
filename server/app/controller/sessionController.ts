@@ -42,7 +42,19 @@ export function getCurrentSession(req : express.Request, res : express.Response,
 }
 
 export function login (req : express.Request, res : express.Response, next: Function) {
-    security.login(req, function (err, session) {
+    var username = req.body.username;
+    if (username == undefined || username.length < 3) {
+        res.status(400).send('Bad Request: username missing or too short');
+        return;
+    }
+
+    var password = req.body.password;
+    if (password == undefined || password.length < 3) {
+        res.status(400).send('Bad Request: password missing or too short');
+        return;
+    }
+
+    security.login(req, username, password, function (err, session) {
         if (err) {
             next(err);
             return;

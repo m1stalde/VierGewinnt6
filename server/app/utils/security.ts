@@ -53,15 +53,15 @@ export function getServerSessionFromWebSocket(conn: WebSocket, callback: (err: E
     });
 }
 
-export function login(req : express.Request, callback: (err: Error, session: sessionService.Session) => void) {
+export function login(req: express.Request, username: string, password: string, callback: (err: Error, session: sessionService.Session) => void) {
     var serverSession = getServerSession(req);
     var playerId = serverSession.getPlayerId();
 
-    sessionService.authenticateUser(playerId, req.body.username, req.body.password, function(err, result, session, userId) {
+    sessionService.authenticateUser(playerId, username, password, function(err, result, session, userId) {
         if (result) {
             serverSession.setUserId(userId);
             serverSession.setUserName(session.username);
-            logger.info('login: sessionId=' + serverSession.getSessionId() + ', userId=' + userId + ', userName=' + req.body.username + ', playerId=' + playerId);
+            logger.info('login: sessionId=' + serverSession.getSessionId() + ', userId=' + userId + ', userName=' + username + ', playerId=' + playerId);
         }
 
         if (callback) callback(err, session);

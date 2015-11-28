@@ -20,7 +20,20 @@ export function getCurrentUser(req : express.Request, res : express.Response) {
 
 export function updateCurrentUser(req : express.Request, res : express.Response) {
     var userId = security.currentUserId(req);
-    userService.updateUser(userId, req.body.name, req.body.password, function(err, user) {
+
+    var name = req.body.name;
+    if (name == undefined || name.length < 3) {
+        res.status(400).send('Bad Request: name missing or too short');
+        return;
+    }
+
+    var password = req.body.password;
+    if (password == undefined || password.length < 3) {
+        res.status(400).send('Bad Request: password missing or too short');
+        return;
+    }
+
+    userService.updateUser(userId, name, password, function(err, user) {
         res.format({
             'application/json': function(){
                 res.json(user);
