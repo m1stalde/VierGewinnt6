@@ -1,3 +1,12 @@
+/**
+ * Security module.
+ *
+ * Initializes security components like Cookie Parser and Session Handler in Express Application.
+ * Provides IServerSession object with PlayerId, UserId and UserName for Express Request and WebSocket Request.
+ * PlayerId is a random generated Id for each client connected to the server to identify user if logged in or not.
+ * UserId and UserName are provided if a user is logged in.
+ */
+
 /// <reference path="../_all.ts"/>
 'use strict';
 
@@ -9,14 +18,16 @@ import sessionService = require('../services/sessionService');
 import utils = require('../utils/helperFunctions');
 import logger = require('../utils/logger');
 
-
 const COOKIE_NAME = 'game.sid';
 const COOKIE_SECRET = 'casduichasidbnuwezrfinasdcvjkadfhsuilfuzihfioda';
 
 var cookieParser: express.RequestHandler;
 var sessionStore: session.Store;
 
-
+/**
+ * Inits security system of Express Application.
+ * @param app
+ */
 export function init(app: express.Application): void {
     // create and register cookie parser
     cookieParser = cookie(COOKIE_SECRET);
@@ -31,10 +42,20 @@ export function init(app: express.Application): void {
     app.disable('x-powered-by');
 }
 
+/**
+ * Returns typed server session object for given Express Request.
+ * @param req
+ * @returns {ServerSession}
+ */
 export function getServerSession(req: Express.Request): IServerSession {
     return new ServerSession(req.session);
 }
 
+/**
+ * Returns typed server session object for given WebSocket Connection.
+ * @param conn
+ * @param callback
+ */
 export function getServerSessionFromWebSocket(conn: WebSocket, callback: (err: Error, serverSession: IServerSession) => void): void {
     cookieParser(<express.Request> conn.upgradeReq, null, function () {
         var req = <express.Request>conn.upgradeReq;
@@ -56,6 +77,13 @@ export function getServerSessionFromWebSocket(conn: WebSocket, callback: (err: E
     });
 }
 
+/**
+ * Authenticates given user and updates Server Session object with user info.
+ * @param req
+ * @param username
+ * @param password
+ * @param callback
+ */
 export function login(req: express.Request, username: string, password: string, callback: (err: Error, session: sessionService.Session) => void) {
     var serverSession = getServerSession(req);
     var playerId = serverSession.getPlayerId();
@@ -71,27 +99,45 @@ export function login(req: express.Request, username: string, password: string, 
     });
 }
 
-export function currentUserId(req : express.Request): string {
+/**
+ * Returns current user id.
+ * @param req
+ * @returns {string}
+ */
+export function currentUserId(req: express.Request): string {
     return getServerSession(req).getUserId();
 }
 
-export function isLoggedIn(req : express.Request)
-{
+/**
+ * Returns true if a user is logged in.
+ * @param req
+ * @returns {boolean}
+ */
+export function isLoggedIn(req: express.Request) {
     return !!currentUserId(req);
 }
 
-export function handleAuthenticate(req : express.Request, res : express.Response, next){
-    if(isLoggedIn(req))
-    {
+/**
+ * Checks if a user is logged in given request.
+ * If user is authenticated, the next middleware is called.
+ * If no user is authenticated, a HTTP code 401 is sent back to client.
+ * @param req
+ * @param res
+ * @param next
+ */
+export function handleAuthenticate(req: express.Request, res: express.Response, next) {
+    if(isLoggedIn(req)) {
         next();
-    }
-    else
-    {
-        //res.send(401, { success : false, message : 'authentication failed' });
+    } else {
         res.sendStatus(401);
     }
 }
 
+/**
+ * Clears user info in current session.
+ * @param req
+ * @param callback
+ */
 export function logout(req : express.Request, callback: (err: Error, session: sessionService.Session) => void) {
     var serverSession = getServerSession(req);
     serverSession.setUserId(null);
@@ -102,6 +148,9 @@ export function logout(req : express.Request, callback: (err: Error, session: se
     });
 }
 
+/**
+ * Interface for Server Sessions.
+ */
 export interface IServerSession {
     getSessionId(): string;
 
@@ -119,6 +168,9 @@ export interface IServerSession {
     setUserName(userName: string): void;
 }
 
+/**
+ * Server Session interface implementation.
+ */
 export class ServerSession implements IServerSession {
 
     private static SESSION_USER_ID = 'userId';

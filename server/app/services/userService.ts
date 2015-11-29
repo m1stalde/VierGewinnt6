@@ -1,3 +1,10 @@
+/**
+ * User Service module.
+ *
+ * Provides a persistent user datastore with functions to read, register, authenticate and update users.
+ * The user passwords are stored encrypted and salted in datastore to secure stored password.
+ */
+
 /// <reference path="../_all.ts"/>
 'use strict';
 
@@ -6,6 +13,11 @@ import crypto = require('crypto');
 
 var db = new Datastore({ filename: './data/user.db', autoload: true });
 
+/**
+ * Reads user from datastore.
+ * @param id
+ * @param callback
+ */
 export function getUser(id, callback: (err: Error, user: IUser) => void) {
     db.findOne<User>({_id: id}, function (err, doc) {
         if (err) {
@@ -17,6 +29,13 @@ export function getUser(id, callback: (err: Error, user: IUser) => void) {
     });
 }
 
+/**
+ * Updates user's name and password.
+ * @param id
+ * @param name
+ * @param password
+ * @param callback
+ */
 export function updateUser(id, name, password, callback: (err: Error, user: IUser) => void) {
     if(!(id && name && password)) {
         callback(new Error('id, username and password required'), null);
@@ -51,6 +70,12 @@ export function updateUser(id, name, password, callback: (err: Error, user: IUse
     });
 }
 
+/**
+ * Registers a new user.
+ * @param name
+ * @param password
+ * @param callback
+ */
 export function registerUser(name, password, callback: (err: Error, user: IUser, userId: string) => void) {
     if(!(name && password)) {
         callback(new Error('username and password required'), null, null);
@@ -76,6 +101,12 @@ export function registerUser(name, password, callback: (err: Error, user: IUser,
     });
 }
 
+/**
+ * Authenticates an existing user or registers a new user.
+ * @param name
+ * @param password
+ * @param callback
+ */
 export function authenticateUser(name, password, callback: (err: Error, success: boolean, user: IUser, userId: string) => void) {
     if(!(name && password)) {
         callback(new Error('username and password required'), false, null, null);
@@ -108,6 +139,11 @@ export function authenticateUser(name, password, callback: (err: Error, success:
     });
 }
 
+/**
+ * Returns just the user's name without id, password and salt for security reasons.
+ * @param user
+ * @returns {{name: string}}
+ */
 function createReturn(user: User): IUser {
     return {
         name: user.name
@@ -171,11 +207,17 @@ function initPassword(password: string, callback: (err: Error, passwordHash: str
     });
 }
 
+/**
+ * Interface for return values without user secrets.
+ */
 export interface IUser {
     name: string;
     twitterAccNr? : string;
 }
 
+/**
+ * Private implementation for stored users.
+ */
 class User implements IUser {
     _id : string;
     name: string;
