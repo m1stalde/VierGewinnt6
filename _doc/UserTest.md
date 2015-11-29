@@ -36,18 +36,30 @@ Führen Sie die nachfolgenden Aufgaben der Reihe nach durch und beantworten Sie d
 
 ### Wie bewerten Sie die Bedienung des Spiels?
 Ist die Bedienung einfach/intuitiv/selbsterklärend oder schwierig/kompliziert/unverständlich?
+
 ...
+
 ...
+
 ...
+
 
 ### Wie bewerten Sie die optische Erscheinung des Spiels?
 Ist die optische Erscheinung ansprechend oder abschreckend?
-..
+
 ...
+
 ...
+
+...
+
 
 ### Wie bewerten Sie die Funktionalität des Spiels?
 Ist die Funktionalität des Spiels passend, überladen oder fehlt etwas?
-..
+
 ...
+
 ...
+
+...
+
