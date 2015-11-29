@@ -12,9 +12,9 @@
       <form name="userForm" ng-submit="user.saveUser()">
         <div class="form-group has-feedback" ng-class="{'has-success': userForm.name.$valid, 'has-error': userForm.name.$invalid }">
           <label for="name">Name</label>
-          <input ng-model="user.displayUser.name" type="text" class="form-control" name="name" id="name" placeholder="Name" required ng-minlength="3">
+          <input ng-model="user.displayUser.name" type="text" class="form-control" name="name" id="name" placeholder="Name" required ng-pattern="/^[a-zA-Z0-9]{3,15}$/">
           <span class="glyphicon form-control-feedback" ng-class="{'glyphicon-ok': userForm.name.$valid, 'glyphicon-remove': userForm.name.$invalid}" aria-hidden="true"></span>
-          <span class="help-block">Mindestens drei Zeichen erforderlich.</span>
+          <span class="help-block">Drei bis 15 alphanumerische Zeichen erforderlich.</span>
         </div>
         <div class="form-group has-feedback" ng-class="{'has-success': userForm.password.$valid, 'has-error': userForm.password.$invalid }">
           <label for="password">Passwort</label>

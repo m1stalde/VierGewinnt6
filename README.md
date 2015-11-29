@@ -111,7 +111,6 @@ Server:
 - [x] Einstellungen nur beim Login zeigen oder bei Klick auf Login weiterleiten -> Marcel
 - [x] Error-Handling im Client mittels Logger und Toastr -> Marcel
 - [x] Logger statt console.log auf Server verwenden
-- [ ] Input-Validierung/Encoding im Chat (<script>alert("hallo")</script>)
 
 1. Prio2
 - [ ] Layout Lobby für schmale Displays anpassen

@@ -73,11 +73,20 @@ Resultat Bildoptimierung mit Kraken.io:
 ## Web Security
 
 Passwörter verschlüsselt gespeichert:
+
 - Passwort-Hash mit PBKDF2 (crypto.pbkdf2)
 - Salt mit Zufallszahl (crypto.randomBytes)
 
 NodeJS:
+
 - Cookie-basiertes Session-Handling
 - httpOnly-Flag gesetzt
 - Header "x-powered-by" deaktiviert
 - Request-Validierung über Parameter und User-Authorization
+
+Cross Site Scripting:
+
+- Alphanumeric Whitelist für Benutzernamen (Client- und Server-seitig mittels RegExp geprüft)
+- Whitelist für Raum-Namen in Lobby
+- Filter für nicht erlaubte Zeichen im Chat
+- Alle Eingabefelder mittels Eingabe von "<script>alert(1)</script>" geprüft

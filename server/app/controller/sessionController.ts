@@ -4,6 +4,7 @@
 import express = require('express');
 import sessionService = require('../services/sessionService');
 import security = require('../utils/security');
+import validation = require('../utils/validation');
 
 export function registerUser(req : express.Request, res : express.Response, next: Function) {
     var playerId = security.getServerSession(req).getPlayerId();
@@ -43,8 +44,8 @@ export function getCurrentSession(req : express.Request, res : express.Response,
 
 export function login (req : express.Request, res : express.Response, next: Function) {
     var username = req.body.username;
-    if (username == undefined || username.length < 3) {
-        res.status(400).send('Bad Request: username missing or too short');
+    if (username == undefined || !validation.isUserNameValid(username)) {
+        res.status(400).send('Bad Request: username missing or not 3 to 15 alphanumeric chars');
         return;
     }
 
