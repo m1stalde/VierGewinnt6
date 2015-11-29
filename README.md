@@ -111,6 +111,8 @@ Server:
 - [x] Einstellungen nur beim Login zeigen oder bei Klick auf Login weiterleiten -> Marcel
 - [x] Error-Handling im Client mittels Logger und Toastr -> Marcel
 - [x] Logger statt console.log auf Server verwenden
+- [ ] Chat und Lobby finden im Release-Build ihre Views nicht (gulp build --stage prod)
+- [ ] Nachricht im Chat mit Enter absenden lädt Seite neu, danach Error this.sendMessage is not a function
 
 1. Prio2
 - [ ] Layout Lobby für schmale Displays anpassen
@@ -131,7 +133,7 @@ Server:
 - [ ] Mehrsprachigkeit über ngTranlsate realisieren
 - [ ] Chat-Nachricht über Enter abschicken
 - [ ] Chat-Darstellung in Breite optimieren
-- [ ] Meldung wenn keine Chat-Nachrichten vorhanden sind darstellen
+- [x] Meldung wenn keine Chat-Nachrichten vorhanden sind darstellen
 - [x] favicon hinzugefügt
 - [x] Server beendet sich wenn Game nicht gefunden wird
 - [x] Navigation passt sich dem Login/Logout-Status an
