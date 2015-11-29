@@ -2,6 +2,7 @@
 'use strict';
 
 import Datastore = require('nedb');
+import crypto = require('crypto');
 
 var db = new Datastore({ filename: './data/user.db', autoload: true });
 
@@ -22,15 +23,31 @@ export function updateUser(id, name, password, callback: (err: Error, user: IUse
         return;
     }
 
-    var user = new User(name, password);
-
-    db.update({_id: id}, user, function(err, doc) {
+    db.findOne<User>({ _id: id }, function (err, user) {
         if (err) {
             callback(err, null);
             return;
         }
 
-        callback(err, createReturn(doc));
+        initPassword(password, function(err, passwordHash, salt) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+
+            user.name = name;
+            user.passwordHash = passwordHash;
+            user.salt = salt;
+
+            db.update({_id: id}, user, function(err, doc) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+
+                callback(err, createReturn(doc));
+            });
+        });
     });
 }
 
@@ -40,15 +57,22 @@ export function registerUser(name, password, callback: (err: Error, user: IUser,
         return;
     }
 
-    var user = new User(name, password);
-
-    db.insert(user, function(err, doc) {
+    initPassword(password, function(err, passwordHash, salt) {
         if (err) {
             callback(err, null, null);
             return;
         }
 
-        callback(err, createReturn(doc), doc._id);
+        var user = new User(name, passwordHash, salt);
+
+        db.insert(user, function(err, doc) {
+            if (err) {
+                callback(err, null, null);
+                return;
+            }
+
+            callback(err, createReturn(doc), doc._id);
+        });
     });
 }
 
@@ -58,14 +82,14 @@ export function authenticateUser(name, password, callback: (err: Error, success:
         return;
     }
 
-    db.findOne<User>({ name: name }, function (err, doc) {
+    db.findOne<User>({ name: name }, function (err, user) {
         if (err) {
             callback(err, false, null, null);
             return;
         }
 
         // register new user if user not found
-        if(!doc){
+        if(!user){
             registerUser(name, password, function (err, user, userId) {
                 if (err) {
                     callback(err, false, null, null);
@@ -77,8 +101,10 @@ export function authenticateUser(name, password, callback: (err: Error, success:
             return;
         }
 
-        var success = doc.password === password;
-        callback(err, success, doc, doc._id);
+        hashPassword(password, user.salt, function (err, passwordHash) {
+            var success = user.passwordHash === passwordHash;
+            callback(err, success, user, user._id);
+        });
     });
 }
 
@@ -86,6 +112,63 @@ function createReturn(user: User): IUser {
     return {
         name: user.name
     }
+}
+
+/**
+ * Creates random salt value for password hash.
+ * @param callback
+ */
+function createSalt(callback: (err: Error, salt: string) => void): void {
+    crypto.randomBytes(64, function (err, salt) {
+        if (err) {
+           callback(err, null);
+           return;
+        }
+
+        var result = salt.toString('hex');
+        callback(err, result);
+    });
+}
+
+/**
+ * Creates hash value for password with given salt.
+ * @param password
+ * @param salt
+ * @param callback
+ */
+function hashPassword(password: string, salt: string, callback: (err: Error, passwordHash: string) => void): void {
+    crypto.pbkdf2(password, salt, 4096, 64, function (err, key: Buffer) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+
+        var hash = key.toString('hex');
+        callback(err, hash);
+    });
+}
+
+/**
+ * Creates salt and hash value for given password.
+ * @param password
+ * @param callback
+ */
+function initPassword(password: string, callback: (err: Error, passwordHash: string, salt: string) => void): void {
+    createSalt(function(err, salt) {
+        if (err) {
+            callback(err, null, null);
+            return;
+        }
+
+        hashPassword(password, salt, function(err, passwordHash) {
+            if (err) {
+                callback(err, null, null);
+                return;
+            }
+
+            callback(err, passwordHash, salt);
+        });
+    });
 }
 
 export interface IUser {
@@ -96,10 +179,12 @@ export interface IUser {
 class User implements IUser {
     _id : string;
     name: string;
-    password: string;
+    passwordHash: string;
+    salt: string;
 
-    constructor(name: string, password?: string) {
+    constructor(name: string, passwordHash: string, salt: string) {
         this.name = name;
-        this.password = password;
+        this.passwordHash = passwordHash;
+        this.salt = salt;
     }
 }

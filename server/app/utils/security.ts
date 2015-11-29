@@ -26,6 +26,9 @@ export function init(app: express.Application): void {
     sessionStore = new session.MemoryStore();
     var sessionHandler: express.RequestHandler = session({ name: COOKIE_NAME, store: sessionStore, secret: COOKIE_SECRET, resave: false, saveUninitialized: true});
     app.use(sessionHandler);
+
+    // disable x-powered-by for security reasons
+    app.disable('x-powered-by');
 }
 
 export function getServerSession(req: Express.Request): IServerSession {

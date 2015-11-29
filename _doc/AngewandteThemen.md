@@ -1,29 +1,31 @@
-# HTML
+# Angewandte Themen
 
-# CSS
+## HTML
+
+## CSS
 
 - Autoprefixer für Browser-spezifische CSS-Properties (z.B. "user-select: none;" in game.less)
 
-# DOM
+## DOM
 
 - Event Bubbling
   Ein Event-Listener auf dem Spielfeld um Click-Events aller Felder zu verarbeiten
 
-# JavaScript
+## JavaScript
 
 - JavaScript am Ende der HTML-Seite eingebunden, damit der Browser bereits mit dem Rendering der Seite beginnen kann.
 
-# NodeJS
+## NodeJS
 
-# REST
+## REST
 
-# Express
+## Express
 
 - Front Controller Pattern mit Routes, Controllers und Services
 
-# Engineering Grundlagen
+## Engineering Grundlagen
 
-# UX
+## UX
 
 6+1 von 125 Designprinzipien:
 
@@ -44,17 +46,17 @@
 - Progressive Disclosure  
   (nicht jedem User die gesamte Funktionalität zeigen)
 
-# Angular
+## Angular
 
-# Responsive Design
+## Responsive Design
 
-# Automatisierung
+## Automatisierung
 
-# Testing
+## Testing
 
-# Modularisierung
+## Modularisierung
 
-# Site Optimization
+## Site Optimization
 
 - Image-Fonts für Icons
 - Korrekte Bild-Formate (JPEG für Background-Foto)
@@ -67,3 +69,15 @@
 
 Resultat Bildoptimierung mit Kraken.io:
 ![Resultat kraken.io](SiteOptimization/kraken.io.png)
+
+## Web Security
+
+Passwörter verschlüsselt gespeichert:
+- Passwort-Hash mit PBKDF2 (crypto.pbkdf2)
+- Salt mit Zufallszahl (crypto.randomBytes)
+
+NodeJS:
+- Cookie-basiertes Session-Handling
+- httpOnly-Flag gesetzt
+- Header "x-powered-by" deaktiviert
+- Request-Validierung über Parameter und User-Authorization
