@@ -9,13 +9,8 @@ module chat.directives {
       id: '='
     }
 
+    public templateUrl = "chat/views/chat-window-template.html";
     public currentMessage : chat.controllers.IChatMessage;
-
-    // template function => replaces the content of the directory with its return value => hack to enable dynamic template loading
-    // in response triggers the getTemplateUrl() function of the scope
-    public template(element : ng.IAugmentedJQuery, attrs : IChatWindowAtributes) {
-      return '<div ng-include="getTemplateUrl()"></div>';
-    }
 
     public link(scope:chat.controllers.IChatScope, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) {
 
@@ -24,13 +19,17 @@ module chat.directives {
         this.currentMessage = "";
       };
 
-      // Send the text when enter is pressed
-      $('#msgInput').keypress( function( e ) {
-        if( e.keyCode == 13 ) // Enter
+      scope.inputBoxKeypress = function(e){
+        if( e.which === 13) // Enter
         {
-          this.sendMessage(this.currentMessage)
+          var chatMsg = {
+            message : $('#msgInput').val()
+          };
+
+          $('#msgInput').val('');
+          scope.chatModel.sendMessage(chatMsg);
         }
-      });
+      };
 
       // For directive implementations which don't use an attribute of id
       scope.id = angular.isUndefined(scope.id) ? "" : scope.id;
@@ -44,11 +43,6 @@ module chat.directives {
       // Retrieve the chat history
       scope.chatModel.fetchChatHistory(scope.chatSection, scope.id);
 
-      // retrieve the template for the chat
-      scope.getTemplateUrl = () => {
-        return "/chat/views/" + scope.chatSection + "-chat-window-template.html";
-      }
-
       // Gets triggered as soon as the directive gets destroyed
       scope.$on('$destroy', function() {
         // Subscribe the chat for the particular section
@@ -58,25 +52,25 @@ module chat.directives {
       scope.$watchCollection(
         function(){
           return scope.chatModel.chatHistory
-      },
-      function(newChatHistory :  Array<chat.controllers.IChatMessage>, oldChatHistory :  Array<chat.controllers.IChatMessage>){
-        // Delete existing records
-        var chatWindowDiv : JQuery = $('.chat-output');
+        },
+        function(newChatHistory :  Array<chat.controllers.IChatMessage>, oldChatHistory :  Array<chat.controllers.IChatMessage>){
+          // Delete existing records
+          var chatWindowDiv : JQuery = $('.chat-output');
 
-        if(newChatHistory !== oldChatHistory){
-          // Load the whole chat history
-          if(oldChatHistory.length === 0){
-            chatWindowDiv.empty();
+          if(newChatHistory !== oldChatHistory){
+            // Load the whole chat history
+            if(oldChatHistory.length === 0){
+              chatWindowDiv.empty();
 
-            for (var i = 0; i < newChatHistory.length; ++i) {
-              chatWindowDiv.append($('<span><strong>[' +  newChatHistory[i].creationDate + '&nbsp' + newChatHistory[i].from + ']</strong>&nbsp' +  newChatHistory[i].message + '<br></span>'));
+              for (var i = 0; i < newChatHistory.length; ++i) {
+                chatWindowDiv.append($('<span><strong>[' +  newChatHistory[i].creationDate + '&nbsp' + newChatHistory[i].from + ']</strong>&nbsp' +  newChatHistory[i].message + '<br></span>'));
+              }
+            } else { // Just add a single message to the chat history
+              var index = newChatHistory.length - 1;
+              chatWindowDiv.append($('<span><strong>[' +  newChatHistory[index].creationDate + '&nbsp' + newChatHistory[index].from + ']</strong>&nbsp' +  newChatHistory[index].message + '<br></span>'));
             }
-          } else { // Just add a single message to the chat history
-            var index = newChatHistory.length - 1;
-            chatWindowDiv.append($('<span><strong>[' +  newChatHistory[index].creationDate + '&nbsp' + newChatHistory[index].from + ']</strong>&nbsp' +  newChatHistory[index].message + '<br></span>'));
           }
-        }
-      })
+        })
     }
 
     public static factory():ng.IDirectiveFactory {

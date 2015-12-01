@@ -39,7 +39,7 @@ module chat.controllers {
 
     public storeChatSectionDataInCtrl(section, id){
       // Store the section additionally to the directive in the controller
-      this.chatSection = section
+      this.chatSection = section;
       this.id = id;
     }
 
@@ -109,6 +109,7 @@ module chat.controllers {
     chatSection : string;
     id : string;
     sendMessage : (message : IChatMessage) => void;
+    inputBoxKeypress : (event : any, message : ChatInputMessage) => void;
   }
 
   export interface IChatModel {
@@ -120,7 +121,7 @@ module chat.controllers {
     unsubscribeToChatSectionEvents: (nameOfEventListener : string, id : string) => void;
     fetchChatHistory : (section : string, id : string) => void;
     sendMessage : (message : IChatMessage) => void;
-    chatMessageListener : (message : ChatInputMessage) => void
+    chatMessageListener : (message : ChatInputMessage) => void;
   }
 
   // Message

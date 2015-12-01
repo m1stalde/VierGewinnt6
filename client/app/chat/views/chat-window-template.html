@@ -6,20 +6,19 @@
   </div>
 
   <div class="panel-body">
-    <label>Messages</label>
+    <label>Nachrichten</label>
     <div class="chat-output">
       <div id="chatHistoryPlaceholder">
-        <i>There are currently no messages available!</i>
+        <i>Es sind momentan keine Nachrichten vorhanden!</i>
       </div>
     </div>
     <br>
     <div class="form-group has-feedback">
       <form action="">
-        <label>New Message</label>
-        <input id="msgInput" autocomplete="off" ng-model="currentMessage.message" class="form-control"/>
+        <label>Neue Nachrichten</label>
+        <input id="msgInput" ng-keypress="inputBoxKeypress($event)" autocomplete="off" ng-model="currentMessage.message" class="form-control"/>
       </form>
     </div>
-    <button ng-click="sendMessage(currentMessage)" type='button' stop-event class="btn btn-default"> Send</button>
+    <button ng-click="sendMessage(currentMessage)" type='button' stop-event class="btn btn-default">Senden</button>
   </div>
 </div>
-
