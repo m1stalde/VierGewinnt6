@@ -32,10 +32,23 @@ module Game.Controllers {
       }
     }
 
+    keyDown(evt: JQueryEventObject): void {
+      var game = this.getCurrentGame();
+      var maxIndex = game.cells[0].length - 1;
+      var keyCode = evt.keyCode;
+
+      if (keyCode === 37 && this.selectedMoveField > 0) { // keyright
+        this.selectedMoveField--;
+      } else if (keyCode === 39 && this.selectedMoveField < maxIndex) { // keyleft
+        this.selectedMoveField++;
+      } else if (keyCode === 13 || keyCode === 32 || keyCode === 40) { // enter, space, keydown
+        this.gameService.doMove(this.selectedMoveField);
+      }
+    }
+
     doMove(evt: JQueryEventObject): void {
       var col = $(evt.target).data('x');
       if (col != undefined) {
-        this.log.debug("do move " + col);
         this.gameService.doMove(col);
       }
     }

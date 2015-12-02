@@ -1,6 +1,6 @@
 <div class="game-move">
 
-  <div class="move-play" ng-click="game.doMove($event)" ng-mouseover="game.mouseOver($event)">
+  <div class="move-play" ng-click="game.doMove($event)" ng-mouseover="game.mouseOver($event)" tabindex="0" ng-keydown="game.keyDown($event)" >
     <div class="game-row">
       <game-field ng-repeat="gameField in game.getMoveFields() track by $index"></game-field>
     </div>
