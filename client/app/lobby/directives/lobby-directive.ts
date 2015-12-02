@@ -44,7 +44,7 @@ module lobby.directives {
     public restrict = 'E';
     public static DirectoryName = "actionMessageDisplay";
     public transclude = true;
-    public templateUrl = "/lobby/views/action-message.html";
+    public templateUrl = "lobby/views/action-message.html";
     private $timeout;
 
     constructor($timeout) {
@@ -56,11 +56,6 @@ module lobby.directives {
         return $scope.lobby.actionMessage;
       }, (newValue:lobby.controllers.IActionMessage, oldValue:lobby.controllers.IActionMessage) => {
         if (oldValue.isError === null && newValue.isError !== null) {
-          if (newValue.isError) { // Error
-            element.find('div:first').addClass('message-panel-error');
-          } else if (!newValue.isError) {
-            element.find('div:last').addClass('message-panel-success');
-          }
           this.$timeout(function () {
             $scope.lobby.actionMessage.isError = null;
           }, 5000)
