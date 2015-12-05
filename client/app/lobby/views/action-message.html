@@ -1,12 +1,14 @@
 <!-- Error -->
-<div class="panel panel-default action-message message-panel-error" ng-hide="lobby.actionMessage.isError === null || lobby.actionMessage.isError === false">
+<div class="panel panel-default action-message" ng-hide="lobby.actionMessage.isError === null || lobby.actionMessage.isError === false">
     <span class="action-message-text ">
       {{lobby.actionMessage.data}}
+      <!--{{lobby.actionMessage.status}}
+      {{lobby.actionMessage.statusText}}-->
     </span>
 </div>
 
 <!-- Success -->
-<div class="panel panel-default action-message message-panel-success" ng-hide="lobby.actionMessage.isError === null || lobby.actionMessage.isError === true">
+<div class="panel panel-default action-message" ng-hide="lobby.actionMessage.isError === null || lobby.actionMessage.isError === true">
   <span class="action-message-text">
     {{lobby.actionMessage.data}}
   </span>
