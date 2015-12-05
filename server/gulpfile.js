@@ -1,15 +1,24 @@
 var gulp = require('gulp'),
     nodemon = require('gulp-nodemon'),
     ts = require('gulp-typescript'),
-    mocha = require('gulp-mocha');
+    mocha = require('gulp-mocha'),
+    del = require('del');
+
+gulp.task('clean', function () {
+    return del.sync(['./deploy/app/**']);
+});
 
 gulp.task('typescript' , function() {
-    console.log('Compiling typescript');
     return gulp.src('app/**/*.ts')
         .pipe(ts({module: 'commonjs'})).js.pipe(gulp.dest('./deploy/app'))
 });
 
-gulp.task('build', ['typescript']);
+gulp.task('copyPublic' , function() {
+    return gulp.src('app/public/**')
+        .pipe(gulp.dest('./deploy/app/public'))
+});
+
+gulp.task('build', ['clean','typescript','copyPublic']);
 
 gulp.task('typescript-watch', function() {
     gulp.watch('app/**/*.ts', ['typescript']);
@@ -26,7 +35,6 @@ gulp.task('serve', function () {
 });
 
 gulp.task('test-typescript' , function() {
-    console.log('Compiling typescript');
     return gulp.src('test/**/*.ts')
         .pipe(ts({module: 'commonjs'})).js.pipe(gulp.dest('./deploy/test'))
 });

@@ -42,7 +42,6 @@ app.use("/lobby", require('./routes/lobbyRoutes'));
 app.use("/game", require('./routes/gameRoutes'));
 
 app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/../../../client/build/app'));
 
 
 // generic error handler after routes
