@@ -22,16 +22,16 @@ module Session.Services {
     private currentSession : ISession;
 
     public static $inject = [
-      '$http', '$q', 'appConfig', 'LoggerService'
+      '$http', '$q', 'ConfigService', 'LoggerService'
     ];
 
-    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private appConfig: vierGewinnt6.IAppConfig, private log: Common.Services.ILoggerService) {
+    constructor(private $http: ng.IHttpService, private $q: ng.IQService, private configService: Common.Services.IConfigService, private log: Common.Services.ILoggerService) {
     }
 
     login(username: string, password: string) : ng.IPromise<ISession> {
       var deferred = this.$q.defer();
 
-      this.$http.post<ISession>(this.appConfig.baseUrl + '/session/login', { "username":username, "password":password})
+      this.$http.post<ISession>(this.configService.getServiceUrl('/session/login'), { "username":username, "password":password})
         .then(data => {
           this.setCurrentSession(data.data);
           deferred.resolve(this.currentSession);
@@ -47,7 +47,7 @@ module Session.Services {
     logout(): ng.IPromise<ISession> {
       var deferred = this.$q.defer();
 
-      this.$http.post<ISession>(this.appConfig.baseUrl + '/session/logout', {})
+      this.$http.post<ISession>(this.configService.getServiceUrl('/session/logout'), {})
         .then(data => {
           this.setCurrentSession(data.data);
           deferred.resolve(this.currentSession);
@@ -72,7 +72,7 @@ module Session.Services {
       var deferred = this.$q.defer();
 
       if (!this.currentSession) {
-        this.$http.get<ISession>(this.appConfig.baseUrl + '/session/')
+        this.$http.get<ISession>(this.configService.getServiceUrl('/session/'))
           .then(data => {
             this.setCurrentSession(data.data);
             deferred.resolve(this.currentSession);

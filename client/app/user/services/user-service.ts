@@ -21,12 +21,12 @@ module User.Services {
     private userResource : ng.resource.IResourceClass<ng.resource.IResource<IUser>>;
 
     public static $inject = [
-      '$resource', '$q', 'appConfig', 'LoggerService'
+      '$resource', '$q', 'ConfigService', 'LoggerService'
     ];
 
-    constructor(private $resource: angular.resource.IResourceService, private $q: ng.IQService, private appConfig: vierGewinnt6.IAppConfig,
+    constructor(private $resource: angular.resource.IResourceService, private $q: ng.IQService, private configService: Common.Services.IConfigService,
       private log: Common.Services.ILoggerService) {
-      this.userResource = $resource(appConfig.baseUrl + '/users');
+      this.userResource = $resource(this.configService.getServiceUrl('/users'));
     }
 
     loadUserData(): ng.IPromise<IUser> {

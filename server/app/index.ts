@@ -57,9 +57,10 @@ app.use(function(err: any, req: express.Request, res: express.Response, next: Fu
 });
 
 var port: number = process.env.PORT || 2999;
+var host: string = process.env.HOST || '0.0.0.0'; // listen on all ip addresses per default
 
-var server = app.listen(port, '127.0.0.1', function() {
-    logger.info('Express server listening on port ' + port);
+var server = app.listen(port, host, function() {
+    logger.info('Express server listening on ' + host + ':' + port);
 });
 
 

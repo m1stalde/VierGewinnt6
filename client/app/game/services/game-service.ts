@@ -50,12 +50,12 @@ module Game.Services {
     private gameResource: IGameResource;
 
     public static $inject = [
-      '$resource', '$q', 'LoggerService', 'MessageService', 'appConfig'
+      '$resource', '$q', 'LoggerService', 'MessageService', 'ConfigService'
     ];
 
-    constructor(private $resource: angular.resource.IResourceService, private $q: ng.IQService, private log: Common.Services.ILoggerService, private messageService: Common.Services.IMessageService, private appConfig: vierGewinnt6.IAppConfig) {
+    constructor(private $resource: angular.resource.IResourceService, private $q: ng.IQService, private log: Common.Services.ILoggerService, private messageService: Common.Services.IMessageService, private configService: Common.Services.IConfigService) {
       var that = this;
-      var gameUrl = appConfig.baseUrl + '/game/:gameId';
+      var gameUrl = this.configService.getServiceUrl('/game/:gameId');
 
       that.gameResource = <IGameResource>$resource(gameUrl,
         { gameId: '@_id' }, {

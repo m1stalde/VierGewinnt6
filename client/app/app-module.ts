@@ -21,12 +21,12 @@ module vierGewinnt6 {
       'chat'
     ])
     .constant('appConfig', {
-      baseUrl: 'http://127.0.0.1:2999',
-      baseWsUrl: 'ws://127.0.0.1:2999'
+      baseUrlPattern: 'http://{host}:2999',
+      baseWsUrlPattern: 'ws://{host}:2999'
     });
 
   export interface IAppConfig {
-    baseUrl: string;
-    baseWsUrl: string;
+    baseUrlPattern: string;
+    baseWsUrlPattern: string;
   }
 }

@@ -114,6 +114,8 @@ Server:
 - [ ] Chat und Lobby finden im Release-Build ihre Views nicht (gulp build --stage prod)
 - [ ] Nachricht im Chat mit Enter absenden lädt Seite neu, danach Error this.sendMessage is not a function
 - [ ] baseUrls für Release-Build auf Rechner-IP umstellen bzw. Browser-URL
+- [ ] dev-Dependencies verwenden --save-dev
+- [ ] Unit-Test auf Client implementieren
 
 1. Prio2
 - [ ] Layout Lobby für schmale Displays anpassen

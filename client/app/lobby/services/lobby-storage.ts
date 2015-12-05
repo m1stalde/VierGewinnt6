@@ -8,12 +8,12 @@ module lobby.services {
     public static $inject = [
       '$http',
       '$resource',
-      'appConfig',
+      'ConfigService',
       'MessageService',
       '$location'
     ];
 
-    constructor(private $http: ng.IHttpService, private $resource : ng.resource.IResourceService, private appConfig: vierGewinnt6.IAppConfig, private messageService: Common.Services.IMessageService,
+    constructor(private $http: ng.IHttpService, private $resource : ng.resource.IResourceService, private configService: Common.Services.IConfigService, private messageService: Common.Services.IMessageService,
                 private $location: ng.ILocationService) {
 
       // register for game update messages concerns to current game
@@ -23,7 +23,7 @@ module lobby.services {
     }
 
     public LobbyRoom() : ng.resource.IResourceClass<ng.resource.IResource<any>> {
-      return this.$resource(this.appConfig.baseUrl + '/lobby/:id', {id: '@id' });
+      return this.$resource(this.configService.getServiceUrl('/lobby/:id'), {id: '@id' });
     }
 
 

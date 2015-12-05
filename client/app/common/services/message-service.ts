@@ -45,15 +45,14 @@ module Common.Services {
     private timerId = 0;
 
     public static $inject = [
-      'LoggerService', '$rootScope', 'appConfig', '$http'
+      'LoggerService', '$rootScope', 'ConfigService', '$http'
     ];
 
-    constructor(private log: Common.Services.ILoggerService, private $rootScope: ng.IScope, private appConfig: vierGewinnt6.IAppConfig, private $http: ng.IHttpService) {
-      log.debug('trying to reach server ' + this.appConfig.baseUrl + ' before connecting websocket');
-      var self = this;
-
+    constructor(private log: Common.Services.ILoggerService, private $rootScope: ng.IScope, private configService: Common.Services.IConfigService, private $http: ng.IHttpService) {
       // Connect to the websocket server
-      self.connect(appConfig.baseWsUrl);
+      var serverUrl = configService.getWebsocketUrl();
+      log.debug('trying to reach server ' + serverUrl + ' before connecting websocket');
+      this.connect(serverUrl);
     }
 
     private connect(baseWsUrl:string) {
@@ -121,7 +120,7 @@ module Common.Services {
       var self = this;
       // In case of a closed connection => establish a new one
       if (this.ws.readyState == WebSocket.CLOSING || this.ws.readyState === WebSocket.CLOSED) {
-        this.connect(this.appConfig.baseWsUrl);
+        this.connect(this.configService.getWebsocketUrl());
         // Because the connection process takes a while, you can't directly afterwards send a message to the server => thus the callback pattern
         this.waitForConnection(function () {
           self.ws.send(JSON.stringify(message));
