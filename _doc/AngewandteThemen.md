@@ -90,3 +90,19 @@ Cross Site Scripting:
 - Whitelist für Raum-Namen in Lobby
 - Filter für nicht erlaubte Zeichen im Chat
 - Alle Eingabefelder mittels Eingabe von "<script>alert(1)</script>" geprüft
+
+## Accessibility
+
+Formular-Markup und -Validierung
+
+- Labels für Formularfelder
+- Gültige und ungültige Felder farblich und mit Symbol hervorgehoben
+
+Tastaturbedienbarkeit
+
+- Tastaturbedienung getestet
+- Spiel um Tastaturbedienung mittels Pfeiltasten links, rechts, unten plus Enter und Space erweitert
+
+Skalierbarkeit
+
+- Anwendung ist frei skalierbar
