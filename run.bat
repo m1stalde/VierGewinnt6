@@ -4,13 +4,6 @@ setlocal
 echo init node
 call "C:\Program Files\nodejs\nodevars.bat"
 
-echo build client
-cd /D "%~dp0\client"
-call npm install
-call tsd install
-call bower install
-call gulp build
-
 echo build server
 cd /D "%~dp0\server"
 call npm install
