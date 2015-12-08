@@ -39,6 +39,7 @@ siehe [Testing](_doc/Testing.md)
 - Spiel mit personalisiertem Account oder als Gast möglich (Usability durch 1 Click to Play)
 - Login und Logout für personalisierten Bereich
 - Benutzerbereich zum Editieren des eigenen Profils
+- Lobbybereich als zentraler Ausgangspunkt für das Starten eines Spiels
 
 ## Angewandte Themen
 
@@ -69,9 +70,12 @@ Client:
 - Agular-Direktive mit eigenem Controller mit controllerAs-Syntax und TypeScript
 - Unterschiedliches Verhalten im Production-Mode mit minifized Files
 - Unit-Tests von Angular-Controllers und -Services mit IResourceService-Mock und TypeScript
+- Modulare Chat Direktive welches ohne grossen Konfigurationsaufwand wiederverwertetet werden kann
+- Eigenheiten des ng-poly überwinden (Konfigurationen, auf den ersten Blick unerklärliche Verhalten)
 
 Server:
 
 - Session-Information aus Websocket-Request auslesen
 - Server-Code inkl. Unit-Tests in TypeScript mit Type-Definitions für Node-Module
+- OAuth mit Twitter Implementatieren => der Prototyp hatte noch einige Bugs und wurde deshalb aus dem produktiven Build herausgenommen
 
