@@ -24,6 +24,10 @@ Alternativ run.bat ausführen:
 
 siehe [Entwicklung](_doc/Development.md)
 
+## Design
+
+siehe [Design](_doc/Design.md)
+
 ## Testing
 
 siehe [Testing](_doc/Testing.md)
