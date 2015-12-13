@@ -172,7 +172,7 @@ Formular-Markup und -Validierung
 Tastaturbedienbarkeit
 
 - Tastaturbedienung getestet
-- Spiel um Tastaturbedienung mittels Pfeiltasten links, rechts, unten plus Enter und Space erweitert
+- Spiel um Tastaturbedienung mittels Pfeiltasten links, rechts plus Enter und Space erweitert
 
 Skalierbarkeit
 
