@@ -39,10 +39,13 @@ module Game.Controllers {
 
       if (keyCode === 37 && this.selectedMoveField > 0) { // keyright
         this.selectedMoveField--;
+        evt.preventDefault();
       } else if (keyCode === 39 && this.selectedMoveField < maxIndex) { // keyleft
         this.selectedMoveField++;
-      } else if (keyCode === 13 || keyCode === 32 || keyCode === 40) { // enter, space, keydown
+        evt.preventDefault();
+      } else if (keyCode === 13 || keyCode === 32) { // enter, space
         this.gameService.doMove(this.selectedMoveField);
+        evt.preventDefault();
       }
     }
 

@@ -96,8 +96,8 @@ export class Game {
             this.gameData.state = GameState.Broken;
         } else {
             this.gameData.state = GameState.Running;
-            this.gameData.nextColor = this.gameData.nextColor === Color.Red ? Color.Yellow : Color.Red;
-            this.gameData.nextPlayerId = this.gameData.playerId1 === playerId ? this.gameData.playerId2 : this.gameData.playerId1;
+            this.gameData.nextColor = this.getNextColor(this.gameData.nextColor);
+            this.gameData.nextPlayerId = this.getNextPlayer(playerId);
         }
 
         callback(null, this.gameData);
@@ -115,6 +115,14 @@ export class Game {
         }
 
         return result;
+    }
+
+    private getNextColor(color: Color): Color {
+        return color === Color.Red ? Color.Yellow : Color.Red;
+    }
+
+    private getNextPlayer(playerId: string): string {
+        return this.gameData.playerId1 === playerId ? this.gameData.playerId2 : this.gameData.playerId1;
     }
 
     /**
@@ -223,6 +231,12 @@ export class Game {
         var colCount = this.gameData.cells[0].length;
         this.gameData.cells = this.initCells(rowCount, colCount);
         this.gameData.state = GameState.New;
+
+        // set resetting player to next player and switch color if necessary
+        if (this.gameData.nextPlayerId !== playerId) {
+            this.gameData.nextPlayerId = playerId;
+            this.gameData.nextColor = this.getNextColor(this.gameData.nextColor);
+        }
 
         callback(null, this.gameData);
     }

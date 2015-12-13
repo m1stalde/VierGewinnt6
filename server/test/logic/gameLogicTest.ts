@@ -181,6 +181,19 @@ describe('Game Logic Tests:', () => {
             });
         });
 
+        it('restart game should set next player and color to resetting player', (done) => {
+            game.restartGame(playerId2, (err, gameData) => {
+                gameData.nextPlayerId.should.be.equal(playerId2);
+                (<number>gameData.nextColor).should.be.equal(gameLogic.Color.Yellow);
+
+                game.restartGame(playerId1, (err, gameData) => {
+                    gameData.nextPlayerId.should.be.equal(playerId1);
+                    (<number>gameData.nextColor).should.be.equal(gameLogic.Color.Red);
+                    done();
+                });
+            });
+        });
+
         it('restart game should do nothing if player is not in the game', (done) => {
             game.restartGame('playerId3', (err, gameData) => {
                 err.should.not.be.null;

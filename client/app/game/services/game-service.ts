@@ -85,7 +85,8 @@ module Game.Services {
     newGame(): ng.IPromise<IGame> {
       var deferred = this.$q.defer();
 
-      if (!this.game) {
+      // create a new game if no game exists or existing game was canceled
+      if (!this.game || this.game.state == GameState.Broken) {
         this.gameResource.create().$promise
           .then(data => {
             this.setGame(data);
