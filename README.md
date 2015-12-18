@@ -7,13 +7,13 @@ Der Client ist als Produktiv-Build bereits im Server enthalten und muss daher ni
 Quickstart (Details siehe [Entwicklung](_doc/Development.md))
 
 - Vorbedingungen
-  Node 0.12.2 installieren
-  Globale Pakete installieren
+    - Node 0.12.2 installieren
+    - Globale Pakete installieren
 - Server
-  Server bauen
-  Server starten
+    - Server bauen
+    - Server starten
 - Browser öffnen
-  http://127.0.0.1:2999/index.html
+    - http://127.0.0.1:2999/index.html
 
 Alternativ run.bat ausführen:
 
